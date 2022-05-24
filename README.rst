@@ -10,15 +10,15 @@ Newsletter
 
 .. |badge_downloads| image:: https://poser.pugx.org/ecodev/newsletter/downloads
    :alt: Total Downloads
-   :target: https://packagist.org/packages/mirko/newsletter
+   :target: https://packagist.org/packages/mirko/typo3-newsletter
 
 .. |badge_version| image:: https://poser.pugx.org/ecodev/newsletter/v/stable
    :alt: Latest Stable Version
-   :target: https://packagist.org/packages/mirko/newsletter
+   :target: https://packagist.org/packages/mirko/typo3-newsletter
 
 .. |badge_license| image:: https://poser.pugx.org/ecodev/newsletter/license
    :alt: License
-   :target: https://packagist.org/packages/mirko/newsletter
+   :target: https://packagist.org/packages/mirko/typo3-newsletter
 
 .. image:: Documentation/Images/Overview_-_small.png
    :align: right
