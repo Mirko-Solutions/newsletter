@@ -1,39 +1,24 @@
-DEPRECATED
-==========
-
-This extension is **no longer maintained** and will never support TYPO3 9+ for the reasons explained in https://github.com/Ecodev/newsletter/issues/168.
-
-Users should migrate to another extension, or fork this project.
+Mirko https://mirko.in.ua team took this extension for further support and development
 
 Newsletter
 ==========
 
-|badge_travis| |badge_scrutinizer| |badge_coverage| |badge_downloads| |badge_version| |badge_license| |badge_gitter|
+|badge_travis| |badge_downloads| |badge_version| |badge_license|
 
 .. |badge_travis| image:: https://travis-ci.org/Ecodev/newsletter.svg?branch=master
     :target: https://travis-ci.org/Ecodev/newsletter
 
-.. |badge_scrutinizer| image:: https://scrutinizer-ci.com/g/Ecodev/newsletter/badges/quality-score.png?b=master
-   :target: https://scrutinizer-ci.com/g/Ecodev/newsletter
-
-.. |badge_coverage| image:: https://scrutinizer-ci.com/g/Ecodev/newsletter/badges/coverage.png?b=master
-   :target: https://scrutinizer-ci.com/g/Ecodev/newsletter
-
 .. |badge_downloads| image:: https://poser.pugx.org/ecodev/newsletter/downloads
    :alt: Total Downloads
-   :target: https://packagist.org/packages/ecodev/newsletter
+   :target: https://packagist.org/packages/mirko/newsletter
 
 .. |badge_version| image:: https://poser.pugx.org/ecodev/newsletter/v/stable
    :alt: Latest Stable Version
-   :target: https://packagist.org/packages/ecodev/newsletter
+   :target: https://packagist.org/packages/mirko/newsletter
 
 .. |badge_license| image:: https://poser.pugx.org/ecodev/newsletter/license
    :alt: License
-   :target: https://packagist.org/packages/ecodev/newsletter
-
-.. |badge_gitter| image:: https://badges.gitter.im/Ecodev/newsletter.svg
-   :alt: Join the chat at https://gitter.im/Ecodev/newsletter
-   :target: https://gitter.im/Ecodev/newsletter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+   :target: https://packagist.org/packages/mirko/newsletter
 
 .. image:: Documentation/Images/Overview_-_small.png
    :align: right
