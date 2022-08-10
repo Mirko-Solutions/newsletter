@@ -1,16 +1,16 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Functional;
+namespace Mirko\Newsletter\Tests\Functional;
 
-use Ecodev\Newsletter\BounceHandler;
-use Ecodev\Newsletter\Domain\Repository\EmailRepository;
+use Mirko\Newsletter\BounceHandler;
+use Mirko\Newsletter\Domain\Repository\EmailRepository;
 
 require_once __DIR__ . '/AbstractFunctionalTestCase.php';
 
 /**
- * Functional test for the \Ecodev\Newsletter\BounceHandler
+ * Functional test for the \Mirko\Newsletter\BounceHandler
  */
-class BounceHandlerTest extends \Ecodev\Newsletter\Tests\Functional\AbstractFunctionalTestCase
+class BounceHandlerTest extends \Mirko\Newsletter\Tests\Functional\AbstractFunctionalTestCase
 {
     public function testDispatch()
     {

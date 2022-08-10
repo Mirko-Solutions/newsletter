@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model;
+namespace Mirko\Newsletter\Domain\Model;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 
 /**
  * BounceAccount

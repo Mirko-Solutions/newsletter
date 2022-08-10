@@ -1,12 +1,12 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Repository;
+namespace Mirko\Newsletter\Domain\Repository;
 
-use Ecodev\Newsletter\Domain\Model\Email;
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Domain\Model\Email;
+use Mirko\Newsletter\Tools;
 
 /**
- * Repository for \Ecodev\Newsletter\Domain\Model\Email
+ * Repository for \Mirko\Newsletter\Domain\Model\Email
  */
 class EmailRepository extends AbstractRepository
 {

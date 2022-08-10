@@ -18,13 +18,13 @@ conf.py:
   - - Index
     - newsletter.tex
     - Newsletter
-    - Ecodev
+    - Mirko
     - manual
   latex_elements:
     papersize: a4paper
     pointsize: 10pt
     preamble: \usepackage{typo3}
   html_theme_options:
-    github_repository: Ecodev/Newsletter
+    github_repository: Mirko/Newsletter
     github_branch: latest
 ...

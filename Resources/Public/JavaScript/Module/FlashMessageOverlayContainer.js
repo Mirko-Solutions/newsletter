@@ -1,14 +1,14 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter');
+    Ext.ns('Ext.ux.Mirko.Newsletter');
     /**
      *
      *
-     * @class Ext.ux.Ecodev.Newsletter.FlashMessageOverlayContainer
+     * @class Ext.ux.Mirko.Newsletter.FlashMessageOverlayContainer
      * @singleton
      */
-    Ext.ux.Ecodev.Newsletter.FlashMessageOverlayContainer = (function () {
+    Ext.ux.Mirko.Newsletter.FlashMessageOverlayContainer = (function () {
         /**
          * Container in the DOM to show Messages.
          */
@@ -140,7 +140,7 @@
             msgCt.setStyle('z-index', 9999);
             msgCt.setWidth(config.width);
             msgCt.setOpacity(config.opacity);
-            Ext.ux.Ecodev.Newsletter.DirectFlashMessageDispatcher.on('new', handleMessages);
+            Ext.ux.Mirko.Newsletter.DirectFlashMessageDispatcher.on('new', handleMessages);
         };
 
         var getMessageGrid = function () {

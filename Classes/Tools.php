@@ -1,12 +1,12 @@
 <?php
 
-namespace Ecodev\Newsletter;
+namespace Mirko\Newsletter;
 
 use DateTime;
-use Ecodev\Newsletter\Domain\Model\Email;
-use Ecodev\Newsletter\Domain\Model\Newsletter;
-use Ecodev\Newsletter\Domain\Repository\EmailRepository;
-use Ecodev\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Domain\Model\Email;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Domain\Repository\EmailRepository;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -297,7 +297,7 @@ abstract class Tools
      */
     public static function getUserAgent()
     {
-        $userAgent = TYPO3_user_agent . ' Newsletter (https://github.com/Ecodev/newsletter)';
+        $userAgent = TYPO3_user_agent . ' Newsletter (https://github.com/Mirko/newsletter)';
 
         return $userAgent;
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model;
+namespace Mirko\Newsletter\Domain\Model;
 
-use Ecodev\Newsletter\Utility\UriBuilder;
+use Mirko\Newsletter\Utility\UriBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -165,10 +165,10 @@ abstract class RecipientList extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
     /**
      * Here you can define an action when an address bounces. This can be database operations such as a deletion.
      * For external data-sources, you might consider collecting the addresses for later removal from the foreign system.
-     * The \Ecodev\Newsletter\Domain\Model\RecipientList\GentleSql implements a sensible default.
+     * The \Mirko\Newsletter\Domain\Model\RecipientList\GentleSql implements a sensible default.
      *
      * @param string $email the email address of the recipient
-     * @param int $bounceLevel Level of bounce, @see \Ecodev\Newsletter\BounceHandler for possible values
+     * @param int $bounceLevel Level of bounce, @see \Mirko\Newsletter\BounceHandler for possible values
      *
      * @return bool status of the success of the removal
      */

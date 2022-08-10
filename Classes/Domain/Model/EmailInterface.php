@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model;
+namespace Mirko\Newsletter\Domain\Model;
 
 /**
  * Email interface defining minimal contract to be used by third party

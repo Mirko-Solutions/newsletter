@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Utility;
+namespace Mirko\Newsletter\Utility;
 
 /**
  * Parse a raw email source to find its bounce level and authCode
@@ -15,7 +15,7 @@ class EmailParser
     /**
      * Bounce level of the mail source specified
      *
-     * @var int @see \Ecodev\Newsletter\BounceHandler
+     * @var int @see \Mirko\Newsletter\BounceHandler
      */
     private $bounceLevel;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\PlainConverter;
+namespace Mirko\Newsletter\Domain\Model\PlainConverter;
 
-use Ecodev\Newsletter\Domain\Model\IPlainConverter;
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Domain\Model\IPlainConverter;
+use Mirko\Newsletter\Tools;
 
 /**
  * Convert HTML to plain text using external lynx program

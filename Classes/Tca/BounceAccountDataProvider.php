@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Tca;
+namespace Mirko\Newsletter\Tca;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 
 /**

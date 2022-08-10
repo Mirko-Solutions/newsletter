@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit;
+namespace Mirko\Newsletter\Tests\Unit;
 
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 

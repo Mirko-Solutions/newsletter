@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\ExtDirect;
+namespace Mirko\Newsletter\MVC\ExtDirect;
 
-use Ecodev\Newsletter\Exception;
+use Mirko\Newsletter\Exception;
 use TYPO3;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;

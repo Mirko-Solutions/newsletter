@@ -1,13 +1,13 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Repository;
+namespace Mirko\Newsletter\Domain\Repository;
 
-use Ecodev\Newsletter\Domain\Model\Link;
-use Ecodev\Newsletter\Tools;
-use Ecodev\Newsletter\Utility\MarkerSubstitutor;
+use Mirko\Newsletter\Domain\Model\Link;
+use Mirko\Newsletter\Tools;
+use Mirko\Newsletter\Utility\MarkerSubstitutor;
 
 /**
- * Repository for \Ecodev\Newsletter\Domain\Model\Link
+ * Repository for \Mirko\Newsletter\Domain\Model\Link
  */
 class LinkRepository extends AbstractRepository
 {

@@ -1,13 +1,13 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Store');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Store');
 
     /**
      * A Store for the plannedNewsletter model using ExtDirect to communicate with the
      * server side extbase framework.
      */
-    Ext.ux.Ecodev.Newsletter.Store.PlannedNewsletter = (function () {
+    Ext.ux.Mirko.Newsletter.Store.PlannedNewsletter = (function () {
 
         var plannedNewsletterStore = null;
 
@@ -18,7 +18,7 @@
             });
 
             if (html === '') {
-                html = '<li class="none">' + Ext.ux.Ecodev.Newsletter.Language.none + '</li>';
+                html = '<li class="none">' + Ext.ux.Mirko.Newsletter.Language.none + '</li>';
             }
 
             html = '<ul class="' + level + '">' + html + '</ul>';
@@ -28,7 +28,7 @@
         var initialize = function () {
             if (plannedNewsletterStore === null) {
                 plannedNewsletterStore = new Ext.data.DirectStore({
-                    storeId: 'Ecodev\\Newsletter\\Domain\\Model\\PlannedNewsletter',
+                    storeId: 'Mirko\\Newsletter\\Domain\\Model\\PlannedNewsletter',
                     reader: new Ext.data.JsonReader({
                         totalProperty: 'total',
                         successProperty: 'success',

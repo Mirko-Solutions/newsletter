@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Repository;
+namespace Mirko\Newsletter\Domain\Repository;
 
 use TYPO3\CMS\Extbase\Persistence\Repository;
 

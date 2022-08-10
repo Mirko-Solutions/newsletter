@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
 /**
  * Recipient List using CSV url to retrieve a CSV file

@@ -1,20 +1,20 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Store');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Store');
 
     /**
      * A Store for the movie model using ExtDirect to communicate with the
      * server side extbase framework.
      */
-    Ext.ux.Ecodev.Newsletter.Store.Newsletter = (function () {
+    Ext.ux.Mirko.Newsletter.Store.Newsletter = (function () {
 
         var newsletterStore = null;
 
         var initialize = function () {
             if (newsletterStore === null) {
                 newsletterStore = new Ext.data.DirectStore({
-                    storeId: 'Ecodev\\Newsletter\\Domain\\Model\\Newsletter',
+                    storeId: 'Mirko\\Newsletter\\Domain\\Model\\Newsletter',
                     reader: new Ext.data.JsonReader({
                         totalProperty: 'total',
                         successProperty: 'success',
@@ -47,10 +47,10 @@
                         writeAllFields: false,
                     }),
                     api: {
-                        read: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.listAction,
-                        update: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.updateAction,
-                        destroy: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.deleteAction,
-                        create: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.createAction,
+                        read: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.listAction,
+                        update: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.updateAction,
+                        destroy: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.deleteAction,
+                        create: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.createAction,
                     },
                     paramOrder: {
                         read: [],

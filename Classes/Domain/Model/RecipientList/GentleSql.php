@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
-use Ecodev\Newsletter\Tools;
-use Ecodev\Newsletter\Utility\EmailParser;
+use Mirko\Newsletter\Tools;
+use Mirko\Newsletter\Utility\EmailParser;
 
 /**
  * This is a more gentle version on the generic sql-driven target. It is dependant on integer field tx_newsletter_bounce

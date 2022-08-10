@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\PlainConverter;
+namespace Mirko\Newsletter\Domain\Model\PlainConverter;
 
-use Ecodev\Newsletter\Domain\Model\IPlainConverter;
+use Mirko\Newsletter\Domain\Model\IPlainConverter;
 use Html2Text\Html2Text;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 

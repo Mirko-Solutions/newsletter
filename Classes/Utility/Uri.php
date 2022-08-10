@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Utility;
+namespace Mirko\Newsletter\Utility;
 
 /**
  * Uri helper

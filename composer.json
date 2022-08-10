@@ -2,7 +2,7 @@
   "name": "mirko/newsletter",
   "type": "typo3-cms-extension",
   "description": "TYPO3 extension to send any pages as Newsletter and provide statistics on opened emails and clicked links.",
-  "homepage": "https://github.com/Mirko-Solutions/typo3-newsletter",
+  "homepage": "https://github.com/Mirko-Solutions/newsletter",
   "license": "GPL-2.0+",
   "keywords": [
     "TYPO3 CMS",
@@ -26,12 +26,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Ecodev\\Newsletter\\": "Classes/"
+      "Mirko\\Newsletter\\": "Classes/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Ecodev\\Newsletter\\Tests\\": "Tests/"
+      "Mirko\\Newsletter\\Tests\\": "Tests/"
     }
   },
   "extra": {

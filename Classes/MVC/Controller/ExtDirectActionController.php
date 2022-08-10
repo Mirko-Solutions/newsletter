@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\Controller;
+namespace Mirko\Newsletter\MVC\Controller;
 
-use Ecodev\Newsletter\MVC\View\ExtDirectView;
-use Ecodev\Newsletter\MVC\View\JsonView;
+use Mirko\Newsletter\MVC\View\ExtDirectView;
+use Mirko\Newsletter\MVC\View\JsonView;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -32,7 +32,7 @@ class ExtDirectActionController extends ActionController
     }
 
     /**
-     * Initializes the View to be a \Ecodev\Newsletter\ExtDirect\View\ExtDirectView that renders json without Template Files.
+     * Initializes the View to be a \Mirko\Newsletter\ExtDirect\View\ExtDirectView that renders json without Template Files.
      *
      * @param ViewInterface $view
      */

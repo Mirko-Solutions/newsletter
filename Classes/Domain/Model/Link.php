@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model;
+namespace Mirko\Newsletter\Domain\Model;
 
-use Ecodev\Newsletter\Domain\Repository\EmailRepository;
-use Ecodev\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Domain\Repository\EmailRepository;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Object\ObjectManager;

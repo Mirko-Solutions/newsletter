@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model;
+namespace Mirko\Newsletter\Domain\Model;
 
 /**
  * Interface for Plain Text Converter. Converter may use either HTML

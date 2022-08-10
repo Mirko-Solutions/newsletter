@@ -15,11 +15,11 @@ Links
     https://typo3.org/extensions/repository/view/newsletter
 
 :Bug Tracker:
-    https://github.com/Ecodev/newsletter/issues
+    https://github.com/Mirko/newsletter/issues
 
 :Git Repository:
-    https://github.com/Ecodev/newsletter
+    https://github.com/Mirko/newsletter
 
 :Contact:
     If you need help with this extension, commercial support may be obtained
-    by contacting `ecodev.ch <https://ecodev.ch/>`_.
+    by contacting `mirko.in.ua <https://mirko.in.ua/>`_.

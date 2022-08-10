@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
-use Ecodev\Newsletter\Domain\Model\RecipientList;
+use Mirko\Newsletter\Domain\Model\RecipientList;
 
 /**
  * This is the basic class for extracting recipient from other data sources than the database.

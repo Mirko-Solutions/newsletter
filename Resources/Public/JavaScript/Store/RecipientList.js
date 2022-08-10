@@ -1,20 +1,20 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Store');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Store');
 
     /**
      * A Store for the recipientList model using ExtDirect to communicate with the
      * server side extbase framework.
      */
-    Ext.ux.Ecodev.Newsletter.Store.RecipientList = (function () {
+    Ext.ux.Mirko.Newsletter.Store.RecipientList = (function () {
 
         var recipientListStore = null;
 
         var initialize = function () {
             if (recipientListStore === null) {
                 recipientListStore = new Ext.data.DirectStore({
-                    storeId: 'Ecodev\\Newsletter\\Domain\\Model\\RecipientList',
+                    storeId: 'Mirko\\Newsletter\\Domain\\Model\\RecipientList',
                     reader: new Ext.data.JsonReader({
                         totalProperty: 'total',
                         successProperty: 'success',
@@ -39,10 +39,10 @@
                         writeAllFields: false,
                     }),
                     api: {
-                        read: Ext.ux.Ecodev.Newsletter.Remote.RecipientListController.listAction,
-                        update: Ext.ux.Ecodev.Newsletter.Remote.RecipientListController.updateAction,
-                        destroy: Ext.ux.Ecodev.Newsletter.Remote.RecipientListController.destroyAction,
-                        create: Ext.ux.Ecodev.Newsletter.Remote.RecipientListController.createAction,
+                        read: Ext.ux.Mirko.Newsletter.Remote.RecipientListController.listAction,
+                        update: Ext.ux.Mirko.Newsletter.Remote.RecipientListController.updateAction,
+                        destroy: Ext.ux.Mirko.Newsletter.Remote.RecipientListController.destroyAction,
+                        create: Ext.ux.Mirko.Newsletter.Remote.RecipientListController.createAction,
                     },
                     paramOrder: {
                         read: [],

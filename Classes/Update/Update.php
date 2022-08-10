@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Update;
+namespace Mirko\Newsletter\Update;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -53,7 +53,7 @@ class Update implements SingletonInterface
     {
         $output = '';
         foreach ($this->getQueries() as $title => $queries) {
-            /* @var $transactedResult \Ecodev\Newsletter\Update\TransactionResult */
+            /* @var $transactedResult \Mirko\Newsletter\Update\TransactionResult */
             $transactedResult = Transaction::transactInnoDBQueries($queries);
 
             if ($transactedResult->complete()) {
@@ -144,10 +144,10 @@ class Update implements SingletonInterface
 
         return [
             'Migrate non-namespaced classes to namespaced classes' => [
-                "UPDATE tx_scheduler_task SET serialized_task_object = REPLACE(serialized_task_object, 'O:29:\"Tx_Newsletter_Task_SendEmails\"', 'O:33:\"Ecodev\\\\Newsletter\\\\Task\\\\SendEmails\"');",
-                "UPDATE tx_scheduler_task SET serialized_task_object = REPLACE(serialized_task_object, 'O:31:\"Tx_Newsletter_Task_FetchBounces\"', 'O:35:\"Ecodev\\\\Newsletter\\\\Task\\\\FetchBounces\"');",
-                "UPDATE tx_newsletter_domain_model_recipientlist SET type = REPLACE(type, 'Tx_Newsletter_Domain_Model_RecipientList_', 'Ecodev\\\\Newsletter\\\\Domain\\\\Model\\\\RecipientList\\\\');",
-                "UPDATE tx_newsletter_domain_model_newsletter SET plain_converter = REPLACE(plain_converter, 'Tx_Newsletter_Domain_Model_PlainConverter_', 'Ecodev\\\\Newsletter\\\\Domain\\\\Model\\\\PlainConverter\\\\');",
+                "UPDATE tx_scheduler_task SET serialized_task_object = REPLACE(serialized_task_object, 'O:29:\"Tx_Newsletter_Task_SendEmails\"', 'O:33:\"Mirko\\\\Newsletter\\\\Task\\\\SendEmails\"');",
+                "UPDATE tx_scheduler_task SET serialized_task_object = REPLACE(serialized_task_object, 'O:31:\"Tx_Newsletter_Task_FetchBounces\"', 'O:35:\"Mirko\\\\Newsletter\\\\Task\\\\FetchBounces\"');",
+                "UPDATE tx_newsletter_domain_model_recipientlist SET type = REPLACE(type, 'Tx_Newsletter_Domain_Model_RecipientList_', 'Mirko\\\\Newsletter\\\\Domain\\\\Model\\\\RecipientList\\\\');",
+                "UPDATE tx_newsletter_domain_model_newsletter SET plain_converter = REPLACE(plain_converter, 'Tx_Newsletter_Domain_Model_PlainConverter_', 'Mirko\\\\Newsletter\\\\Domain\\\\Model\\\\PlainConverter\\\\');",
             ],
         ];
     }

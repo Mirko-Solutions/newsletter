@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\ViewHelpers;
+namespace Mirko\Newsletter\ViewHelpers;
 
-use Ecodev\Newsletter\Exception;
+use Mirko\Newsletter\Exception;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**

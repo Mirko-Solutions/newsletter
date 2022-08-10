@@ -3,22 +3,19 @@ Mirko https://mirko.in.ua team took this extension for further support and devel
 Newsletter
 ==========
 
-|badge_travis| |badge_downloads| |badge_version| |badge_license|
+|badge_downloads| |badge_version| |badge_license|
 
-.. |badge_travis| image:: https://travis-ci.org/Ecodev/newsletter.svg?branch=master
-    :target: https://travis-ci.org/Ecodev/newsletter
-
-.. |badge_downloads| image:: https://poser.pugx.org/ecodev/newsletter/downloads
+.. |badge_downloads| image:: https://poser.pugx.org/Mirko/newsletter/downloads
    :alt: Total Downloads
-   :target: https://packagist.org/packages/mirko/typo3-newsletter
+   :target: https://packagist.org/packages/mirko/newsletter
 
-.. |badge_version| image:: https://poser.pugx.org/ecodev/newsletter/v/stable
+.. |badge_version| image:: https://poser.pugx.org/Mirko/newsletter/v/stable
    :alt: Latest Stable Version
-   :target: https://packagist.org/packages/mirko/typo3-newsletter
+   :target: https://packagist.org/packages/mirko/newsletter
 
-.. |badge_license| image:: https://poser.pugx.org/ecodev/newsletter/license
+.. |badge_license| image:: https://poser.pugx.org/Mirko/newsletter/license
    :alt: License
-   :target: https://packagist.org/packages/mirko/typo3-newsletter
+   :target: https://packagist.org/packages/mirko/newsletter
 
 .. image:: Documentation/Images/Overview_-_small.png
    :align: right

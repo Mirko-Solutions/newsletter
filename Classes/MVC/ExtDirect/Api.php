@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\ExtDirect;
+namespace Mirko\Newsletter\MVC\ExtDirect;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 use ReflectionException;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
@@ -71,7 +71,7 @@ class Api
 
         foreach ($this->frameworkConfiguration['controllerConfiguration'] as $controllerName => $allowedControllerActions) {
             $unstrippedControllerName = $controllerName . 'Controller';
-            $controllerObjectName = 'Ecodev\\Newsletter\\Controller\\' . $unstrippedControllerName;
+            $controllerObjectName = 'Mirko\\Newsletter\\Controller\\' . $unstrippedControllerName;
             $controllerActions = [];
             foreach ($allowedControllerActions['actions'] as $actionName) {
                 $unstrippedActionName = $actionName . 'Action';

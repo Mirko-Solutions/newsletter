@@ -1,20 +1,20 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Store');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Store');
 
     /**
      * A Store for the bounceAccount model using ExtDirect to communicate with the
      * server side extbase framework.
      */
-    Ext.ux.Ecodev.Newsletter.Store.BounceAccount = (function () {
+    Ext.ux.Mirko.Newsletter.Store.BounceAccount = (function () {
 
         var bounceAccountStore = null;
 
         var initialize = function () {
             if (bounceAccountStore === null) {
                 bounceAccountStore = new Ext.data.DirectStore({
-                    storeId: 'Ecodev\\Newsletter\\Domain\\Model\\BounceAccount',
+                    storeId: 'Mirko\\Newsletter\\Domain\\Model\\BounceAccount',
                     reader: new Ext.data.JsonReader({
                         totalProperty: 'total',
                         successProperty: 'success',
@@ -38,10 +38,10 @@
                         writeAllFields: false,
                     }),
                     api: {
-                        read: Ext.ux.Ecodev.Newsletter.Remote.BounceAccountController.listAction,
-                        update: Ext.ux.Ecodev.Newsletter.Remote.BounceAccountController.updateAction,
-                        destroy: Ext.ux.Ecodev.Newsletter.Remote.BounceAccountController.destroyAction,
-                        create: Ext.ux.Ecodev.Newsletter.Remote.BounceAccountController.createAction,
+                        read: Ext.ux.Mirko.Newsletter.Remote.BounceAccountController.listAction,
+                        update: Ext.ux.Mirko.Newsletter.Remote.BounceAccountController.updateAction,
+                        destroy: Ext.ux.Mirko.Newsletter.Remote.BounceAccountController.destroyAction,
+                        create: Ext.ux.Mirko.Newsletter.Remote.BounceAccountController.createAction,
                     },
                     paramOrder: {
                         read: [],

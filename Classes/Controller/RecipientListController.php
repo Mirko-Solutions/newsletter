@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\Controller;
+namespace Mirko\Newsletter\Controller;
 
-use Ecodev\Newsletter\Domain\Repository\RecipientListRepository;
-use Ecodev\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

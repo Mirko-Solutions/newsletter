@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\ViewHelpers;
+namespace Mirko\Newsletter\ViewHelpers;
 
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 

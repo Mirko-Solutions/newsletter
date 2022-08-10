@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Tca;
+namespace Mirko\Newsletter\Tca;
 
 /**
  * Handle bounced emails. Fetch them, analyse them and take approriate actions.

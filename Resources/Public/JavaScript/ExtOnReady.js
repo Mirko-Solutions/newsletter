@@ -1,1 +1,1 @@
-Ext.ux.Ecodev.Newsletter.Module.Application.bootstrap();
+Ext.ux.Mirko.Newsletter.Module.Application.bootstrap();

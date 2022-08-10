@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter;
+namespace Mirko\Newsletter;
 
 /**
  * The base exception for this extension.

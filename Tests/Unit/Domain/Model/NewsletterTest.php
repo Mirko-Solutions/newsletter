@@ -1,17 +1,17 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit\Domain\Model;
+namespace Mirko\Newsletter\Tests\Unit\Domain\Model;
 
-use Ecodev\Newsletter\Domain\Model\BounceAccount;
-use Ecodev\Newsletter\Domain\Model\Newsletter;
-use Ecodev\Newsletter\Domain\Model\PlainConverter\Builtin;
-use Ecodev\Newsletter\Domain\Model\PlainConverter\Lynx;
-use Ecodev\Newsletter\Domain\Model\RecipientList\BeUsers;
+use Mirko\Newsletter\Domain\Model\BounceAccount;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
+use Mirko\Newsletter\Domain\Model\PlainConverter\Lynx;
+use Mirko\Newsletter\Domain\Model\RecipientList\BeUsers;
 
 /**
- * Test case for class \Ecodev\Newsletter\Domain\Model\Newsletter.
+ * Test case for class \Mirko\Newsletter\Domain\Model\Newsletter.
  */
-class NewsletterTest extends \Ecodev\Newsletter\Tests\Unit\AbstractUnitTestCase
+class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
 {
     /**
      * @var Newsletter

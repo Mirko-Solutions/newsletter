@@ -1,11 +1,11 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Tests\Unit\Domain\Model\RecipientList;
 
-use Ecodev\Newsletter\Domain\Model\RecipientList\CsvUrl;
+use Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl;
 
 /**
- * Test case for class \Ecodev\Newsletter\Domain\Model\RecipientList\CsvUrl.
+ * Test case for class \Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl.
  */
 class CsvUrlTest extends CsvFileTest
 {

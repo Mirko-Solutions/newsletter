@@ -13,7 +13,7 @@ $TYPO3_CONF_VARS['SC_OPTIONS']['GLOBAL']['cliKeys']['newsletter_bounce'] = ['EXT
 
 // Configure FE plugin element
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-    'Ecodev.' . $_EXTKEY, 'p', [// list of controller
+    'Mirko.' . $_EXTKEY, 'p', [// list of controller
     'Email' => 'show, opened',
     'Link' => 'clicked',
     'RecipientList' => 'unsubscribe, export',
@@ -24,21 +24,21 @@ $TYPO3_CONF_VARS['SC_OPTIONS']['GLOBAL']['cliKeys']['newsletter_bounce'] = ['EXT
     ]
 );
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Ecodev\Newsletter\Task\SendEmails::class] = [
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Mirko\Newsletter\Task\SendEmails::class] = [
     'extension' => $_EXTKEY,
     'title' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang.xlf:task_send_emails_title',
     'description' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang.xlf:task_send_emails_description',
 ];
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Ecodev\Newsletter\Task\FetchBounces::class] = [
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Mirko\Newsletter\Task\FetchBounces::class] = [
     'extension' => $_EXTKEY,
     'title' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang.xlf:task_fetch_bounces_title',
     'description' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang.xlf:task_fetch_bounces_description',
 ];
 
 // Configure TCA custom eval and hooks to manage on-the-fly (de)encryption from database
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals'][\Ecodev\Newsletter\Tca\BounceAccountTca::class] = 'EXT:' . $_EXTKEY . '/Classes/Tca/BounceAccountTca.php';
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\Ecodev\Newsletter\Tca\BounceAccountDataProvider::class] = [
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tce']['formevals'][\Mirko\Newsletter\Tca\BounceAccountTca::class] = 'EXT:' . $_EXTKEY . '/Classes/Tca/BounceAccountTca.php';
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\Mirko\Newsletter\Tca\BounceAccountDataProvider::class] = [
     'depends' => [
         \TYPO3\CMS\Backend\Form\FormDataProvider\DatabaseEditRow::class,
     ],
@@ -47,5 +47,5 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRe
 // Make a call to update
 if (TYPO3_MODE === 'BE') {
     $dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-    $dispatcher->connect(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class, 'afterExtensionInstall', \Ecodev\Newsletter\Update\Update::class, 'afterExtensionInstall');
+    $dispatcher->connect(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class, 'afterExtensionInstall', \Mirko\Newsletter\Update\Update::class, 'afterExtensionInstall');
 }

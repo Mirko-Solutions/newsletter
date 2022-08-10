@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Tca;
+namespace Mirko\Newsletter\Tca;
 
-use Ecodev\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 

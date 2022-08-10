@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Update;
+namespace Mirko\Newsletter\Update;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 
 /**
  * A collection of transacted operations.

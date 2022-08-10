@@ -1,11 +1,11 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit\Utility;
+namespace Mirko\Newsletter\Tests\Unit\Utility;
 
-use Ecodev\Newsletter\Utility\EmailParser;
+use Mirko\Newsletter\Utility\EmailParser;
 
 /**
- * Test case for class Ecodev\Newsletter\Utility\EmailParser.
+ * Test case for class Mirko\Newsletter\Utility\EmailParser.
  */
 class EmailParserTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {

@@ -1,20 +1,20 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Store');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Store');
 
     /**
      * A Store for the link model using ExtDirect to communicate with the
      * server side extbase framework.
      */
-    Ext.ux.Ecodev.Newsletter.Store.Link = (function () {
+    Ext.ux.Mirko.Newsletter.Store.Link = (function () {
 
         var linkStore = null;
 
         var initialize = function () {
             if (linkStore === null) {
                 linkStore = new Ext.data.DirectStore({
-                    storeId: 'Ecodev\\Newsletter\\Domain\\Model\\Link',
+                    storeId: 'Mirko\\Newsletter\\Domain\\Model\\Link',
                     reader: new Ext.data.JsonReader({
                         totalProperty: 'total',
                         successProperty: 'success',
@@ -32,10 +32,10 @@
                         writeAllFields: false,
                     }),
                     api: {
-                        read: Ext.ux.Ecodev.Newsletter.Remote.LinkController.listAction,
-                        update: Ext.ux.Ecodev.Newsletter.Remote.LinkController.updateAction,
-                        destroy: Ext.ux.Ecodev.Newsletter.Remote.LinkController.destroyAction,
-                        create: Ext.ux.Ecodev.Newsletter.Remote.LinkController.createAction,
+                        read: Ext.ux.Mirko.Newsletter.Remote.LinkController.listAction,
+                        update: Ext.ux.Mirko.Newsletter.Remote.LinkController.updateAction,
+                        destroy: Ext.ux.Mirko.Newsletter.Remote.LinkController.destroyAction,
+                        create: Ext.ux.Mirko.Newsletter.Remote.LinkController.createAction,
                     },
                     paramOrder: {
                         read: ['data', 'start', 'limit'],

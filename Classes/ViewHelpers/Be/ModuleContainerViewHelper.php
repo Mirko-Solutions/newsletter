@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\ViewHelpers\Be;
+namespace Mirko\Newsletter\ViewHelpers\Be;
 
-use Ecodev\Newsletter\ViewHelpers\AbstractViewHelper;
+use Mirko\Newsletter\ViewHelpers\AbstractViewHelper;
 
 /**
  * View helper which allows you to create ExtBase-based modules in the style of
@@ -12,7 +12,7 @@ use Ecodev\Newsletter\ViewHelpers\AbstractViewHelper;
  * = Examples =
  *
  * <code title="Simple">
- * {namespace newsletter=Ecodev\Newsletter\ViewHelpers}
+ * {namespace newsletter=Mirko\Newsletter\ViewHelpers}
  * <newsletter:be.container>your additional viewHelpers inside</ext:be.container>
  * </code>
  *
@@ -21,7 +21,7 @@ use Ecodev\Newsletter\ViewHelpers\AbstractViewHelper;
  * Default backend CSS styles and JavaScript will be included
  *
  * <code title="All options">
- * {namespace newsletter=Ecodev\Newsletter\ViewHelpers}
+ * {namespace newsletter=Mirko\Newsletter\ViewHelpers}
  * <newsletter:be.moduleContainer pageTitle="foo">your module content</f:be.container>
  * </code>
  */

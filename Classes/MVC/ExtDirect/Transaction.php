@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\ExtDirect;
+namespace Mirko\Newsletter\MVC\ExtDirect;
 
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -194,7 +194,7 @@ class Transaction
      */
     public function getControllerObjectName()
     {
-        return 'Ecodev\\Newsletter\\Controller\\' . $this->action;
+        return 'Mirko\\Newsletter\\Controller\\' . $this->action;
     }
 
     /**

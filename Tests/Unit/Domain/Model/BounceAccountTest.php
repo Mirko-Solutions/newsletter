@@ -1,12 +1,12 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit\Domain\Model;
+namespace Mirko\Newsletter\Tests\Unit\Domain\Model;
 
-use Ecodev\Newsletter\Domain\Model\BounceAccount;
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Domain\Model\BounceAccount;
+use Mirko\Newsletter\Tools;
 
 /**
- * Test case for class \Ecodev\Newsletter\Domain\Model\BounceAccount.
+ * Test case for class \Mirko\Newsletter\Domain\Model\BounceAccount.
  */
 class BounceAccountTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {

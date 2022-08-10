@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\ExtDirect\Exception;
+namespace Mirko\Newsletter\MVC\ExtDirect\Exception;
 
-use Ecodev\Newsletter\Exception;
+use Mirko\Newsletter\Exception;
 
 /**
  * An exception for an invalid Ext Direct request

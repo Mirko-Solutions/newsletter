@@ -1,14 +1,14 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Functional\Utility;
+namespace Mirko\Newsletter\Tests\Functional\Utility;
 
-use Ecodev\Newsletter\Utility\UriBuilder;
+use Mirko\Newsletter\Utility\UriBuilder;
 use ReflectionClass;
 
 /**
- * Test case for class Ecodev\Newsletter\Utility\UriBuilder.
+ * Test case for class Mirko\Newsletter\Utility\UriBuilder.
  */
-class UriBuilderTest extends \Ecodev\Newsletter\Tests\Functional\AbstractFunctionalTestCase
+class UriBuilderTest extends \Mirko\Newsletter\Tests\Functional\AbstractFunctionalTestCase
 {
     public function testBuildFrontendUriFromTca()
     {

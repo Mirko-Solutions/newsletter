@@ -1,19 +1,19 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter');
+    Ext.ns('Ext.ux.Mirko.Newsletter');
     /**
      * This class fetches Ext.Direct events, fires a event if
      * new FlashMessages are available and removes the messages from the
      * Ext.Direct response event.
      *
      * Register your FlashMessage-processing ExtJS component like this:
-     * Ext.ux.Ecodev.Newsletter.DirectFlashMessages.on('new',function(flashMessages) {
+     * Ext.ux.Mirko.Newsletter.DirectFlashMessages.on('new',function(flashMessages) {
      * 		//do something with incoming FlashMessages
      * });
      *
      */
-    Ext.ux.Ecodev.Newsletter.DirectFlashMessageDispatcher = (function () {
+    Ext.ux.Mirko.Newsletter.DirectFlashMessageDispatcher = (function () {
         /**
          * @class Ext.util.Observable
          */

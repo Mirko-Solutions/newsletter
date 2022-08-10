@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\Task;
+namespace Mirko\Newsletter\Task;
 
-use Ecodev\Newsletter\Domain\Repository\NewsletterRepository;
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;

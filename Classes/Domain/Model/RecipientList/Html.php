@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 
 /**
  * Recipient List using any public URL to fetch and parse for emails addresses

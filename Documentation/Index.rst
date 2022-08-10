@@ -26,13 +26,16 @@ Newsletter
         newsletter, email, scheduling, bulk email
 
     :Copyright:
-        2010-2016
+        2010-2022
 
     :Author:
         Ecodev
 
+    :Maintainer:
+        Mirko
+
     :Email:
-        contact@ecodev.ch
+        support@mirko.in.ua
 
     :License:
         This document is published under the Open Publication License
@@ -40,7 +43,7 @@ Newsletter
 
     :Support:
         If you need help with this extension, commercial support may be obtained
-        by contacting `ecodev.ch <https://ecodev.ch/>`_.
+        by contacting `mirko.in.ua <https://mirko.in.ua/>`_.
 
     :Rendered:
         |today|

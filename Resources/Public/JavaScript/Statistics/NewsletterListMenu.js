@@ -1,22 +1,22 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Statistics');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Statistics');
 
     /**
-     * @class Ext.ux.Ecodev.Newsletter.Statistics.NewsletterListMenu
-     * @namespace Ext.ux.Ecodev.Newsletter.Statistics
+     * @class Ext.ux.Mirko.Newsletter.Statistics.NewsletterListMenu
+     * @namespace Ext.ux.Mirko.Newsletter.Statistics
      * @extends Ext.form.ComboBox
      *
      * Class for newsletter drop down menu
      */
-    Ext.ux.Ecodev.Newsletter.Statistics.NewsletterListMenu = Ext.extend(Ext.grid.GridPanel, {
+    Ext.ux.Mirko.Newsletter.Statistics.NewsletterListMenu = Ext.extend(Ext.grid.GridPanel, {
         initComponent: function () {
             var thisNewsletterListMenu = this;
-            var newsletterStore = Ext.StoreMgr.get('Ecodev\\Newsletter\\Domain\\Model\\Newsletter');
+            var newsletterStore = Ext.StoreMgr.get('Mirko\\Newsletter\\Domain\\Model\\Newsletter');
 
             var config = {
-                emptyText: Ext.ux.Ecodev.Newsletter.Language.no_statistics,
+                emptyText: Ext.ux.Mirko.Newsletter.Language.no_statistics,
                 id: 'newsletterListMenu',
                 store: newsletterStore,
                 autoExpandColumn: 'title',
@@ -40,33 +40,33 @@
                 columns: [
                     {
                         id: 'title',
-                        header: Ext.ux.Ecodev.Newsletter.Language.newsletter,
+                        header: Ext.ux.Mirko.Newsletter.Language.newsletter,
                         dataIndex: 'title',
                         width: 300,
                         sortable: true,
                     },
                     {
-                        header: Ext.ux.Ecodev.Newsletter.Language.tx_newsletter_domain_model_newsletter_planned_time,
+                        header: Ext.ux.Mirko.Newsletter.Language.tx_newsletter_domain_model_newsletter_planned_time,
                         dataIndex: 'plannedTime',
                         width: 150,
                         sortable: true,
                         renderer: Ext.util.Format.dateRenderer('Y-m-d H:i:s'),
                     },
                     {
-                        header: Ext.ux.Ecodev.Newsletter.Language.tx_newsletter_domain_model_newsletter_begin_time,
+                        header: Ext.ux.Mirko.Newsletter.Language.tx_newsletter_domain_model_newsletter_begin_time,
                         dataIndex: 'beginTime',
                         width: 150,
                         sortable: true,
                         renderer: Ext.util.Format.dateRenderer('Y-m-d H:i:s'),
                     },
                     {
-                        header: Ext.ux.Ecodev.Newsletter.Language.recipients,
+                        header: Ext.ux.Mirko.Newsletter.Language.recipients,
                         dataIndex: 'emailCount',
                         width: 100,
                         sortable: true,
                     },
                     {
-                        header: Ext.ux.Ecodev.Newsletter.Language.tx_newsletter_domain_model_newsletter_is_test,
+                        header: Ext.ux.Mirko.Newsletter.Language.tx_newsletter_domain_model_newsletter_is_test,
                         dataIndex: 'isTest',
                         width: 70,
                         sortable: true,
@@ -79,7 +79,7 @@
             };
 
             Ext.apply(this, config);
-            Ext.ux.Ecodev.Newsletter.Statistics.NewsletterListMenu.superclass.initComponent.call(this);
+            Ext.ux.Mirko.Newsletter.Statistics.NewsletterListMenu.superclass.initComponent.call(this);
         },
         /**
          * When a newsletter is selected, we update the store representing the selected newsletter.
@@ -91,16 +91,16 @@
          */
         onNewsletterSelected: function (newsletter) {
 
-            var selectedNewsletterStore = Ext.StoreMgr.get('Ecodev\\Newsletter\\Domain\\Model\\SelectedNewsletter');
+            var selectedNewsletterStore = Ext.StoreMgr.get('Mirko\\Newsletter\\Domain\\Model\\SelectedNewsletter');
             selectedNewsletterStore.load({params: {data: newsletter.data.__identity}});
 
-            var linkStore = Ext.StoreMgr.get('Ecodev\\Newsletter\\Domain\\Model\\Link');
+            var linkStore = Ext.StoreMgr.get('Mirko\\Newsletter\\Domain\\Model\\Link');
             linkStore.load({params: {data: newsletter.data.__identity, start: 0, limit: 50}});
 
-            var linkEmail = Ext.StoreMgr.get('Ecodev\\Newsletter\\Domain\\Model\\Email');
+            var linkEmail = Ext.StoreMgr.get('Mirko\\Newsletter\\Domain\\Model\\Email');
             linkEmail.load({params: {data: newsletter.data.__identity, start: 0, limit: 50}});
         },
     });
 
-    Ext.reg('Ext.ux.Ecodev.Newsletter.Statistics.NewsletterListMenu', Ext.ux.Ecodev.Newsletter.Statistics.NewsletterListMenu);
+    Ext.reg('Ext.ux.Mirko.Newsletter.Statistics.NewsletterListMenu', Ext.ux.Mirko.Newsletter.Statistics.NewsletterListMenu);
 }());

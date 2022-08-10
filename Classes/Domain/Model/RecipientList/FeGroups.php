@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Tools;
 
 /**
  * Recipient List using Frontend Groups

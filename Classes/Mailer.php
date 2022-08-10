@@ -1,10 +1,10 @@
 <?php
 
-namespace Ecodev\Newsletter;
+namespace Mirko\Newsletter;
 
-use Ecodev\Newsletter\Domain\Model\Email;
-use Ecodev\Newsletter\Domain\Model\Newsletter;
-use Ecodev\Newsletter\Utility\UriBuilder;
+use Mirko\Newsletter\Domain\Model\Email;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Utility\UriBuilder;
 use Swift_Attachment;
 use Swift_EmbeddedFile;
 use TYPO3\CMS\Core\Mail\MailMessage;

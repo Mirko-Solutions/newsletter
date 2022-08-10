@@ -1,11 +1,11 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Module');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Module');
 
     /**
-     * @class Ext.ux.Ecodev.Newsletter.Module.Application
-     * @namespace Ext.ux.Ecodev.Newsletter.Module
+     * @class Ext.ux.Mirko.Newsletter.Module.Application
+     * @namespace Ext.ux.Mirko.Newsletter.Module
      * @extends Ext.util.Observable
      *
      * The main entry point which controls the lifecycle of the application.
@@ -15,7 +15,7 @@
      * @singleton
      */
 
-    Ext.ux.Ecodev.Newsletter.Module.Application = Ext.apply(new Ext.util.Observable(), {
+    Ext.ux.Mirko.Newsletter.Module.Application = Ext.apply(new Ext.util.Observable(), {
         /**
          * Main bootstrap. This is called by Ext.onReady.
          *
@@ -25,8 +25,8 @@
             Ext.QuickTips.init();
 
             // init Flashmessage
-            Ext.ux.Ecodev.Newsletter.DirectFlashMessageDispatcher.initialize();
-            Ext.ux.Ecodev.Newsletter.FlashMessageOverlayContainer.initialize({
+            Ext.ux.Mirko.Newsletter.DirectFlashMessageDispatcher.initialize();
+            Ext.ux.Mirko.Newsletter.FlashMessageOverlayContainer.initialize({
                 minDelay: 5,
                 maxDelay: 15,
                 logLevel: -1,
@@ -51,7 +51,7 @@
          * @return {Boolean}
          */
         checkIfPage: function () {
-            return Ext.ux.Ecodev.Newsletter.Configuration.pageType == 'page';
+            return Ext.ux.Mirko.Newsletter.Configuration.pageType == 'page';
         },
         /**
          * Check if the application can be loaded
@@ -59,7 +59,7 @@
          * @return {Boolean}
          */
         checkIfPageIsFolder: function () {
-            return Ext.ux.Ecodev.Newsletter.Configuration.pageType == 'folder';
+            return Ext.ux.Mirko.Newsletter.Configuration.pageType == 'folder';
         },
         /**
          * Init menus and content area
@@ -78,15 +78,15 @@
                     bodyCssClass: 't3-newsletter-docbody',
                     padding: '0 20px 10px 24px',
                     items: [{
-                        xtype: 'Ext.ux.Ecodev.Newsletter.Planner.Planner',
+                        xtype: 'Ext.ux.Mirko.Newsletter.Planner.Planner',
                         iconCls: 't3-newsletter-button-planner',
                         api: {
-                            load: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.listPlannedAction,
-                            submit: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.createAction,
+                            load: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.listPlannedAction,
+                            submit: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.createAction,
                         },
 
                     }, {
-                        xtype: 'Ext.ux.Ecodev.Newsletter.Statistics.Statistics',
+                        xtype: 'Ext.ux.Mirko.Newsletter.Statistics.Statistics',
                         iconCls: 't3-newsletter-button-statistics',
                     }],
                 }],
@@ -96,14 +96,14 @@
          * Init ExtDirect stores
          */
         initStore: function () {
-            Ext.ux.Ecodev.Newsletter.Store.Newsletter.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.SelectedNewsletter.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.PlannedNewsletter.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.Email.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.Link.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.BounceAccount.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.RecipientList.initialize();
-            Ext.ux.Ecodev.Newsletter.Store.Recipient.initialize();
+            Ext.ux.Mirko.Newsletter.Store.Newsletter.initialize();
+            Ext.ux.Mirko.Newsletter.Store.SelectedNewsletter.initialize();
+            Ext.ux.Mirko.Newsletter.Store.PlannedNewsletter.initialize();
+            Ext.ux.Mirko.Newsletter.Store.Email.initialize();
+            Ext.ux.Mirko.Newsletter.Store.Link.initialize();
+            Ext.ux.Mirko.Newsletter.Store.BounceAccount.initialize();
+            Ext.ux.Mirko.Newsletter.Store.RecipientList.initialize();
+            Ext.ux.Mirko.Newsletter.Store.Recipient.initialize();
         },
         /**
          * Init folder GUI
@@ -124,8 +124,8 @@
                             '</div>',
                             '<div id="typo3-docbody">',
                             '<div id="typo3-inner-docbody">',
-                            '<h2>' + Ext.ux.Ecodev.Newsletter.Language.message_title_page_selected + '</h2>',
-                            '<p>' + Ext.ux.Ecodev.Newsletter.Language.message_page_selected + '</p>',
+                            '<h2>' + Ext.ux.Mirko.Newsletter.Language.message_title_page_selected + '</h2>',
+                            '<p>' + Ext.ux.Mirko.Newsletter.Language.message_page_selected + '</p>',
                             '</div>',
                             '</div>',
                         ],
@@ -152,8 +152,8 @@
                             '</div>',
                             '<div id="typo3-docbody">',
                             '<div id="typo3-inner-docbody">',
-                            '<h2>' + Ext.ux.Ecodev.Newsletter.Language.message_title_no_pid_selected + '</h2>',
-                            '<p>' + Ext.ux.Ecodev.Newsletter.Language.message_no_pid_selected + '</p>',
+                            '<h2>' + Ext.ux.Mirko.Newsletter.Language.message_title_no_pid_selected + '</h2>',
+                            '<p>' + Ext.ux.Mirko.Newsletter.Language.message_no_pid_selected + '</p>',
                             '</div>',
                             '</div>',
                         ],

@@ -1,10 +1,10 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model\RecipientList;
+namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
-use Ecodev\Newsletter\Domain\Model\RecipientList;
-use Ecodev\Newsletter\Tools;
-use Ecodev\Newsletter\Utility\EmailParser;
+use Mirko\Newsletter\Domain\Model\RecipientList;
+use Mirko\Newsletter\Tools;
+use Mirko\Newsletter\Utility\EmailParser;
 
 /**
  * This is the basic SQL related newsletter target. Methods implemented with DB calls using SQL query defined by end-user.
@@ -170,7 +170,7 @@ class Sql extends RecipientList
      * Execute the SQL defined by the user to disable a recipient.
      *
      * @param string $email the email address of the recipient
-     * @param int $bounceLevel Level of bounce, @see \Ecodev\Newsletter\BounceHandler for possible values
+     * @param int $bounceLevel Level of bounce, @see \Mirko\Newsletter\BounceHandler for possible values
      *
      * @return bool status of the success of the removal
      */

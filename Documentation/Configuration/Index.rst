@@ -17,7 +17,7 @@ This reference manual does not cover all possible configurations of this
 extension. To help you and others learn and share your newsletter configurations
 we have enabled the project `wiki`_ on GitHub for public contribution.
 
-.. _wiki: https://github.com/Ecodev/newsletter/wiki
+.. _wiki: https://github.com/Mirko/newsletter/wiki
 
 .. _configuration-scheduler_and_mail_transport:
 

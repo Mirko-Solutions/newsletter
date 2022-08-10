@@ -1,13 +1,13 @@
 <?php
 
-namespace Ecodev\Newsletter\Controller;
+namespace Mirko\Newsletter\Controller;
 
 use DateTime;
-use Ecodev\Newsletter\Domain\Model\Newsletter;
-use Ecodev\Newsletter\Domain\Repository\BounceAccountRepository;
-use Ecodev\Newsletter\Domain\Repository\NewsletterRepository;
-use Ecodev\Newsletter\MVC\Controller\ExtDirectActionController;
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter;

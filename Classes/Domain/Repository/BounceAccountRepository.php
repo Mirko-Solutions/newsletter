@@ -1,15 +1,15 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Repository;
+namespace Mirko\Newsletter\Domain\Repository;
 
-use Ecodev\Newsletter\Domain\Model\BounceAccount;
+use Mirko\Newsletter\Domain\Model\BounceAccount;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
- * Repository for \Ecodev\Newsletter\Domain\Model\BounceAccount
+ * Repository for \Mirko\Newsletter\Domain\Model\BounceAccount
  */
 class BounceAccountRepository extends AbstractRepository
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Functional\Repository;
+namespace Mirko\Newsletter\Tests\Functional\Repository;
 
-use Ecodev\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 
 require_once __DIR__ . '/../AbstractFunctionalTestCase.php';
 
 /**
- * Functional test for the \Ecodev\Newsletter\Domain\Repository\RecipientListRepository
+ * Functional test for the \Mirko\Newsletter\Domain\Repository\RecipientListRepository
  */
-class RecipientListRepositoryTest extends \Ecodev\Newsletter\Tests\Functional\AbstractFunctionalTestCase
+class RecipientListRepositoryTest extends \Mirko\Newsletter\Tests\Functional\AbstractFunctionalTestCase
 {
     /** @var RecipientListRepository */
     private $recipientListRepository;

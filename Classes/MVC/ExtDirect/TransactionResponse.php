@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\ExtDirect;
+namespace Mirko\Newsletter\MVC\ExtDirect;
 
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
 

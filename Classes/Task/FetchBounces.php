@@ -1,9 +1,9 @@
 <?php
 
-namespace Ecodev\Newsletter\Task;
+namespace Mirko\Newsletter\Task;
 
-use Ecodev\Newsletter\BounceHandler;
-use Ecodev\Newsletter\Domain\Repository\BounceAccountRepository;
+use Mirko\Newsletter\BounceHandler;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Utility;
+namespace Mirko\Newsletter\Utility;
 
 use TYPO3\CMS\Core\TimeTracker\TimeTracker;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\Update;
+namespace Mirko\Newsletter\Update;
 
 /**
  * A model for transaction states of operands

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ecodev\Newsletter\ViewHelpers;
+namespace Mirko\Newsletter\ViewHelpers;
 
-use Ecodev\Newsletter\MVC\ExtDirect\Api;
+use Mirko\Newsletter\MVC\ExtDirect\Api;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -40,10 +40,10 @@ class ExtDirectProviderViewHelper extends AbstractViewHelper
      * @param string $namespace the namespace the variable is placed
      * @param string $routeUrl you can specify a URL that acts as router
      */
-    public function render($name = 'remoteDescriptor', $namespace = 'Ext.ux.Ecodev.Newsletter.Remote', $routeUrl = null)
+    public function render($name = 'remoteDescriptor', $namespace = 'Ext.ux.Mirko.Newsletter.Remote', $routeUrl = null)
     {
         if ($routeUrl === null) {
-            $routeUrl = $this->controllerContext->getUriBuilder()->reset()->build() . '&Ecodev\\Newsletter\\ExtDirectRequest=1';
+            $routeUrl = $this->controllerContext->getUriBuilder()->reset()->build() . '&Mirko\\Newsletter\\ExtDirectRequest=1';
         }
 
         $api = $this->apiService->createApi($routeUrl, $namespace);

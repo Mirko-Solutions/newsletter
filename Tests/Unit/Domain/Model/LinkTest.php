@@ -1,12 +1,12 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit\Domain\Model;
+namespace Mirko\Newsletter\Tests\Unit\Domain\Model;
 
-use Ecodev\Newsletter\Domain\Model\Link;
-use Ecodev\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Domain\Model\Link;
+use Mirko\Newsletter\Domain\Model\Newsletter;
 
 /**
- * Test case for class \Ecodev\Newsletter\Domain\Model\Link.
+ * Test case for class \Mirko\Newsletter\Domain\Model\Link.
  */
 class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Ecodev\Newsletter\Tests\Unit\Utility;
+namespace Mirko\Newsletter\Tests\Unit\Utility;
 
-use Ecodev\Newsletter\Domain\Model\Newsletter;
-use Ecodev\Newsletter\Utility\Validator;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Utility\Validator;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
- * Test case for class Ecodev\Newsletter\Utility\Validator.
+ * Test case for class Mirko\Newsletter\Utility\Validator.
  */
 class ValidatorTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {

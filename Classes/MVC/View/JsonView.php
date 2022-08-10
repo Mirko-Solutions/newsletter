@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\MVC\View;
+namespace Mirko\Newsletter\MVC\View;
 
 use ArrayAccess;
 use DateTime;

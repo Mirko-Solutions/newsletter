@@ -1,26 +1,26 @@
 (function () {
     'use strict';
 
-    Ext.ns('Ext.ux.Ecodev.Newsletter.Store');
+    Ext.ns('Ext.ux.Mirko.Newsletter.Store');
 
     /**
      * A Store for the selectedNewsletter model using ExtDirect to communicate with the
      * server side extbase framework.
      */
-    Ext.ux.Ecodev.Newsletter.Store.SelectedNewsletter = (function () {
+    Ext.ux.Mirko.Newsletter.Store.SelectedNewsletter = (function () {
 
         var selectedNewsletterStore = null;
 
         var initialize = function () {
             if (selectedNewsletterStore === null) {
-                var newsletterStore = Ext.StoreMgr.get('Ecodev\\Newsletter\\Domain\\Model\\Newsletter');
+                var newsletterStore = Ext.StoreMgr.get('Mirko\\Newsletter\\Domain\\Model\\Newsletter');
                 selectedNewsletterStore = new Ext.data.DirectStore({
-                    storeId: 'Ecodev\\Newsletter\\Domain\\Model\\SelectedNewsletter',
+                    storeId: 'Mirko\\Newsletter\\Domain\\Model\\SelectedNewsletter',
                     // Here we use the same JsonReader as NewsletterStore to
                     // get the exact same definition of fields as both store have same RecordType
                     reader: newsletterStore.reader,
                     api: {
-                        read: Ext.ux.Ecodev.Newsletter.Remote.NewsletterController.statisticsAction,
+                        read: Ext.ux.Mirko.Newsletter.Remote.NewsletterController.statisticsAction,
                     },
                     paramOrder: {
                         read: ['data'],
@@ -56,29 +56,29 @@
 
                     var timelineData = [
                         {
-                            key: Ext.ux.Ecodev.Newsletter.Language.link_opened,
+                            key: Ext.ux.Mirko.Newsletter.Language.link_opened,
                             values: linkOpenedPercentage,
                             color: '#FFB61B',
                             disabled: true,
 
                         },
                         {
-                            key: Ext.ux.Ecodev.Newsletter.Language.bounced,
+                            key: Ext.ux.Mirko.Newsletter.Language.bounced,
                             values: emailBouncedPercentage,
                             color: '#E01B4C',
                         },
                         {
-                            key: Ext.ux.Ecodev.Newsletter.Language.opened,
+                            key: Ext.ux.Mirko.Newsletter.Language.opened,
                             values: emailOpenedPercentage,
                             color: '#078207',
                         },
                         {
-                            key: Ext.ux.Ecodev.Newsletter.Language.sent,
+                            key: Ext.ux.Mirko.Newsletter.Language.sent,
                             values: emailSentPercentage,
                             color: '#25CDF2',
                         },
                         {
-                            key: Ext.ux.Ecodev.Newsletter.Language.not_sent,
+                            key: Ext.ux.Mirko.Newsletter.Language.not_sent,
                             values: emailNotSentPercentage,
                             color: '#CCCCCC',
                         },
@@ -122,19 +122,19 @@
                     var mostRecentState = statistics[statistics.length - 1];
                     var pieData = [
                         {
-                            label: Ext.ux.Ecodev.Newsletter.Language.not_sent,
+                            label: Ext.ux.Mirko.Newsletter.Language.not_sent,
                             value: mostRecentState.emailNotSentCount,
                         },
                         {
-                            label: Ext.ux.Ecodev.Newsletter.Language.sent,
+                            label: Ext.ux.Mirko.Newsletter.Language.sent,
                             value: mostRecentState.emailSentCount,
                         },
                         {
-                            label: Ext.ux.Ecodev.Newsletter.Language.opened,
+                            label: Ext.ux.Mirko.Newsletter.Language.opened,
                             value: mostRecentState.emailOpenedCount,
                         },
                         {
-                            label: Ext.ux.Ecodev.Newsletter.Language.bounced,
+                            label: Ext.ux.Mirko.Newsletter.Language.bounced,
                             value: mostRecentState.emailBouncedCount,
                         },
                     ];

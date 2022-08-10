@@ -1,13 +1,13 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Repository;
+namespace Mirko\Newsletter\Domain\Repository;
 
-use Ecodev\Newsletter\Domain\Model\Newsletter;
-use Ecodev\Newsletter\Tools;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
- * Repository for \Ecodev\Newsletter\Domain\Model\Newsletter
+ * Repository for \Mirko\Newsletter\Domain\Model\Newsletter
  */
 class NewsletterRepository extends AbstractRepository
 {

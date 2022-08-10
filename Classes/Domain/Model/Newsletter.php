@@ -1,15 +1,15 @@
 <?php
 
-namespace Ecodev\Newsletter\Domain\Model;
+namespace Mirko\Newsletter\Domain\Model;
 
 use DateTime;
-use Ecodev\Newsletter\Domain\Model\PlainConverter\Builtin;
-use Ecodev\Newsletter\Domain\Repository\BounceAccountRepository;
-use Ecodev\Newsletter\Domain\Repository\EmailRepository;
-use Ecodev\Newsletter\Domain\Repository\NewsletterRepository;
-use Ecodev\Newsletter\Domain\Repository\RecipientListRepository;
-use Ecodev\Newsletter\Tools;
-use Ecodev\Newsletter\Utility\Validator;
+use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
+use Mirko\Newsletter\Domain\Repository\EmailRepository;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\Tools;
+use Mirko\Newsletter\Utility\Validator;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -119,7 +119,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * bounceAccount
      *
      * @lazy
-     * @var \Ecodev\Newsletter\Domain\Model\BounceAccount
+     * @var \Mirko\Newsletter\Domain\Model\BounceAccount
      */
     protected $bounceAccount;
 
@@ -134,7 +134,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * recipientList
      *
      * @lazy
-     * @var \Ecodev\Newsletter\Domain\Model\RecipientList
+     * @var \Mirko\Newsletter\Domain\Model\RecipientList
      */
     protected $recipientList;
 
@@ -306,7 +306,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         }
 
         if (!($converter instanceof IPlainConverter)) {
-            throw new \Exception("$class does not implement \Ecodev\Newsletter\Domain\Model\IPlainConverter");
+            throw new \Exception("$class does not implement \Mirko\Newsletter\Domain\Model\IPlainConverter");
         }
 
         return $converter;

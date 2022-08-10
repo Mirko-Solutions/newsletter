@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\ViewHelpers;
+namespace Mirko\Newsletter\ViewHelpers;
 
 /**
  * View helper which allows you to include a JS File.

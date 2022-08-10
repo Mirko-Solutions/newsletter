@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecodev\Newsletter\ViewHelpers;
+namespace Mirko\Newsletter\ViewHelpers;
 
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
@@ -32,7 +32,7 @@ class LocalizationViewHelper extends AbstractViewHelper
         }
 
         $localizations = json_encode($localizations);
-        $javascript = "Ext.ux.Ecodev.Newsletter.Language = $localizations;";
+        $javascript = "Ext.ux.Mirko.Newsletter.Language = $localizations;";
 
         $this->pageRenderer->addJsInlineCode($filePath, $javascript);
     }

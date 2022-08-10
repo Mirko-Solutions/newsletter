@@ -1,6 +1,6 @@
 <?php
 
-use Ecodev\Newsletter\Update\Update;
+use Mirko\Newsletter\Update\Update;
 
 /**
  * Provide a "update" button in Extension Manager when update are required
