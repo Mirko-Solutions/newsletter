@@ -9,20 +9,33 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class LocalizationViewHelper extends AbstractViewHelper
 {
-    /**
-     * Calls addJsFile on the Instance of TYPO3\CMS\Core\Page\PageRenderer.
-     *
-     * @param string $name the list of file to include separated by coma
-     * @param string $extKey the extension, where the file is located
-     * @param string $pathInsideExt the path to the file relative to the ext-folder
-     */
-    public function render($name = 'locallang.xlf', $extKey = null, $pathInsideExt = 'Resources/Private/Language/')
+    public function initializeArguments()
     {
+        parent::initializeArguments();
+
+        $this->registerArgument('name', 'string', 'Name');
+        $this->registerArgument('extKey', 'string', 'Extension key');
+        $this->registerArgument(
+            'pathInsideExt',
+            'string',
+            'Path inside extension',
+            false,
+            'Resources/Private/Language/'
+        );
+    }
+
+    public function render()
+    {
+        $name = $this->arguments['name'];
+        $extKey = $this->arguments['extKey'];
+        $pathInsideExt = $this->arguments['pathInsideExt'];
+
         $names = explode(',', $name);
 
-        if ($extKey == null) {
-            $extKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
+        if ($extKey === null) {
+            $extKey = $this->renderingContext->getRequest()->getControllerExtensionKey();
         }
+
         $extPath = ExtensionManagementUtility::extPath($extKey);
 
         $localizations = [];
@@ -42,8 +55,8 @@ class LocalizationViewHelper extends AbstractViewHelper
      *
      * @param string $filePath
      *
-     * @throws Exception
      * @return array
+     * @throws \Exception
      */
     protected function getLocalizations($filePath)
     {
@@ -51,14 +64,13 @@ class LocalizationViewHelper extends AbstractViewHelper
         global $LOCAL_LANG;
 
         // Language inclusion
-        $LANG->includeLLFile($filePath);
+        $LOCAL_LANG = $LANG->includeLLFile($filePath);
         if (!isset($LOCAL_LANG[$LANG->lang]) || empty($LOCAL_LANG[$LANG->lang])) {
             $lang = 'default';
         } else {
             $lang = $LANG->lang;
         }
 
-        $result = [];
         foreach ($LOCAL_LANG[$lang] as $key => $value) {
             $target = $value[0]['target'];
 

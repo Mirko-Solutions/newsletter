@@ -3,6 +3,8 @@
 namespace Mirko\Newsletter\ViewHelpers\Be;
 
 use Mirko\Newsletter\ViewHelpers\AbstractViewHelper;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * View helper which allows you to create ExtBase-based modules in the style of
@@ -32,39 +34,50 @@ class ModuleContainerViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
+    public function initializeArguments()
+    {
+        $this->registerArgument(
+            'pageTitle',
+            'string',
+            'title tag of the module. Not required by default, as BE modules are shown in a frame',
+            true
+        );
+    }
+
     /**
      * Renders start page with template.php and pageTitle.
      *
-     * @param string $pageTitle title tag of the module. Not required by default, as BE modules are shown in a frame
      *
      * @return string
      * @see template
      * @see \TYPO3\CMS\Core\Page\PageRenderer
      */
-    public function render($pageTitle = '')
+    public function render()
     {
-        $doc = $this->getDocInstance();
+        $pageTitle = $this->arguments['pageTitle'];
+        $doc = $this->getModuleTemplate();
         $this->pageRenderer->backPath = '';
-        $this->pageRenderer->loadExtJS();
+        $this->pageRenderer->loadRequireJs();
 
-        // From TYPO3 8.6.0 onward t3skin is located in core (see: https://forge.typo3.org/issues/79259).
-        if (version_compare(TYPO3_version, '8.6.0', '>=')) {
-            $this->pageRenderer->addCssFile('sysext/core/Resources/Public/ExtJs/xtheme-t3skin.css');
-        } else {
-            // Anything before 8.6.0 must still use the old t3skin EXT path.
-            $this->pageRenderer->addCssFile('sysext/t3skin/extjs/xtheme-t3skin.css');
-        }
+        $extPath = ExtensionManagementUtility::extPath('newsletter');
+        $extRelPath = '/' . mb_substr($extPath, mb_strlen(Environment::getPublicPath() . '/'));
+        $this->pageRenderer->addCssFile($extRelPath . 'Resources/Public/Styles/xtheme-t3skin.css');
 
         $this->renderChildren();
 
-        $this->pageRenderer->enableCompressJavaScript();
-        $this->pageRenderer->enableCompressCss();
-        $this->pageRenderer->enableConcatenateFiles();
+//        $this->pageRenderer->enableCompressJavaScript();
+//        $this->pageRenderer->enableCompressCss();
+//        $this->pageRenderer->enableConcatenateCss();
+//        $this->pageRenderer->enableConcatenateJavascript();
 
-        $output = $doc->startPage($pageTitle);
-        $output .= $this->pageRenderer->getBodyContent();
-        $output .= $doc->endPage();
+        $this->pageRenderer->disableCompressCss();
+        $this->pageRenderer->disableCompressJavascript();
+        $this->pageRenderer->disableConcatenateCss();
+        $this->pageRenderer->disableConcatenateJavascript();
 
-        return $output;
+        $doc->setTitle($pageTitle);
+        $doc->setContent($this->pageRenderer->getBodyContent());
+
+        return $doc->renderContent();
     }
 }

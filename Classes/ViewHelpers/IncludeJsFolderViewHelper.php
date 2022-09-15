@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\ViewHelpers;
 
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -18,25 +19,39 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class IncludeJsFolderViewHelper extends AbstractViewHelper
 {
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+
+        $this->registerArgument('name', 'string', 'Name', false, null);
+        $this->registerArgument('extKey', 'string', 'Extension key', false, null);
+        $this->registerArgument(
+            'pathInsideExt',
+            'string',
+            'Path inside extension',
+            false,
+            'Resources/Public/JavaScript/'
+        );
+        $this->registerArgument('recursive', 'boolean', 'Recursive', false, false);
+    }
+
     /**
      * Calls addJsFile for each file in the given folder on the Instance of TYPO3\CMS\Core\Page\PageRenderer.
      *
-     * @param string $name the file to include
-     * @param string $extKey the extension, where the file is located
-     * @param string $pathInsideExt the path to the file relative to the ext-folder
      * @param bool $recursive
      */
-    public function render($name = null, $extKey = null, $pathInsideExt = 'Resources/Public/JavaScript/', $recursive = false)
+    public function render()
     {
-        if ($extKey == null) {
-            $extKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
+        $name = $this->arguments['name'];
+        $extKey = $this->arguments['extKey'];
+        $pathInsideExt = $this->arguments['pathInsideExt'];
+        $recursive = $this->arguments['recursive'];
+
+        if ($extKey === null) {
+            $extKey = $this->renderingContext->getRequest()->getControllerExtensionKey();
         }
         $extPath = ExtensionManagementUtility::extPath($extKey);
-        if (TYPO3_MODE === 'FE') {
-            $extRelPath = mb_substr($extPath, mb_strlen(PATH_site));
-        } else {
-            $extRelPath = ExtensionManagementUtility::extRelPath($extKey);
-        }
+        $extRelPath = '/' . mb_substr($extPath, mb_strlen(Environment::getPublicPath() . '/'));
         $absFolderPath = $extPath . $pathInsideExt . $name;
         // $files will include all files relative to $pathInsideExt
         if ($recursive === false) {
@@ -50,6 +65,7 @@ class IncludeJsFolderViewHelper extends AbstractViewHelper
                 $files[$hash] = str_replace($extPath . $pathInsideExt, '', $absPath);
             }
         }
+
         foreach ($files as $name) {
             $this->pageRenderer->addJsFile($extRelPath . $pathInsideExt . $name);
         }

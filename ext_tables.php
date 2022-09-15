@@ -7,17 +7,17 @@ if (!defined('TYPO3_MODE')) {
 // ========== Register BE Modules
 if (TYPO3_MODE == 'BE') {
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Mirko.' . $_EXTKEY,
+        'Mirko.newsletter',
         'web', // Make newsletter module a submodule of 'user'
         'tx_newsletter_m1', // Submodule key
         'before:info', // Position
         [
-            'Module' => 'index',
-            'Newsletter' => 'list, listPlanned, create, statistics',
-            'Email' => 'list',
-            'Link' => 'list',
-            'BounceAccount' => 'list',
-            'RecipientList' => 'list, listRecipient',
+            \Mirko\Newsletter\Controller\ModuleController::class => 'newsletter, statistics',
+            \Mirko\Newsletter\Controller\NewsletterController::class => 'list, listPlanned, create, statistics',
+            \Mirko\Newsletter\Controller\EmailController::class => 'list',
+            \Mirko\Newsletter\Controller\LinkController::class => 'list',
+            \Mirko\Newsletter\Controller\BounceAccountController::class => 'list',
+            \Mirko\Newsletter\Controller\RecipientListController::class => 'list, listRecipient',
         ],
         [
             'access' => 'user,group',

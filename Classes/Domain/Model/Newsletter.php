@@ -14,6 +14,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 
 /**
  * Newsletter represents a page to be sent to a specific time to several recipients.
@@ -24,7 +25,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * When the newsletter will start sending emails
      *
      * @var DateTime
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $plannedTime;
 
@@ -60,7 +61,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Whether this newsletter is for test purpose. If it is it will be ignored in statistics
      *
      * @var bool
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $isTest = false;
 
@@ -75,7 +76,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * The name of the newsletter sender
      *
      * @var string
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $senderName;
 
@@ -83,7 +84,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * The email of the newsletter sender
      *
      * @var string
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $senderEmail;
 
@@ -118,7 +119,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * bounceAccount
      *
-     * @lazy
+     * @Extbase\ORM\Lazy 
      * @var \Mirko\Newsletter\Domain\Model\BounceAccount
      */
     protected $bounceAccount;
@@ -133,7 +134,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * recipientList
      *
-     * @lazy
+     * @Extbase\ORM\Lazy 
      * @var \Mirko\Newsletter\Domain\Model\RecipientList
      */
     protected $recipientList;
@@ -291,8 +292,8 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns an instance of plain converter
      *
-     * @throws \Exception
      * @return IPlainConverter
+     * @throws \Exception
      */
     public function getPlainConverterInstance()
     {
@@ -394,10 +395,12 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $sender = Tools::confParam('sender_name');
         if ($sender == 'user') {
             // Use the page-owner as user
-            $rs = $db->sql_query("SELECT realName
+            $rs = $db->sql_query(
+                "SELECT realName
 							  FROM be_users
 							  LEFT JOIN pages ON be_users.uid = pages.perms_userid
-							  WHERE pages.uid = $this->pid");
+							  WHERE pages.uid = $this->pid"
+            );
 
             list($sender) = $db->sql_fetch_row($rs);
             if ($sender) {
@@ -446,10 +449,12 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $email = Tools::confParam('sender_email');
         if ($email == 'user') {
             /* Use the page-owner as user */
-            $rs = $db->sql_query("SELECT email
+            $rs = $db->sql_query(
+                "SELECT email
 			FROM be_users bu
 			LEFT JOIN pages p ON bu.uid = p.perms_userid
-			WHERE p.uid = $this->pid");
+			WHERE p.uid = $this->pid"
+            );
 
             list($email) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
             if (GeneralUtility::validEmail($email)) {
@@ -702,14 +707,16 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
             $pids = array_reverse(BackendUtility::BEgetRootLine($this->pid));
             foreach ($pids as $page) {
                 /* Domains */
-                $rs = $db->sql_query("SELECT domainName FROM sys_domain
+                $rs = $db->sql_query(
+                    "SELECT domainName FROM sys_domain
 								INNER JOIN pages ON sys_domain.pid = pages.uid
 								WHERE NOT sys_domain.hidden
 								AND NOT pages.hidden
 								AND NOT pages.deleted
 								AND pages.uid = $page[uid]
 								ORDER BY sys_domain.sorting
-								LIMIT 0,1");
+								LIMIT 0,1"
+                );
 
                 if ($db->sql_num_rows($rs)) {
                     list($domain) = $db->sql_fetch_row($rs);
@@ -722,8 +729,9 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
             $rootLine = BackendUtility::BEgetRootLine($this->pid);
             $parser = GeneralUtility::makeInstance(ExtendedTemplateService::class); // Defined global here!
             $parser->tt_track = 0; // Do not log time-performance information
-            $parser->init();
-            $parser->runThroughTemplates($rootLine); // This generates the constants/config + hierarchy info for the template.
+            $parser->runThroughTemplates(
+                $rootLine
+            ); // This generates the constants/config + hierarchy info for the template.
             $parser->generateConfig();
             if (isset($parser->flatSetup['config.domain'])) {
                 $domain = $parser->flatSetup['config.domain'];
@@ -732,7 +740,9 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
         // If still no domain, can't continue
         if (!$domain) {
-            throw new \Exception("Could not find the domain name. Use Newsletter configuration page to set 'fetch_path'");
+            throw new \Exception(
+                "Could not find the domain name. Use Newsletter configuration page to set 'fetch_path'"
+            );
         }
 
         // Force scheme if found from domain record, or if fetch_path was not configured properly (before Newsletter 2.6.0)
@@ -810,10 +820,12 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         // Clone this newsletter and give the new plannedTime
         // We cannot use extbase because __clone() doesn't work and even if we clone manually the PID cannot be set
         $db = Tools::getDatabaseConnection();
-        $db->sql_query("INSERT INTO tx_newsletter_domain_model_newsletter
+        $db->sql_query(
+            "INSERT INTO tx_newsletter_domain_model_newsletter
         (uid, pid, planned_time, begin_time, end_time, repetition, plain_converter, is_test, attachments, sender_name, sender_email, replyto_name, replyto_email, inject_open_spy, inject_links_spy, bounce_account, recipient_list)
 		SELECT null AS uid, pid, '$newPlannedTime' AS planned_time, 0 AS begin_time, 0 AS end_time, repetition, plain_converter, is_test, attachments, sender_name, sender_email, replyto_name, replyto_email, inject_open_spy, inject_links_spy, bounce_account, recipient_list
-		FROM tx_newsletter_domain_model_newsletter WHERE uid = " . $this->getUid());
+		FROM tx_newsletter_domain_model_newsletter WHERE uid = " . $this->getUid()
+        );
     }
 
     /**
@@ -848,9 +860,13 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
             return $this->getEmailCount();
         }
 
-        $numberOfNotSent = $db->exec_SELECTcountRows('*', 'tx_newsletter_domain_model_email', 'end_time = 0 AND newsletter = ' . $this->getUid());
+        $numberOfNotSent = $db->exec_SELECTcountRows(
+            '*',
+            'tx_newsletter_domain_model_email',
+            'end_time = 0 AND newsletter = ' . $this->getUid()
+        );
 
-        return (int) $numberOfNotSent;
+        return (int)$numberOfNotSent;
     }
 
     /**
@@ -942,7 +958,11 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
             $emailNotSentCount = $this->getEmailNotSentCount();
 
             if ($emailNotSentCount) {
-                return sprintf($LANG->getLL('newsletter_status_sending'), $emailCount - $emailNotSentCount, $emailCount);
+                return sprintf(
+                    $LANG->getLL('newsletter_status_sending'),
+                    $emailCount - $emailNotSentCount,
+                    $emailCount
+                );
             }
 
             return sprintf($LANG->getLL('newsletter_status_was_sent'), $endTime->format(DateTime::ISO8601));

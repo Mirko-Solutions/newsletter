@@ -1,1 +1,3 @@
-Ext.ux.Mirko.Newsletter.Module.Application.bootstrap();
+Ext.onReady(function () {
+    Ext.ux.Mirko.Newsletter.Module.Application.bootstrap();
+});

@@ -5,6 +5,8 @@ namespace Mirko\Newsletter\MVC\ExtDirect;
 use Mirko\Newsletter\Tools;
 use ReflectionException;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ClassSchema\Exception\NoSuchMethodException;
+use TYPO3\CMS\Extbase\Reflection\Exception\UnknownClassException;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 
 /**
@@ -33,7 +35,9 @@ class Api
     public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
     {
         $this->configurationManager = $configurationManager;
-        $this->frameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+        $this->frameworkConfiguration = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
+        );
     }
 
     /**
@@ -54,6 +58,7 @@ class Api
      * @param string $namespace
      *
      * @return array
+     * @throws ReflectionException
      */
     public function createApi($routeUrl, $namespace)
     {
@@ -70,24 +75,30 @@ class Api
         }
 
         foreach ($this->frameworkConfiguration['controllerConfiguration'] as $controllerName => $allowedControllerActions) {
-            $unstrippedControllerName = $controllerName . 'Controller';
-            $controllerObjectName = 'Mirko\\Newsletter\\Controller\\' . $unstrippedControllerName;
+            $unstrappedControllerName = (new \ReflectionClass($controllerName))->getShortName();
+            $controllerObjectName = $controllerName;
+
             $controllerActions = [];
             foreach ($allowedControllerActions['actions'] as $actionName) {
-                $unstrippedActionName = $actionName . 'Action';
+                $unstrappedActionName = $actionName . 'Action';
                 try {
-                    $actionParameters = $this->reflectionService->getMethodParameters($controllerObjectName, $unstrippedActionName);
+                    $classReflection = $this->reflectionService->getClassSchema($controllerObjectName);
+                    $actionParameters = $classReflection->getMethod($unstrappedActionName)->getParameters();
                     $controllerActions[] = [
                         'len' => count($actionParameters),
-                        'name' => $unstrippedActionName,
+                        'name' => $unstrappedActionName,
                     ];
-                } catch (ReflectionException $re) {
-                    if ($unstrippedActionName !== 'extObjAction') {
-                        Tools::getLogger(__CLASS__)->critical('You have a not existing action (' . $controllerObjectName . '::' . $unstrippedActionName . ') in your module/plugin configuration. This action will not be available for Ext.Direct remote execution.');
+                } catch (ReflectionException $e) {
+                } catch (UnknownClassException $e) {
+                } catch (NoSuchMethodException $e) {
+                    if ($unstrappedActionName !== 'extObjAction') {
+                        Tools::getLogger(__CLASS__)->critical(
+                            'You have a not existing action (' . $controllerObjectName . '::' . $unstrappedActionName . ') in your module/plugin configuration. This action will not be available for Ext.Direct remote execution.'
+                        );
                     }
                 }
             }
-            $api['actions'][$unstrippedControllerName] = $controllerActions;
+            $api['actions'][$unstrappedControllerName] = $controllerActions;
         }
 
         return $api;

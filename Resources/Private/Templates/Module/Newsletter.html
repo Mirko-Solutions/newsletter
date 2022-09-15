@@ -1,0 +1,28 @@
+{namespace newsletter=Mirko\Newsletter\ViewHelpers}
+
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<newsletter:includeCssFile name="module.css"/>
+<newsletter:includeCssFile name="flashmessages.css"/>
+<h1>Newsletter Management</h1>
+<f:form name="newsletter" action="newsletter" class="form-horizontal" arguments="{id:configuration.pageId}">
+    <div class="row row-cols-auto align-items-center g-3 mb-3">
+        <div class="col">
+            <label for="mode" class="form-label">
+                <f:translate key="Mode"/>
+            </label>
+
+            <f:form.select class="form-select" id="mode" name="mode" options="{
+                            status:'Status',
+                            settings:'Settings',
+                            sending:'Sending'
+                            }" value="{mode}" additionalAttributes="{data-global-event='change', data-action-submit: '$form'}" />
+
+            <f:render partial="{mode}" arguments="{_all}"/>
+            <f:if condition="{mode} "></f:if>
+        </div>
+    </div>
+</f:form>
+
+
+</html>

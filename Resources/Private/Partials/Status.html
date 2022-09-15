@@ -1,0 +1,71 @@
+<div>
+    <h1>Status</h1>
+
+    <div>
+        <h2>
+            <f:translate key="recent_activity"></f:translate>
+        </h2>
+        <p class="recent_activity">{pageData.status}</p>
+        <h2>
+            <f:translate key="newsletter_validity"></f:translate>
+        </h2>
+        <h3>
+            <f:translate key="errors"></f:translate>
+        </h3>
+        <ul class="errors">
+            <f:if condition="{pageData.validationResult.errors}">
+                <f:then>
+                    <f:for as="error" each="{pageData.validationResult.errors}">
+                        <li>{error}</li>
+                    </f:for>
+                </f:then>
+                <f:else>
+                    <li class="none">
+                        <f:translate key="none"></f:translate>
+                    </li>
+                </f:else>
+            </f:if>
+        </ul>
+        <h3>
+            <f:translate key="warnings"></f:translate>
+        </h3>
+        <ul class="warnings">
+            <f:if condition="{pageData.validationResult.warnings}">
+                <f:then>
+                    <f:for as="warning" each="{pageData.validationResult.warnings}">
+                        <li>{warning}</li>
+                    </f:for>
+                </f:then>
+                <f:else>
+                    <li class="none">
+                        <f:translate key="none"></f:translate>
+                    </li>
+                </f:else>
+            </f:if>
+        </ul>
+        <h3>
+            <f:translate key="infos"></f:translate>
+        </h3>
+        <ul class="infos">
+            <f:if condition="{pageData.validationResult.infos}">
+                <f:then>
+                    <f:for as="info" each="{pageData.validationResult.infos}">
+                        <li>{info}</li>
+                    </f:for>
+                </f:then>
+                <f:else>
+                    <li class="none">
+                        <f:translate key="none"></f:translate>
+                    </li>
+                </f:else>
+            </f:if>
+        </ul>
+    </div>
+
+    <script>
+        fetch(textURL)
+            .then(async r => console.log(await r.text()))
+            .catch(e => console.error('Boo...' + e));
+        document.querySelector('.recent_activity')
+    </script>
+</div>
