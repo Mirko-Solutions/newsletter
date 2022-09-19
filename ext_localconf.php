@@ -51,6 +51,17 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRe
     ],
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][time()] = [
+    'nodeName' => 'userEmailField',
+    'priority' => 40,
+    'class' => \Mirko\Newsletter\Tca\EmailTca::class,
+];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][time()] = [
+    'nodeName' => 'RecipientListField',
+    'priority' => 40,
+    'class' => \Mirko\Newsletter\Tca\RecipientListTca::class,
+];
+
 // Make a call to update
 if (TYPO3_MODE === 'BE') {
     $dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);

@@ -2,20 +2,20 @@
 
 namespace Mirko\Newsletter\Tca;
 
+use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
+
 /**
  * Handle bounced emails. Fetch them, analyse them and take approriate actions.
  */
-class EmailTca
+class EmailTca extends AbstractFormElement
 {
     /**
      * Returns an HTML table showing recipient_data content
      *
-     * @param $PA
-     * @param $fObj
      */
-    public function render($PA, $fObj)
+    public function render(): array
     {
-        $data = unserialize($PA['row']['recipient_data']);
+        $data = unserialize($this->data['databaseRow']['recipient_data']);
 
         if (!$data) {
             $data = [];
@@ -23,20 +23,23 @@ class EmailTca
 
         $keys = array_keys($data);
 
-        $result = '<table style="border: 1px grey solid; border-collapse: collapse;">';
-        $result .= '<tr>';
+        $html = [];
+        $html[] = '<table style="border: 1px grey solid; border-collapse: collapse;">';
+        $html[] = '<tr>';
         foreach ($keys as $key) {
-            $result .= '<th style="padding-right: 1em;">' . $key . '</th>';
+            $html[] = '<th style="padding-right: 1em;">' . $key . '</th>';
         }
-        $result .= '</tr>';
+        $html[] = '</tr>';
 
-        $result .= '<tr style="border: 1px grey solid; border-collapse: collapse;">';
+        $html[] = '<tr style="border: 1px grey solid; border-collapse: collapse;">';
         foreach ($data as $value) {
-            $result .= '<td style="padding-right: 1em;">' . $value . '</td>';
+            $html[] = '<td style="padding-right: 1em;">' . $value . '</td>';
         }
-        $result .= '</tr>';
-        $result .= '</table>';
+        $html[] = '</tr>';
+        $html[] = '</table>';
 
-        return $result;
+        $resultArray['html'] = implode(LF, $html);
+
+        return $resultArray;
     }
 }

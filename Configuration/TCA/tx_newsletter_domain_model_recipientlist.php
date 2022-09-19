@@ -145,16 +145,30 @@ return [
         ],
         'csv_filename' => [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_recipientlist.csv_file',
-            'config' => [
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => 'csv,txt',
-                'max_size' => 500,
-                'uploadfolder' => 'uploads/tx_newsletter',
-                'size' => 1,
-                'minitems' => 0,
-                'maxitems' => 1,
-            ],
+            'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
+                'attachments',
+                [
+                    'minitems' => 0,
+                    'maxitems' => 1,
+                    'size' => 1,
+                    'max_size' => 500,
+                    'internal_type' => 'file',
+                    'allowed' => 'csv,txt',
+                    'uploadfolder' => 'uploads/tx_newsletter',
+                    'appearance' => [
+                        'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference'
+                    ],
+                    'overrideChildTca' => [
+                        'types' => [
+                            '0' => [
+                                'showitem' => '
+                                --palette--;;imageoverlayPalette,
+                                --palette--;;filePalette'
+                            ],
+                        ],
+                    ],
+                ],
+            )
         ],
         'csv_url' => [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_recipientlist.csv_url',
@@ -207,7 +221,7 @@ return [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang.xlf:preview',
             'config' => [
                 'type' => 'user',
-                'userFunc' => 'Mirko\\Newsletter\Tca\\RecipientListTca->render',
+                'renderType' => 'RecipientListField',
             ],
         ],
     ],

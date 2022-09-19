@@ -3,34 +3,32 @@
 namespace Mirko\Newsletter\Tca;
 
 use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Render extract of recipient list
  */
-class RecipientListTca
+class RecipientListTca extends AbstractFormElement
 {
     /**
      * Returns an HTML table showing recipient_data content
      *
-     * @param $PA
-     * @param $fObj
-     *
-     * @return string
+     * @return array
      */
-    public function render($PA, $fObj)
+    public function render()
     {
-        $result = '';
-        $uid = (int) $PA['row']['uid'];
+        $result = [];
+        $uid = (int)$this->data['databaseRow']['uid'];
         if ($uid != 0) {
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $recipientListRepository = $objectManager->get(RecipientListRepository::class);
             $recipientList = $recipientListRepository->findByUidInitialized($uid);
 
-            $result .= $recipientList->getExtract();
+            $result = $recipientList->getExtract();
         }
-
-        return $result;
+        $resultArray['html'] = implode(LF, $result);
+        return $resultArray;
     }
 }

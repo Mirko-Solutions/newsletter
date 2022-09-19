@@ -47,7 +47,7 @@ return [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_email.recipient_data',
             'config' => [
                 'type' => 'user',
-                'userFunc' => 'Mirko\\Newsletter\Tca\\EmailTca->render',
+                'renderType' => 'userEmailField',
                 'size' => 30,
                 'eval' => 'trim',
             ],

@@ -22,61 +22,6 @@ config.tx_extbase {
 			Mirko\Newsletter\MVC\ExtDirect\RequestHandler = Mirko\Newsletter\MVC\ExtDirect\RequestHandler
 		}
 	}
-	persistence.classes {
-
-		# Defines all possibles subclasses of recipientList
-		Mirko\Newsletter\Domain\Model\RecipientList.subclasses {
-			Mirko\Newsletter\Domain\Model\RecipientList\BeUsers = Mirko\Newsletter\Domain\Model\RecipientList\BeUsers
-			Mirko\Newsletter\Domain\Model\RecipientList\FeGroups = Mirko\Newsletter\Domain\Model\RecipientList\FeGroups
-			Mirko\Newsletter\Domain\Model\RecipientList\FePages = Mirko\Newsletter\Domain\Model\RecipientList\FePages
-			Mirko\Newsletter\Domain\Model\RecipientList\Sql = Mirko\Newsletter\Domain\Model\RecipientList\Sql
-			Mirko\Newsletter\Domain\Model\RecipientList\CsvFile = Mirko\Newsletter\Domain\Model\RecipientList\CsvFile
-			Mirko\Newsletter\Domain\Model\RecipientList\CsvList = Mirko\Newsletter\Domain\Model\RecipientList\CsvList
-			Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl = Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl
-			Mirko\Newsletter\Domain\Model\RecipientList\Html = Mirko\Newsletter\Domain\Model\RecipientList\Html
-		}
-
-		# For all types, defines what class will used for the recordType, and what table will be used for storage
-		Mirko\Newsletter\Domain\Model\RecipientList\BeUsers.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\BeUsers
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\FeGroups.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\FeGroups
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\FePages.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\FePages
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\Sql.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\Sql
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\CsvFile.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\CsvFile
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\CsvList.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\CsvList
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-
-		Mirko\Newsletter\Domain\Model\RecipientList\Html.mapping {
-				recordType = Mirko\Newsletter\Domain\Model\RecipientList\Html
-				tableName = tx_newsletter_domain_model_recipientlist
-		}
-	}
 }
 
 

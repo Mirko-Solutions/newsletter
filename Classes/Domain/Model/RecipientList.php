@@ -200,47 +200,56 @@ abstract class RecipientList extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
      *
      * @param int $limit
      *
-     * @return string
+     * @return array
      */
     public function getExtract($limit = 30)
     {
+        $out = [];
         if ($this->getError()) {
-            $out = 'Error: ' . $this->getError();
+            $out[] = 'Error: ' . $this->getError();
         } else {
             $i = 0;
-            $out = '';
+            $out[] = '<table style="border: 1px grey solid; border-collapse: collapse;">';
+
             while ($row = $this->getRecipient()) {
                 // Dump formatted table header
                 if ($i == 0) {
-                    $out .= '<tr>';
+                    $out[] = '<tr>';
                     foreach (array_keys($row) as $key) {
-                        $out .= '<th style="padding-right: 1em;">' . $this->getFieldTitle($key) . '</th>';
+                        $out[] = '<th style="padding-right: 1em;">' . $this->getFieldTitle($key) . '</th>';
                     }
-                    $out .= '</tr>';
+                    $out[] = '</tr>';
                 }
 
-                $out .= '<tr style="border: 1px grey solid; border-collapse: collapse;">';
+                $out[] = '<tr style="border: 1px grey solid; border-collapse: collapse;">';
                 foreach ($row as $field) {
-                    $out .= '<td style="padding-right: 1em;">' . $field . '</td>';
+                    $out[] = '<td style="padding-right: 1em;">' . $field . '</td>';
                 }
-                $out .= '</tr>';
+                $out[] = '</tr>';
 
                 if (++$i == $limit) {
                     break;
                 }
             }
-            $out = '<table style="border: 1px grey solid; border-collapse: collapse;">' . $out . '</table>';
+            $out[] = '</table>';
 
             $authCode = GeneralUtility::stdAuthCode($this->_getCleanProperties());
-            $uriXml = UriBuilder::buildFrontendUriFromTcA('RecipientList', 'export', ['uidRecipientList' => $this->getUid(), 'authCode' => $authCode, 'format' => 'xml']);
-            $uriCsv = UriBuilder::buildFrontendUriFromTcA('RecipientList', 'export', ['uidRecipientList' => $this->getUid(), 'authCode' => $authCode, 'format' => 'csv']);
+            $uriXml = UriBuilder::buildFrontendUriFromTcA(
+                'RecipientList',
+                'export',
+                ['uidRecipientList' => $this->getUid(), 'authCode' => $authCode, 'format' => 'xml']
+            );
+            $uriCsv = UriBuilder::buildFrontendUriFromTcA(
+                'RecipientList',
+                'export',
+                ['uidRecipientList' => $this->getUid(), 'authCode' => $authCode, 'format' => 'csv']
+            );
             $export = ' (<a href="' . $uriXml . '">export XML</a>, <a href="' . $uriCsv . '">export CSV</a>)';
 
-            $out .= '<p><strong>' . $i . '/' . $this->getCount() . '</strong> recipients' . $export . '</p>';
+            $out[] = '<p><strong>' . $i . ' / ' . $this->getCount() . '</strong> recipients' . $export . '</p>';
         }
 
-        $out = '<h4>' . $this->getTitle() . '</h4>' . $out;
-
+        $out[] = '<h4>' . $this->getTitle() . '</h4>';
         return $out;
     }
 
