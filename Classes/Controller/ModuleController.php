@@ -2,15 +2,17 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\DataProvider\Backend\NewsletterDataProvider;
+use Mirko\Newsletter\Service\NewsletterModuleService;
 use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Tools;
+use Mirko\Newsletter\Utility\BackendDataProviderRegistration;
 use Mirko\Newsletter\Utility\UriBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -23,7 +25,22 @@ class ModuleController extends ActionController
     /**
      * @var int
      */
-    protected $pageId;
+    protected int $pageId;
+
+    private array $menuItems = [
+        'newsletter' => [
+            'controller' => 'Module',
+            'action' => 'newsletter',
+            'label' => 'Newsletter',
+        ],
+        'statistics' => [
+            'controller' => 'Module',
+            'action' => 'statistics',
+            'label' => 'Statistics',
+        ],
+    ];
+
+    private array $subMenus = [];
 
     /**
      * @var ModuleTemplateFactory
@@ -31,16 +48,16 @@ class ModuleController extends ActionController
     private ModuleTemplateFactory $moduleTemplateFactory;
 
     /**
-     * @var NewsletterDataProvider
+     * @var NewsletterModuleService
      */
-    private NewsletterDataProvider $newsletterDataProvider;
+    private NewsletterModuleService $newsletterModuleService;
 
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
-        NewsletterDataProvider $newsletterDataProvider
+        NewsletterModuleService $newsletterModuleService
     ) {
         $this->moduleTemplateFactory = $moduleTemplateFactory;
-        $this->newsletterDataProvider = $newsletterDataProvider;
+        $this->newsletterModuleService = $newsletterModuleService;
     }
 
     /**
@@ -56,26 +73,13 @@ class ModuleController extends ActionController
      */
     protected function initializeModuleTemplate(ServerRequestInterface $request): ModuleTemplate
     {
-        $menuItems = [
-            'newsletter' => [
-                'controller' => 'Module',
-                'action' => 'newsletter',
-                'label' => 'Newsletter',
-            ],
-            'statistics' => [
-                'controller' => 'Module',
-                'action' => 'statistics',
-                'label' => 'Statistics',
-            ],
-        ];
-
         $moduleTemplate = $this->moduleTemplateFactory->create($request);
 
         $menu = $moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
         $menu->setIdentifier('IndexedSearchModuleMenu');
 
         $context = '';
-        foreach ($menuItems as $menuItemConfig) {
+        foreach ($this->menuItems as $menuItemConfig) {
             $isActive = $this->request->getControllerActionName() === $menuItemConfig['action'];
             $menuItem = $menu->makeMenuItem()
                 ->setTitle($menuItemConfig['label'])
@@ -86,6 +90,8 @@ class ModuleController extends ActionController
             $menu->addMenuItem($menuItem);
             if ($isActive) {
                 $context = $menuItemConfig['label'];
+                $this->subMenus = BackendDataProviderRegistration::getBackendDataProvidersByModule(
+                )[$menuItemConfig['action']];
             }
         }
 
@@ -95,7 +101,9 @@ class ModuleController extends ActionController
             $context
         );
 
-        $permissionClause = Typo3GeneralService::getBackendUserAuthentication()->getPagePermsClause(Permission::PAGE_SHOW);
+        $permissionClause = Typo3GeneralService::getBackendUserAuthentication()->getPagePermsClause(
+            Permission::PAGE_SHOW
+        );
         $pageRecord = BackendUtility::readPageAccess($this->pageId, $permissionClause);
         if ($pageRecord) {
             $moduleTemplate->getDocHeaderComponent()->setMetaInformation($pageRecord);
@@ -107,7 +115,10 @@ class ModuleController extends ActionController
 
     public function newsletterAction(): ResponseInterface
     {
-        $mode = $this->request->hasArgument('mode') ? $this->request->getArgument('mode') : 'status';
+        $moduleTemplate = $this->initializeModuleTemplate($this->request);
+        $page = $this->request->hasArgument('page') ? $this->request->getArgument('page') : array_key_first(
+            $this->subMenus
+        );
 
         $pageType = '';
         $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
@@ -123,15 +134,17 @@ class ModuleController extends ActionController
             'emailShowUrl' => UriBuilder::buildFrontendUri($this->pageId, 'Email', 'show'),
         ];
 
-        $this->view->assignMultiple([
-            'configuration', $configuration,
-            'mode' => $mode,
-            'pageData' => $this->newsletterDataProvider->getDataByMode($mode, $this->pageId)
-        ]);
 
-        $moduleTemplate = $this->initializeModuleTemplate($this->request);
+        $this->view->assignMultiple(
+            [
+                'configuration', $configuration,
+                'page' => $page,
+                'pages' => $this->subMenus,
+                'pageData' => $this->newsletterModuleService->getDataForPage($page, $this->pageId),
+                'moduleUrl' => UriBuilder::getInstance()->buildUriFromRoute($this->request->getPluginName())
+            ]
+        );
         $moduleTemplate->setContent($this->view->render());
-
         return $this->htmlResponse($moduleTemplate->renderContent());
     }
 

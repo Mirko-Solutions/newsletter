@@ -6,7 +6,7 @@ use DateTime;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -15,7 +15,7 @@ use TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter;
 /**
  * Controller for the Newsletter object
  */
-class NewsletterController extends ExtDirectActionController
+class NewsletterController extends ApiActionController
 {
     /**
      * newsletterRepository

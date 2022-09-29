@@ -3,14 +3,15 @@
 namespace Mirko\Newsletter\Controller;
 
 use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use Symfony\Component\Routing\Annotation\Route;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Controller for the RecipientList object
  */
-class RecipientListController extends ExtDirectActionController
+class RecipientListController extends ApiActionController
 {
     /**
      * recipientListRepository

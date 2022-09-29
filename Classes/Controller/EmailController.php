@@ -6,7 +6,7 @@ use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Model\RecipientList;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use Mirko\Newsletter\Tools;
 use Mirko\Newsletter\Utility\EmailParser;
 use TYPO3\CMS\Core\Mail\MailMessage;
@@ -19,7 +19,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * Controller for the Email object
  */
-class EmailController extends ExtDirectActionController
+class EmailController extends ApiActionController
 {
     /**
      * emailRepository

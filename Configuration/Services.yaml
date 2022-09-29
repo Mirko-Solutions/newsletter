@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Mirko\Newsletter\:
+    resource: '../Classes/*'
+    exclude: ['../Classes/Domain/Model/*', '../Classes/Tca/*']
+
+  Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider:
+    arguments:
+      $recipientListRepository: '@Mirko\Newsletter\Domain\Repository\RecipientListRepository'
+
+  Mirko\Newsletter\DataProvider\Backend\SettingsPageDataProvider:
+    arguments:
+      $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+      $bounceAccountRepository: '@Mirko\Newsletter\Domain\Repository\BounceAccountRepository'
+
+  Mirko\Newsletter\DataProvider\Backend\StatusPageDataProvider:
+    arguments:
+      $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'

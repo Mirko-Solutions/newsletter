@@ -7,6 +7,8 @@ use DateTime;
 use TYPO3\CMS\Extbase\Mvc\View\AbstractView;
 use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\Exception\PropertyNotAccessibleException;
+use TYPO3\CMS\Extbase\Reflection\Exception\UnknownClassException;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -124,9 +126,11 @@ class JsonView extends AbstractView
      * the result.
      *
      * @return string The JSON encoded variables
+     * @throws PropertyNotAccessibleException
+     * @throws UnknownClassException
      * @api
      */
-    public function render()
+    public function render(): string
     {
         $propertiesToRender = $this->renderArray();
 
@@ -138,6 +142,8 @@ class JsonView extends AbstractView
      * array.
      *
      * @return array An array containing the values, ready to be JSON encoded
+     * @throws PropertyNotAccessibleException
+     * @throws UnknownClassException
      * @api
      */
     protected function renderArray()
@@ -165,6 +171,8 @@ class JsonView extends AbstractView
      * @param mixed $configuration Configuration for transforming the value or NULL
      *
      * @return array The transformed value
+     * @throws PropertyNotAccessibleException
+     * @throws UnknownClassException
      */
     protected function transformValue($value, $configuration)
     {
@@ -199,7 +207,9 @@ class JsonView extends AbstractView
      * @param object $object Object to traverse
      * @param mixed $configuration Configuration for transforming the given object or NULL
      *
-     * @return array Object structure as an aray
+     * @return string Object structure as an array
+     * @throws PropertyNotAccessibleException
+     * @throws UnknownClassException
      */
     protected function transformObject($object, $configuration)
     {

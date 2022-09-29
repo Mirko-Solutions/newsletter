@@ -50,6 +50,14 @@ abstract class UriBuilder
     }
 
     /**
+     * @return \TYPO3\CMS\Backend\Routing\UriBuilder
+     */
+    public static function getInstance() : \TYPO3\CMS\Backend\Routing\UriBuilder
+    {
+        return GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+    }
+
+    /**
      * Returns an ugly frontend URI from TCA context
      *
      * @param string $controllerName
@@ -79,6 +87,10 @@ abstract class UriBuilder
      */
     public static function buildFrontendUri($currentPid, $controllerName, $actionName, array $arguments = [])
     {
+        if (!$currentPid) {
+            return '';
+        }
+
         $argumentsToRestore = array_intersect_key($arguments, array_fill_keys(['c', 'l'], null));
         unset($arguments['c'], $arguments['l']);
         $cacheKey = serialize([$currentPid, $controllerName, $actionName, $arguments]);

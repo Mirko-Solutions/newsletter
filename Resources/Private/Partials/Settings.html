@@ -1,3 +1,80 @@
 <div>
     <h1>Settings</h1>
+
+
+    <f:flashMessages/>
+    <div>
+        <h2>
+            <f:translate key="sender"/>
+        </h2>
+        <label for="">
+            <f:translate
+                    key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.sender_name"/>
+            <f:form.textfield name="senderName" value="{pageData.newsletter.senderName}"></f:form.textfield>
+        </label>
+
+        <label for="">
+            <f:translate
+                    key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.sender_email"/>
+            <f:form.textfield name="senderEmail" value="{pageData.newsletter.senderEmail}"></f:form.textfield>
+        </label>
+    </div>
+    <div>
+        <h2>
+            <f:translate key="advanced_settings"/>
+        </h2>
+        <div>
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.replyto_name"/>
+                <f:form.textfield name="replytoName" value="{pageData.newsletter.replytoName}"></f:form.textfield>
+            </label>
+
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.replyto_email"/>
+                <f:form.textfield name="replytoEmail" value="{pageData.newsletter.replytoEmail}"></f:form.textfield>
+            </label>
+
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.bounce_account"/>
+                <f:form.select name="uidBounceAccount" class="form-select" options="{pageData.bounceAccounts}" value="{pageData.newsletter.bounceAccount}" prependOptionLabel="" prependOptionValue="" optionValueField="uid" optionLabelField="email"></f:form.select>
+            </label>
+
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.plain_converter"/>
+                <f:form.select name="plainConverter" class="form-select">
+                    <f:for as="plainConverter" each="{pageData.plainConverters}">
+                        <f:if condition="{plainConverter.className} = {pageData.newsletter.plainConverter}">
+                            <f:then>
+                                <f:form.select.option value="{plainConverter.className}" selected="true">{plainConverter.label}</f:form.select.option>
+                            </f:then>
+                            <f:else>
+                                <f:form.select.option value="{plainConverter.className}">{plainConverter.label}</f:form.select.option>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                </f:form.select>
+            </label>
+
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.repetition"/>
+                <f:form.select name="repetition" class="form-select" options="{pageData.repetition}" value="{pageData.newsletter.repetition}"></f:form.select>
+            </label>
+
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.inject_open_spy"/>
+                <f:form.checkbox name="injectOpenSpy" value="{pageData.newsletter.injectOpenSpy}"></f:form.checkbox>
+            </label>
+
+            <label for="">
+                <f:translate
+                        key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.inject_links_spy"/>
+                <f:form.checkbox  name="injectLinksSpy" value="{pageData.newsletter.injectLinksSpy}"></f:form.checkbox>
+        </div>
+    </div>
 </div>

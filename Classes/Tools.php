@@ -297,7 +297,7 @@ abstract class Tools
      */
     public static function getUserAgent()
     {
-        $userAgent = TYPO3_user_agent . ' Newsletter (https://github.com/Mirko/newsletter)';
+        $userAgent = $GLOBALS['TYPO3_CONF_VARS']['HTTP']['headers']['User-Agent'] . ' Newsletter (https://github.com/Mirko/newsletter)';
 
         return $userAgent;
     }

@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Domain\Model;
 
 use Mirko\Newsletter\Tools;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 
 /**
  * BounceAccount
@@ -13,7 +14,7 @@ class BounceAccount extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * email
      *
      * @var string
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $email = '';
 

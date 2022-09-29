@@ -3,14 +3,14 @@
 namespace Mirko\Newsletter\Controller;
 
 use Mirko\Newsletter\Domain\Repository\LinkRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 
 /**
  * Controller for the Link object
  */
-class LinkController extends ExtDirectActionController
+class LinkController extends ApiActionController
 {
     /**
      * linkRepository

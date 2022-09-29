@@ -2,18 +2,17 @@
 
 namespace Mirko\Newsletter\MVC\Controller;
 
-use Mirko\Newsletter\MVC\View\ExtDirectView;
 use Mirko\Newsletter\MVC\View\JsonView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Extbase\Validation\PropertyError;
 
 /**
  * A Controller used for answering via AJAX speaking JSON
  */
-class ExtDirectActionController extends ActionController
+class ApiActionController extends ActionController
 {
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface
@@ -33,13 +32,12 @@ class ExtDirectActionController extends ActionController
     /**
      * Initializes the View to be a \Mirko\Newsletter\ExtDirect\View\ExtDirectView that renders json without Template Files.
      *
-     * @param ViewInterface $view
+     * @param ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
      */
-    public function initializeView(ViewInterface $view)
+    public function initializeView($view)
     {
-        if ($this->request->getFormat() === 'extdirect') {
-            $this->view = $this->objectManager->get(ExtDirectView::class);
-            $this->view->setControllerContext($this->controllerContext);
+        if ($this->request->getAttribute('jsonRequest')) {
+            $this->view = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Mvc\View\JsonView::class);
         }
     }
 
@@ -49,17 +47,8 @@ class ExtDirectActionController extends ActionController
      */
     protected function errorAction()
     {
-        $message = parent::errorAction();
+        $message = $this->getFlattenedValidationErrorMessage();
 
-        // Append detail of properties if available
-        // Message layout is not optimal, but at least we avoid code duplication
-        foreach ($this->argumentsMappingResults->getErrors() as $error) {
-            if ($error instanceof PropertyError) {
-                foreach ($error->getErrors() as $subError) {
-                    $message .= 'Error:   ' . $subError->getMessage() . PHP_EOL;
-                }
-            }
-        }
         if ($this->view instanceof JsonView) {
             $this->view->setVariablesToRender(['flashMessages', 'error', 'success']);
             $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());

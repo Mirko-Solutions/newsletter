@@ -11,6 +11,8 @@ use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 use Mirko\Newsletter\Tools;
 use Mirko\Newsletter\Utility\Validator;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -468,7 +470,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         }
 
         /* If this did not yield an email address, try to use the system-user */
-        if (ini_get('safe_mode') || TYPO3_OS == 'WIN') {
+        if (ini_get('safe_mode') || Environment::isWindows()) {
             return 'no-reply@' . $_SERVER['HTTP_HOST'];
         }
 
@@ -703,39 +705,16 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $domain = Tools::confParam('fetch_path');
 
         // Else we try to resolve a domain in page root line
-        if (!$domain) {
-            $pids = array_reverse(BackendUtility::BEgetRootLine($this->pid));
-            foreach ($pids as $page) {
-                /* Domains */
-                $rs = $db->sql_query(
-                    "SELECT domainName FROM sys_domain
-								INNER JOIN pages ON sys_domain.pid = pages.uid
-								WHERE NOT sys_domain.hidden
-								AND NOT pages.hidden
-								AND NOT pages.deleted
-								AND pages.uid = $page[uid]
-								ORDER BY sys_domain.sorting
-								LIMIT 0,1"
-                );
-
-                if ($db->sql_num_rows($rs)) {
-                    list($domain) = $db->sql_fetch_row($rs);
-                }
-            }
-        }
 
         // Else we try to find it in sys_template (available at least since TYPO3 4.6 Introduction Package)
+        if (!$domain && $this->getPid()) {
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+
+            $domain = $siteFinder->getSiteByPageId($this->getPid())->getBase()->getHost();
+        }
+
         if (!$domain) {
-            $rootLine = BackendUtility::BEgetRootLine($this->pid);
-            $parser = GeneralUtility::makeInstance(ExtendedTemplateService::class); // Defined global here!
-            $parser->tt_track = 0; // Do not log time-performance information
-            $parser->runThroughTemplates(
-                $rootLine
-            ); // This generates the constants/config + hierarchy info for the template.
-            $parser->generateConfig();
-            if (isset($parser->flatSetup['config.domain'])) {
-                $domain = $parser->flatSetup['config.domain'];
-            }
+            $domain = $_SERVER['HOSTNAME'];
         }
 
         // If still no domain, can't continue

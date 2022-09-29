@@ -3,13 +3,13 @@
 namespace Mirko\Newsletter\Controller;
 
 use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 
 /**
  * Controller for the BounceAccount object
  */
-class BounceAccountController extends ExtDirectActionController
+class BounceAccountController extends ApiActionController
 {
     /**
      * bounceAccountRepository

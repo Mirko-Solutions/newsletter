@@ -8,21 +8,19 @@
 <f:form name="newsletter" action="newsletter" class="form-horizontal" arguments="{id:configuration.pageId}">
     <div class="row row-cols-auto align-items-center g-3 mb-3">
         <div class="col">
-            <label for="mode" class="form-label">
+            <label for="page" class="form-label">
                 <f:translate key="Mode"/>
             </label>
+            <f:form.select class="form-select" id="page" name="page" options="{pages}" optionValueField="name" optionLabelField="label" value="{page}" additionalAttributes="{data-global-event='change', data-action-submit: '$form'}" />
 
-            <f:form.select class="form-select" id="mode" name="mode" options="{
-                            status:'Status',
-                            settings:'Settings',
-                            sending:'Sending'
-                            }" value="{mode}" additionalAttributes="{data-global-event='change', data-action-submit: '$form'}" />
-
-            <f:render partial="{mode}" arguments="{_all}"/>
-            <f:if condition="{mode} "></f:if>
+            <f:if condition="{page} ">
+                <f:render partial="{page}" arguments="{_all}"/>
+            </f:if>
         </div>
     </div>
 </f:form>
 
-
+<script type="text/javascript">
+    const moduleUrl = '{f:format.raw(value: moduleUrl)}';
+</script>
 </html>
