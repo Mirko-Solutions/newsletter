@@ -1,12 +1,18 @@
 {
-  "name": "Newsletter",
+  "name": "newsletter",
   "private": true,
   "dependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
     "gulp-composer": "^0.4.5",
+    "gulp-concat": "^2.6.1",
     "gulp-jscs": "^4.1.0",
     "gulp-jshint": "^2.1.0",
     "gulp-shell": "^0.6.5",
     "jshint": "^2.9.5"
+  },
+  "devDependencies": {
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.55.0"
   }
 }

@@ -1,44 +1,28 @@
-var gulp = require('gulp');
-var shell = require('gulp-shell');
+const gulp = require('gulp');
+const sass = require('gulp-sass')(require('sass'));
+const concat = require('gulp-concat');
 
-var paths = {
-    js: [
-        'Resources/Public/JavaScript/**/*.js',
-        '!Resources/Public/JavaScript/NVD3/*',
-        '!Resources/Public/JavaScript/Override/*',
-    ],
-    php: [
-        '**/*.php',
-        '!3dparty/*',
-        '!vendor/*',
-    ],
+function buildBackendStyles() {
+    return gulp.src('Resources/Public/sass/backend/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(concat('module.css').on('error', sass.logError))
+        .pipe(gulp.dest('Resources/Public/Styles'));
+}
+
+function buildFrontendStyles() {
+    return gulp.src('Resources/Public/sass/frontend/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(concat('app.css').on('error', sass.logError))
+        .pipe(gulp.dest('Resources/Public/Styles'));
+}
+
+exports.buildBackendStyles = buildBackendStyles;
+exports.buildFrontendStyles = buildFrontendStyles;
+exports.watch = function () {
+    gulp.watch('Resources/Public/sass/backend/*.scss', gulp.series(buildBackendStyles));
+    gulp.watch('Resources/Public/sass/frontend/*.scss', gulp.series(buildFrontendStyles));
 };
 
-gulp.task('default', ['composer', 'lint-js', 'lint-php'], function() {
-    // place code for your default task here
-});
+exports.build = gulp.series(buildBackendStyles, buildFrontendStyles);
 
-gulp.task('lint-js', function() {
-    var jshint = require('gulp-jshint');
-    var jscs = require('gulp-jscs');
-
-    return gulp.src(paths.js)
-            .pipe(jscs({configPath: '.jscs.json'}))
-            .pipe(jshint())
-            .pipe(jshint.reporter());
-});
-
-gulp.task('lint-php', ['composer'], shell.task([
-    './vendor/bin/php-cs-fixer fix --diff --verbose --dry-run'
-]));
-
-gulp.task('composer', function() {
-    var composer = require('gulp-composer');
-    return composer('install', {});
-});
-
-gulp.task('watch', function() {
-    gulp.watch(paths.js, ['lint-js']);
-    gulp.watch(paths.php, ['lint-php']);
-});
-
+exports.default = gulp.series(buildBackendStyles, buildFrontendStyles);
