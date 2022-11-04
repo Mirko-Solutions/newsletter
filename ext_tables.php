@@ -34,11 +34,6 @@ if (TYPO3_MODE == 'BE') {
 );
 \Mirko\Newsletter\Utility\BackendDataProviderRegistration::registerBackendDataProvider(
     'newsletter',
-    'settings',
-    \Mirko\Newsletter\DataProvider\Backend\SettingsPageDataProvider::class
-);
-\Mirko\Newsletter\Utility\BackendDataProviderRegistration::registerBackendDataProvider(
-    'newsletter',
     'sending',
     \Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider::class
 );

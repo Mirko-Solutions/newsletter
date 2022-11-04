@@ -222,3 +222,27 @@ ul.x-tab-strip li {
         transform: rotate(360deg);
     }
 }
+
+.tabs-container {
+    width: 100%;
+    margin-top: 30px;
+    padding: 10px 0;
+}
+
+.sending-tab {
+    .sending-container {
+        display: flex;
+        flex-direction: column;
+        .sending-actions {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .planing-container, .testing-container {
+            border: 1px solid #c0c0c0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

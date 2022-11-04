@@ -10,6 +10,8 @@ use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter;
 
 /**
@@ -81,13 +83,19 @@ class NewsletterController extends ApiActionController
         $newsletters = $this->newsletterRepository->findAllByPid($this->pid);
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded Newsletters from Server side.', 'Newsletters loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded Newsletters from Server side.',
+            'Newsletters loaded successfully',
+            FlashMessage::NOTICE
+        );
 
         $this->view->assign('total', $newsletters->count());
         $this->view->assign('data', $newsletters);
@@ -115,9 +123,11 @@ class NewsletterController extends ApiActionController
         $newsletter->setPlannedTime(new DateTime());
 
         $this->view->setVariablesToRender(['total', 'data', 'success']);
-        $this->view->setConfiguration([
-            'data' => self::resolvePlannedJsonViewConfiguration(),
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => self::resolvePlannedJsonViewConfiguration(),
+            ]
+        );
 
         $this->view->assign('total', 1);
         $this->view->assign('data', $newsletter);
@@ -132,17 +142,20 @@ class NewsletterController extends ApiActionController
     {
         $propertyMappingConfiguration = $this->arguments['newNewsletter']->getPropertyMappingConfiguration();
         $propertyMappingConfiguration->allowAllProperties();
-        $propertyMappingConfiguration->setTypeConverterOption(PersistentObjectConverter::class, PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, true);
+        $propertyMappingConfiguration->setTypeConverterOption(
+            PersistentObjectConverter::class,
+            PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED,
+            true
+        );
     }
 
     /**
      * Creates a new Newsletter and forwards to the list action.
      *
-     * @param Newsletter $newNewsletter a fresh Newsletter object which has not yet been added to the repository
+     * @param Newsletter|null $newNewsletter a fresh Newsletter object which has not yet been added to the repository
      *
-     * @dontverifyrequesthash
-     * @dontvalidate $newNewsletter
-     * @ignorevalidation $newNewsletter
+     * @throws IllegalObjectTypeException
+     * @Extbase\IgnoreValidation("newNewsletter")
      */
     public function createAction(Newsletter $newNewsletter = null)
     {
@@ -154,11 +167,19 @@ class NewsletterController extends ApiActionController
 
         // If we attempt to create a newsletter as a test but it has too many recipient, reject it (we cannot safely send several emails wihtout slowing down respoonse and/or timeout issues)
         if ($newNewsletter->getIsTest() && $count > $limitTestRecipientCount) {
-            $this->addFlashMessage($this->translate('flashmessage_test_maximum_recipients', [$count, $limitTestRecipientCount]), $this->translate('flashmessage_test_maximum_recipients_title'), FlashMessage::ERROR);
+            $this->addFlashMessage(
+                $this->translate('flashmessage_test_maximum_recipients', [$count, $limitTestRecipientCount]),
+                $this->translate('flashmessage_test_maximum_recipients_title'),
+                FlashMessage::ERROR
+            );
             $this->view->assign('success', false);
         } // If we attempt to create a newsletter which contains errors, abort and don't save in DB
         elseif (count($validatedContent['errors'])) {
-            $this->addFlashMessage('The newsletter HTML content does not validate. See tab "Newsletter > Status" for details.', $this->translate('flashmessage_newsletter_invalid'), FlashMessage::ERROR);
+            $this->addFlashMessage(
+                'The newsletter HTML content does not validate. See tab "Newsletter > Status" for details.',
+                $this->translate('flashmessage_newsletter_invalid'),
+                FlashMessage::ERROR
+            );
             $this->view->assign('success', false);
         } else {
             // If it's a test newsletter, it's planned to be sent right now
@@ -170,27 +191,41 @@ class NewsletterController extends ApiActionController
             $this->newsletterRepository->add($newNewsletter);
             $this->persistenceManager->persistAll();
             $this->view->assign('success', true);
-
             // If it is test newsletter, send it immediately
             if ($newNewsletter->getIsTest()) {
                 try {
                     // Fill the spool and run the queue
-                    Tools::createSpool($newNewsletter);
-                    Tools::runSpool($newNewsletter);
+                    $tools = Tools::getInstance();
+                    $tools->createSpool($newNewsletter);
+                    $tools->runSpool($newNewsletter);
 
-                    $this->addFlashMessage($this->translate('flashmessage_test_newsletter_sent'), $this->translate('flashmessage_test_newsletter_sent_title'), FlashMessage::OK);
+                    $this->addFlashMessage(
+                        $this->translate('flashmessage_test_newsletter_sent'),
+                        $this->translate('flashmessage_test_newsletter_sent_title'),
+                        FlashMessage::OK
+                    );
                 } catch (\Exception $exception) {
-                    $this->addFlashMessage($exception->getMessage(), $this->translate('flashmessage_test_newsletter_error'), FlashMessage::ERROR);
+                    $this->addFlashMessage(
+                        $exception->getMessage(),
+                        $this->translate('flashmessage_test_newsletter_error'),
+                        FlashMessage::ERROR
+                    );
                 }
             } else {
-                $this->addFlashMessage($this->translate('flashmessage_newsletter_queued'), $this->translate('flashmessage_newsletter_queued_title'), FlashMessage::OK);
+                $this->addFlashMessage(
+                    $this->translate('flashmessage_newsletter_queued'),
+                    $this->translate('flashmessage_newsletter_queued_title'),
+                    FlashMessage::OK
+                );
             }
         }
 
         $this->view->setVariablesToRender(['data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => self::resolveJsonViewConfiguration(),
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => self::resolveJsonViewConfiguration(),
+            ]
+        );
 
         $this->view->assign('data', $newNewsletter);
         $this->flushFlashMessages();
@@ -210,9 +245,11 @@ class NewsletterController extends ApiActionController
         $conf = self::resolveJsonViewConfiguration();
         $conf['_only'][] = 'statistics';
         $conf['_descend'][] = 'statistics';
-        $this->view->setConfiguration([
-            'data' => $conf,
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => $conf,
+            ]
+        );
 
         $this->view->assign('total', 1);
         $this->view->assign('success', true);

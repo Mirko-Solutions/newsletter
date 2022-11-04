@@ -9,6 +9,7 @@ use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 use Mirko\Newsletter\Utility\EmailParser;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -55,7 +56,9 @@ class BounceHandler
         $output = $exitStatus = null;
         exec("$fetchmail --version 2>&1", $output, $exitStatus);
         if ($exitStatus) {
-            throw new Exception("fetchmail is not available with path configured via Extension Manager '$fetchmail'. Install fetchmail or update configuration and try again.");
+            throw new Exception(
+                "fetchmail is not available with path configured via Extension Manager '$fetchmail'. Install fetchmail or update configuration and try again."
+            );
         }
 
         // Find all bounce accounts we need to check
@@ -69,7 +72,7 @@ class BounceHandler
         }
 
         // Write a new fetchmailrc based on bounce accounts found
-        $fetchmailHome = PATH_site . 'uploads/tx_newsletter';
+        $fetchmailHome = Environment::getPublicPath() . '/uploads/tx_newsletter';
         $fetchmailFile = "$fetchmailHome/fetchmailrc";
         file_put_contents($fetchmailFile, $fetchmailConfiguration);
         $fetchmailConfiguration = null; // Dont leave unencrypted values in memory around for too long.
@@ -80,7 +83,8 @@ class BounceHandler
         $keep = Tools::confParam('keep_messages') ? '--keep ' : '';
 
         // Execute fetchtmail and ask him to pipe emails to our cli/bounce.php
-        $cli_dispatcher = PATH_typo3 . 'cli_dispatch.phpsh'; // This needs to be the absolute path of /typo3/cli_dispatch.phpsh
+        $cli_dispatcher = Environment::getPublicPath(
+            ) . '/typo3/cli_dispatch.phpsh'; // This needs to be the absolute path of /typo3/cli_dispatch.phpsh
         foreach ($servers as $server) {
             $cmd = "$fetchmail -s $keep -m \"$cli_dispatcher newsletter_bounce\" $server 2>&1";
             exec($cmd, $output, $exitStatus);
@@ -127,13 +131,15 @@ fetchmail output was:
         $authCode = $this->emailParser->getAuthCode();
         if ($authCode) {
             // Find the recipientList and email UIDs according to authcode
-            $rs = $db->sql_query("
+            $rs = $db->sql_query(
+                "
 			SELECT tx_newsletter_domain_model_newsletter.recipient_list, tx_newsletter_domain_model_email.uid
 			FROM tx_newsletter_domain_model_email
 			INNER JOIN tx_newsletter_domain_model_newsletter ON (tx_newsletter_domain_model_email.newsletter = tx_newsletter_domain_model_newsletter.uid)
 			INNER JOIN tx_newsletter_domain_model_recipientlist ON (tx_newsletter_domain_model_newsletter.recipient_list = tx_newsletter_domain_model_recipientlist.uid)
 			WHERE tx_newsletter_domain_model_email.auth_code = '$authCode' AND recipient_list IS NOT NULL
-			LIMIT 1");
+			LIMIT 1"
+            );
 
             if (list($recipientListUid, $emailUid) = $db->sql_fetch_row($rs)) {
                 $emailRepository = $this->objectManager->get(EmailRepository::class);
@@ -154,7 +160,9 @@ fetchmail output was:
 
         // If couldn't find the original email we cannot do anything
         if (!$this->email) {
-            Tools::getLogger(__CLASS__)->warning('Bounced email found but cannot find corresponding record in database. Skipped.');
+            Tools::getLogger(__CLASS__)->warning(
+                'Bounced email found but cannot find corresponding record in database. Skipped.'
+            );
 
             return;
         }

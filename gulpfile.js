@@ -3,15 +3,15 @@ const sass = require('gulp-sass')(require('sass'));
 const concat = require('gulp-concat');
 
 function buildBackendStyles() {
-    return gulp.src('Resources/Public/sass/backend/*.scss')
-        .pipe(sass().on('error', sass.logError))
+    return gulp.src('Resources/Public/sass/backend/**/*.{sass,scss,css}')
+        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(concat('module.css').on('error', sass.logError))
         .pipe(gulp.dest('Resources/Public/Styles'));
 }
 
 function buildFrontendStyles() {
-    return gulp.src('Resources/Public/sass/frontend/*.scss')
-        .pipe(sass().on('error', sass.logError))
+    return gulp.src('Resources/Public/sass/frontend/**/*.{sass,scss,css}')
+        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(concat('app.css').on('error', sass.logError))
         .pipe(gulp.dest('Resources/Public/Styles'));
 }

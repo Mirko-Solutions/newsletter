@@ -25,7 +25,7 @@ class Link extends AbstractEntity
      * Here the type is intentionally wrong because for some reasons it does not
      * work in TYPO3 7.3 and older if we specify the correct type of Newsletter
      *
-     * @lazy
+     * @Extbase\ORM\Lazy
      * @var int
      */
     protected $newsletter;

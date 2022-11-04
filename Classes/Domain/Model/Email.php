@@ -4,6 +4,7 @@ namespace Mirko\Newsletter\Domain\Model;
 
 use DateTime;
 use Mirko\Newsletter\Utility\UriBuilder;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 
 /**
  * Email
@@ -28,7 +29,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
      * recipientAddress
      *
      * @var string
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $recipientAddress = '';
 
@@ -56,7 +57,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
     /**
      * newsletter
      *
-     * @lazy
+     * @Extbase\ORM\Lazy
      * @var \Mirko\Newsletter\Domain\Model\Newsletter
      */
     protected $newsletter;
@@ -65,7 +66,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
      * Whether the recipient of this email requested to unsubscribe.
      *
      * @var bool
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $unsubscribed = false;
 

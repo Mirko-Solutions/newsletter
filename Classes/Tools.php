@@ -7,7 +7,6 @@ use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
@@ -16,11 +15,28 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 /**
  * Toolbox for newsletter and dependant extensions.
  */
-abstract class Tools
+class Tools
 {
     private static $configuration = null;
 
     private static $OPEN_SSL_CIPHER = 'aes-256-cbc';
+
+    private EmailRepository $emailRepository;
+
+    private NewsletterRepository $newsletterRepository;
+
+    public function __construct(
+        EmailRepository $emailRepository,
+        NewsletterRepository $newsletterRepository
+    ) {
+        $this->emailRepository = $emailRepository;
+        $this->newsletterRepository = $newsletterRepository;
+    }
+
+    public static function getInstance()
+    {
+        return GeneralUtility::makeInstance(self::class);
+    }
 
     /**
      * Get a newsletter-conf-template parameter
@@ -92,13 +108,11 @@ abstract class Tools
     /**
      * Create the spool for all newsletters who need it
      */
-    public static function createAllSpool()
+    public function createAllSpool()
     {
-        $newsletterRepository = self::getNewsletterRepository();
-
-        $newsletters = $newsletterRepository->findAllReadyToSend();
+        $newsletters = $this->newsletterRepository->findAllReadyToSend();
         foreach ($newsletters as $newsletter) {
-            self::createSpool($newsletter);
+            $this->createSpool($newsletter);
         }
     }
 
@@ -107,19 +121,17 @@ abstract class Tools
      *
      * @param Newsletter $newsletter
      */
-    public static function createSpool(Newsletter $newsletter)
+    public function createSpool(Newsletter $newsletter)
     {
         // If newsletter is locked because spooling now, or already spooled, then skip
         if ($newsletter->getBeginTime()) {
             return;
         }
 
-        $newsletterRepository = self::getNewsletterRepository();
-
         // Lock the newsletter by setting its begin_time
         $beginTime = new DateTime();
         $newsletter->setBeginTime($beginTime);
-        $newsletterRepository->update($newsletter);
+        $this->newsletterRepository->update($newsletter);
 
         $emailSpooledCount = 0;
         $recipientList = $newsletter->getRecipientList();
@@ -128,55 +140,49 @@ abstract class Tools
         while ($receiver = $recipientList->getRecipient()) {
             // Register the recipient
             if (GeneralUtility::validEmail($receiver['email'])) {
-                $db->exec_INSERTquery(
-                    'tx_newsletter_domain_model_email',
-                    [
-                        'pid' => $newsletter->getPid(),
-                        'recipient_address' => $receiver['email'],
-                        'recipient_data' => serialize($receiver),
-                        'newsletter' => $newsletter->getUid(),
-                    ]
-                );
-
-                $db->exec_UPDATEquery(
-                    'tx_newsletter_domain_model_email',
-                    'uid = ' . (int) $db->sql_insert_id(),
-                    [
-                        'auth_code' => 'MD5(CONCAT(uid, recipient_address))',
-                    ],
-                    ['auth_code']
-                );
-
+                $emailInstance = new Email();
+                $emailInstance->setPid($newsletter->getPid());
+                $emailInstance->setRecipientData($receiver);
+                $emailInstance->setNewsletter($newsletter);
+                $this->emailRepository->add($emailInstance);
+                $this->emailRepository->persistAll();
+                $emailInstance->setRecipientAddress($receiver['email']);
+                $this->emailRepository->update($emailInstance);
+                $this->emailRepository->persistAll();
                 ++$emailSpooledCount;
             }
         }
-        self::getLogger(__CLASS__)->info("Queued $emailSpooledCount emails to be sent for newsletter " . $newsletter->getUid());
+        self::getLogger(__CLASS__)->info(
+            "Queued $emailSpooledCount emails to be sent for newsletter " . $newsletter->getUid()
+        );
 
         // Schedule repeated newsletter if any
         $newsletter->scheduleNextNewsletter();
 
         // Unlock the newsletter by setting its end_time
         $newsletter->setEndTime(new DateTime());
-        $newsletterRepository->update($newsletter);
+        $this->newsletterRepository->update($newsletter);
     }
 
     /**
      * Run the spool for all Newsletters, with a security to avoid parallel sending
      */
-    public static function runAllSpool()
+    public function runAllSpool()
     {
         $db = self::getDatabaseConnection();
 
         // Try to detect if a spool is already running
         // If there is no records for the last 30 seconds, previous spool session is assumed to have ended.
         // If there are newer records, then stop here, and assume the running mailer will take care of it.
-        $rs = $db->sql_query('SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30));
+        $rs = $db->sql_query(
+            'SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30)
+        );
         list($num_records) = $db->sql_fetch_row($rs);
         if ($num_records != 0) {
             return;
         }
 
-        self::runSpool();
+        $this->runSpool();
     }
 
     /**
@@ -184,15 +190,12 @@ abstract class Tools
      *
      * @param Newsletter $limitNewsletter if specified, run spool only for that Newsletter
      */
-    public static function runSpool(Newsletter $limitNewsletter = null)
+    public function runSpool(Newsletter $limitNewsletter = null)
     {
         $emailSentCount = 0;
         $mailers = [];
 
-        $newsletterRepository = self::getNewsletterRepository();
-        $emailRepository = self::getObjectManager()->get(EmailRepository::class);
-
-        $allUids = $newsletterRepository->findAllNewsletterAndEmailUidToSend($limitNewsletter);
+        $allUids = $this->newsletterRepository->findAllNewsletterAndEmailUidToSend($limitNewsletter);
 
         $oldNewsletterUid = null;
         foreach ($allUids as $uids) {
@@ -205,12 +208,12 @@ abstract class Tools
                 $mailers = [];
 
                 /** @var Newsletter $newsletter */
-                $newsletter = $newsletterRepository->findByUid($newsletterUid);
+                $newsletter = $this->newsletterRepository->findByUid($newsletterUid);
             }
 
             // Define the language of email
             /** @var Email $email */
-            $email = $emailRepository->findByUid($emailUid);
+            $email = $this->emailRepository->findByUid($emailUid);
             $recipientData = $email->getRecipientData();
             $language = $recipientData['L'];
 
@@ -221,14 +224,14 @@ abstract class Tools
 
             // Mark it as started sending
             $email->setBeginTime(new DateTime());
-            $emailRepository->update($email);
+            $this->emailRepository->update($email);
 
             // Send the email
             $mailers[$language]->send($email);
 
             // Mark it as sent already
             $email->setEndTime(new DateTime());
-            $emailRepository->update($email);
+            $this->emailRepository->update($email);
 
             ++$emailSentCount;
         }
@@ -342,16 +345,6 @@ abstract class Tools
     }
 
     /**
-     * Returns the Newsletter Repository
-     *
-     * @return NewsletterRepository
-     */
-    private static function getNewsletterRepository()
-    {
-        return self::getObjectManager()->get(NewsletterRepository::class);
-    }
-
-    /**
      * Returns the the connection to database
      *
      * @return DatabaseConnection
@@ -359,5 +352,13 @@ abstract class Tools
     public static function getDatabaseConnection()
     {
         return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
+     * @return NewsletterRepository
+     */
+    public function getNewsletterRepository(): NewsletterRepository
+    {
+        return $this->newsletterRepository;
     }
 }

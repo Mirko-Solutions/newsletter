@@ -11,12 +11,14 @@ services:
   Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider:
     arguments:
       $recipientListRepository: '@Mirko\Newsletter\Domain\Repository\RecipientListRepository'
-
-  Mirko\Newsletter\DataProvider\Backend\SettingsPageDataProvider:
-    arguments:
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
       $bounceAccountRepository: '@Mirko\Newsletter\Domain\Repository\BounceAccountRepository'
 
   Mirko\Newsletter\DataProvider\Backend\StatusPageDataProvider:
     arguments:
+      $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+
+  Mirko\Newsletter\Tools:
+    arguments:
+      $emailRepository: '@Mirko\Newsletter\Domain\Repository\EmailRepository'
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
