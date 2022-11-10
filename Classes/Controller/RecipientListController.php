@@ -45,18 +45,27 @@ class RecipientListController extends ApiActionController
         }
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded RecipientLists from Server side.', 'RecipientLists loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded RecipientLists from Server side.',
+            'RecipientLists loaded successfully',
+            FlashMessage::NOTICE
+        );
 
         $this->view->assign('total', $recipientLists->count());
         $this->view->assign('data', $recipientLists);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 
     /**
@@ -96,13 +105,20 @@ class RecipientListController extends ApiActionController
             }
         }
 
-        $this->addFlashMessage('Loaded Recipients from Server side.', 'Recipients loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded Recipients from Server side.',
+            'Recipients loaded successfully',
+            FlashMessage::NOTICE
+        );
 
         $this->view->assign('metaData', $metaData);
         $this->view->assign('total', $recipientLists->getCount());
         $this->view->assign('data', $recipients);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
         $this->view->setVariablesToRender(['metaData', 'total', 'data', 'success', 'flashMessages']);
     }
 
@@ -133,7 +149,11 @@ class RecipientListController extends ApiActionController
 
         $this->response->setHeader('Content-Type', 'text/' . $format, true);
         $this->response->setHeader('Content-Description', 'File transfer', true);
-        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $title . '.' . $format . '"', true);
+        $this->response->setHeader(
+            'Content-Disposition',
+            'attachment; filename="' . $title . '.' . $format . '"',
+            true
+        );
 
         $recipients = [];
         while ($recipient = $recipientList->getRecipient()) {

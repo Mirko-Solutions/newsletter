@@ -142,7 +142,7 @@ class Mailer
         foreach ($files as $file) {
             if (trim($file) != '') {
                 $filename = Environment::getPublicPath() . "/uploads/tx_newsletter/$file";
-                $this->attachments[] = Swift_Attachment::fromPath($filename);
+                $this->attachments[] = $filename;
             }
         }
     }

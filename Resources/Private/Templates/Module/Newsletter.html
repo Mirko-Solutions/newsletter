@@ -5,6 +5,9 @@
 <newsletter:includeCssFile name="module.css"/>
 
 <h1>Newsletter Management</h1>
+<div>
+
+</div>
 <f:form name="newsletter" action="newsletter" class="form-horizontal" arguments="{id:configuration.pageId}">
     <div class="row row-cols-auto align-items-center g-3 mb-3">
         <div class="col">
@@ -14,7 +17,7 @@
             <f:form.select class="form-select" id="page" name="page" options="{pages}" optionValueField="name" optionLabelField="label" value="{page}" additionalAttributes="{data-global-event='change', data-action-submit: '$form'}" />
 
             <f:if condition="{page} ">
-                <f:render partial="{page}" arguments="{_all}"/>
+                <f:render partial="Newsletter/{page}" arguments="{_all}"/>
             </f:if>
         </div>
     </div>

@@ -41,18 +41,23 @@ class LinkController extends ApiActionController
         $links = $this->linkRepository->findAllByNewsletter($uidNewsletter, $start, $limit);
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
         $this->addFlashMessage('Loaded all Links from Server side.', 'Links loaded successfully', FlashMessage::NOTICE);
 
         $this->view->assign('total', $this->linkRepository->getCount($uidNewsletter));
         $this->view->assign('data', $links);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 
     /**

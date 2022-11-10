@@ -38,13 +38,19 @@ class BounceAccountController extends ApiActionController
         $bounceAccounts = $this->bounceAccountRepository->findAll();
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded BounceAccounts from Server side.', 'BounceAccounts loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded BounceAccounts from Server side.',
+            'BounceAccounts loaded successfully',
+            FlashMessage::NOTICE
+        );
 
         $this->view->assign('total', $bounceAccounts->count());
         $this->view->assign('data', $bounceAccounts);

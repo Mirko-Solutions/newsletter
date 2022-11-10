@@ -32,10 +32,10 @@ class SendingPageDataProvider implements BackendDataProvider
     public function getPageData($pid): array
     {
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Module/Newsletter/Grid');
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Libraries/Grid');
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Module/Newsletter/Sending');
         $newsletter = $this->newsletterRepository->getLatest($pid) ?? new Newsletter();
-
+        $newsletter->setPid($pid);
         $repetition = [
             LocalizationUtility::translate(
                 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.repetition_none',
@@ -76,7 +76,7 @@ class SendingPageDataProvider implements BackendDataProvider
             'recipientList' => $this->recipientListRepository->findAll(),
             'newsletter' => $newsletter,
             'repetition' => $repetition,
-            'bounceAccounts' =>  $bounceAccounts,
+            'bounceAccounts' => $bounceAccounts,
             'plainConverters' => PlainConverterRegistration::getPlainConvertersList()
         ];
     }

@@ -2,7 +2,7 @@ define(
     [
         'jquery',
         'TYPO3/CMS/Backend/Notification',
-        'TYPO3/CMS/Newsletter/Module/Newsletter/Grid'
+        'TYPO3/CMS/Newsletter/Libraries/Grid'
     ], function ($, Notification, agGrid) {
         const getTimeZone = () => {
             const timezoneOffset = new Date().getTimezoneOffset()

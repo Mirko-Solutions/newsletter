@@ -52,17 +52,26 @@ class EmailController extends ApiActionController
         $emails = $this->emailRepository->findAllByNewsletter($uidNewsletter, $start, $limit);
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded all Emails from Server side.', 'Emails loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded all Emails from Server side.',
+            'Emails loaded successfully',
+            FlashMessage::NOTICE
+        );
         $this->view->assign('total', $this->emailRepository->getCount($uidNewsletter));
         $this->view->assign('data', $emails);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 
     /**
@@ -230,11 +239,13 @@ class EmailController extends ApiActionController
             $uriBuilder = $this->controllerContext->getUriBuilder();
             $uriBuilder->reset();
             $uriBuilder->setUseCacheHash(false);
-            $uriBuilder->setTargetPageUid((int) $redirect);
+            $uriBuilder->setTargetPageUid((int)$redirect);
             // Append the recipient address just in case you want to do something with it at the destination
-            $uriBuilder->setArguments([
-                'recipient' => $recipientAddress,
-            ]);
+            $uriBuilder->setArguments(
+                [
+                    'recipient' => $recipientAddress,
+                ]
+            );
             $redirect = $uriBuilder->build();
         }
 
@@ -261,10 +272,12 @@ class EmailController extends ApiActionController
 
         // Use the page-owner as user
         if ($notificationEmail == 'user') {
-            $rs = Tools::getDatabaseConnection()->sql_query('SELECT email
+            $rs = Tools::getDatabaseConnection()->sql_query(
+                'SELECT email
 			FROM be_users
 			LEFT JOIN pages ON be_users.uid = pages.perms_userid
-			WHERE pages.uid = ' . $newsletter->getPid());
+			WHERE pages.uid = ' . $newsletter->getPid()
+            );
 
             list($notificationEmail) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
         }
@@ -276,11 +289,19 @@ class EmailController extends ApiActionController
 
         // Build email texts
         $baseUrl = $newsletter->getBaseUrl();
-        $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid() . ']=edit';
-        $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid() . ']=edit';
-        $urlNewsletter = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_newsletter][' . $newsletter->getUid() . ']=edit';
+        $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid(
+            ) . ']=edit';
+        $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid(
+            ) . ']=edit';
+        $urlNewsletter = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_newsletter][' . $newsletter->getUid(
+            ) . ']=edit';
         $subject = LocalizationUtility::translate('unsubscribe_notification_subject', 'newsletter');
-        $body = LocalizationUtility::translate('unsubscribe_notification_body', 'newsletter', [$email->getRecipientAddress(), $urlRecipient, $recipientList->getTitle(), $urlRecipientList, $newsletter->getTitle(), $urlNewsletter]);
+        $body = LocalizationUtility::translate(
+            'unsubscribe_notification_body',
+            'newsletter',
+            [$email->getRecipientAddress(), $urlRecipient, $recipientList->getTitle(
+            ), $urlRecipientList, $newsletter->getTitle(), $urlNewsletter]
+        );
 
         // Actually sends email
         $message = GeneralUtility::makeInstance(MailMessage::class);

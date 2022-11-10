@@ -15,9 +15,11 @@ class Builtin implements IPlainConverter
 {
     public function getPlainText($content, $baseUrl)
     {
-        $converter = new Html2Text($content, [
-            'do_links' => 'table',
-        ]);
+        $converter = new Html2Text(
+            $content, [
+                'do_links' => 'table',
+            ]
+        );
         $converter->setBaseUrl($baseUrl);
 
         return $converter->getText();

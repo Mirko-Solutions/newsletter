@@ -3,6 +3,7 @@
 <form name="newsletter">
     <div class="settings">
         <h1>Settings</h1>
+        <f:form.hidden name="newsletter[pid]" value="{pageData.newsletter.pid}" />
         <div>
             <h2>
                 <f:translate key="sender"/>
@@ -74,13 +75,13 @@
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.inject_open_spy"/>
-                    <f:form.checkbox name="newsletter[injectOpenSpy]" value="{pageData.newsletter.injectOpenSpy}"></f:form.checkbox>
+                    <f:form.checkbox name="newsletter[injectOpenSpy]" checked="{pageData.newsletter.injectOpenSpy}" value="1"></f:form.checkbox>
                 </label>
 
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.inject_links_spy"/>
-                    <f:form.checkbox name="newsletter[injectLinksSpy]" value="{pageData.newsletter.injectLinksSpy}"></f:form.checkbox>
+                    <f:form.checkbox name="newsletter[injectLinksSpy]" checked="{pageData.newsletter.injectLinksSpy}" value="1"></f:form.checkbox>
                 </label>
             </div>
         </div>

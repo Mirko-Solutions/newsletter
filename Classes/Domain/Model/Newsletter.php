@@ -699,8 +699,6 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getBaseUrl()
     {
-        $db = Tools::getDatabaseConnection();
-
         // Is anything hardcoded from TYPO3_CONF_VARS ?
         $domain = Tools::confParam('fetch_path');
 

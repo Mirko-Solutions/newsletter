@@ -109,11 +109,47 @@ class ModuleController extends ActionController
             $moduleTemplate->getDocHeaderComponent()->setMetaInformation($pageRecord);
         }
         $moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue());
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Libraries/Libraries');
 
         return $moduleTemplate;
     }
 
     public function newsletterAction(): ResponseInterface
+    {
+        $moduleTemplate = $this->initializeModuleTemplate($this->request);
+        $page = $this->request->hasArgument('page') ? $this->request->getArgument('page') : array_key_first(
+            $this->subMenus
+        );
+
+        $pageType = '';
+        $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
+        if (!empty($record['doktype']) && $record['doktype'] == 254) {
+            $pageType = 'folder';
+        } elseif (!empty($record['doktype'])) {
+            $pageType = 'page';
+        }
+
+        $configuration = [
+            'pageId' => $this->pageId,
+            'pageType' => $pageType,
+        ];
+
+
+        $this->view->assignMultiple(
+            [
+                'configuration' => $configuration,
+                'page' => $page,
+                'pages' => $this->subMenus,
+                'pageData' => $this->newsletterModuleService->getDataForPage($page, $this->pageId),
+                'moduleUrl' => UriBuilder::getInstance()->buildUriFromRoute($this->request->getPluginName())
+            ]
+        );
+        $moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($moduleTemplate->renderContent());
+    }
+
+    public function statisticsAction(): ResponseInterface
     {
         $moduleTemplate = $this->initializeModuleTemplate($this->request);
         $page = $this->request->hasArgument('page') ? $this->request->getArgument('page') : array_key_first(
@@ -137,7 +173,7 @@ class ModuleController extends ActionController
 
         $this->view->assignMultiple(
             [
-                'configuration', $configuration,
+                'configuration' => $configuration,
                 'page' => $page,
                 'pages' => $this->subMenus,
                 'pageData' => $this->newsletterModuleService->getDataForPage($page, $this->pageId),
@@ -145,29 +181,6 @@ class ModuleController extends ActionController
             ]
         );
         $moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($moduleTemplate->renderContent());
-    }
-
-    public function statisticsAction(): ResponseInterface
-    {
-        $pageType = '';
-        $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
-        if (!empty($record['doktype']) && $record['doktype'] == 254) {
-            $pageType = 'folder';
-        } elseif (!empty($record['doktype'])) {
-            $pageType = 'page';
-        }
-
-        $configuration = [
-            'pageId' => $this->pageId,
-            'pageType' => $pageType,
-            'emailShowUrl' => UriBuilder::buildFrontendUri($this->pageId, 'Email', 'show'),
-        ];
-
-        $this->view->assign('configuration', $configuration);
-        $moduleTemplate = $this->initializeModuleTemplate($this->request);
-        $moduleTemplate->setContent($this->view->render());
-
         return $this->htmlResponse($moduleTemplate->renderContent());
     }
 }

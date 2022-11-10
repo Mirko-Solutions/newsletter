@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\Utility;
 
+use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -104,9 +105,13 @@ abstract class UriBuilder
 
             // E.g.: "https://example.org/slug-of-page/?foo=1"
             $uri = (string)$site->getRouter()->generateUri((string)$currentPid, $namespacedArguments);
+            if (!Uri::isAbsolute($uri)) {
+                $uri = Tools::getBaseUrl($currentPid) . $uri;
+            }
 
             self::$uriCache[$cacheKey] = $uri;
         }
+
 
         // Re-append linkAuthCode
         if ($argumentsToRestore) {

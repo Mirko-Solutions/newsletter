@@ -18,6 +18,10 @@ services:
     arguments:
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
 
+  Mirko\Newsletter\DataProvider\Backend\StatisticPageDataProvider:
+    arguments:
+      $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+
   Mirko\Newsletter\Tools:
     arguments:
       $emailRepository: '@Mirko\Newsletter\Domain\Repository\EmailRepository'

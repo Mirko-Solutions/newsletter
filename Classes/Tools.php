@@ -8,6 +8,7 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -332,6 +333,40 @@ class Tools
         }
 
         return $content;
+    }
+
+    public static function getBaseUrl($pid = null)
+    {
+
+        // Is anything hardcoded from TYPO3_CONF_VARS ?
+        $domain = Tools::confParam('fetch_path');
+
+        // Else we try to resolve a domain in page root line
+
+        // Else we try to find it in sys_template (available at least since TYPO3 4.6 Introduction Package)
+        if (!$domain && $pid) {
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+
+            $domain = $siteFinder->getSiteByPageId($pid)->getBase()->getHost();
+        }
+
+        if (!$domain) {
+            $domain = $_SERVER['HTTP_HOST'];
+        }
+
+        // If still no domain, can't continue
+        if (!$domain) {
+            throw new \Exception(
+                "Could not find the domain name. Use Newsletter configuration page to set 'fetch_path'"
+            );
+        }
+
+        // Force scheme if found from domain record, or if fetch_path was not configured properly (before Newsletter 2.6.0)
+        if (!preg_match('~^https?://~', $domain)) {
+            $domain = 'http://' . $domain;
+        }
+
+        return $domain;
     }
 
     /**

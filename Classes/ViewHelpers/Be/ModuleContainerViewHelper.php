@@ -61,8 +61,6 @@ class ModuleContainerViewHelper extends AbstractViewHelper
 
         $extPath = ExtensionManagementUtility::extPath('newsletter');
         $extRelPath = '/' . mb_substr($extPath, mb_strlen(Environment::getPublicPath() . '/'));
-        $this->pageRenderer->addCssFile($extRelPath . 'Resources/Public/Styles/xtheme-t3skin.css');
-
         $this->renderChildren();
 
 //        $this->pageRenderer->enableCompressJavaScript();

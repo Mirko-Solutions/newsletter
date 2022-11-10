@@ -29,7 +29,7 @@ class IncludeJsFileViewHelper extends AbstractViewHelper
             'string',
             'Path inside extension',
             false,
-            'Resources/Public/JavaScript/'
+            'Resources/Public/dist/'
         );
     }
 

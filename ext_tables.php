@@ -37,6 +37,11 @@ if (TYPO3_MODE == 'BE') {
     'sending',
     \Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider::class
 );
+\Mirko\Newsletter\Utility\BackendDataProviderRegistration::registerBackendDataProvider(
+    'statistics',
+    'overview',
+    \Mirko\Newsletter\DataProvider\Backend\StatisticPageDataProvider::class
+);
 
 
 \Mirko\Newsletter\Utility\PlainConverterRegistration::registerPlainConverter(

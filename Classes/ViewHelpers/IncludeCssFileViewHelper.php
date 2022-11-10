@@ -29,7 +29,7 @@ class IncludeCssFileViewHelper extends AbstractViewHelper
             'string',
             'Path inside extension',
             false,
-            'Resources/Public/Styles/'
+            'Resources/Public/dist/'
         );
     }
 
