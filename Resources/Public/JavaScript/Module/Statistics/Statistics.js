@@ -3,40 +3,19 @@ define(
         'jquery',
         'TYPO3/CMS/Backend/Notification',
         'TYPO3/CMS/Newsletter/Libraries/Grid',
-        'TYPO3/CMS/Newsletter/Libraries/Libraries'
-    ], function ($, Notification, agGrid, libraries) {
-        const generateFlashMessageFromResponse = (response) => {
-            response.flashMessages.forEach((message) => {
-                switch (message.severity) {
-                    case -2:
-                        Notification.notice(message.title, message.message);
-                        break;
-                    case -1:
-                        Notification.info(message.title, message.message);
-                        break;
-                    case 0:
-                        Notification.success(message.title, message.message);
-                        break;
-                    case 1:
-                        Notification.warning(message.title, message.message);
-                        break;
-                    case 2:
-                        Notification.error(message.title, message.message);
-                }
-            })
-        }
-
+        'TYPO3/CMS/Newsletter/Libraries/Libraries',
+        'TYPO3/CMS/Newsletter/Libraries/Utility',
+    ], function ($, Notification, agGrid, Libraries, Utility) {
         const Statistics = function () {
             const me = this;
-            const extKey = 'newsletter';
-            let selectedNewsletter = {};
-            let overviewChart;
-            let timeLineChart;
-            let emailStatsTable;
-            let linksStatsTable;
 
             me.getNewsletterList = (gridOptions) => {
-                const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'list');
+                const params = getBackendRequest(
+                    'web',
+                    'tx_newsletter_m1',
+                    'Newsletter',
+                    'list'
+                );
                 $.ajax({
                     url: moduleUrl,
                     data: params,
@@ -46,7 +25,6 @@ define(
                     success: function (response) {
                         gridOptions.api.setRowData(response.data);
                         gridOptions.api.forEachNode(node => node.rowIndex === 0 ? node.setSelected(true) : node.setSelected(false));
-                        generateFlashMessageFromResponse(response);
                     },
                     error: function (response) {
                         const r = $.parseJSON(response.responseText);
@@ -58,28 +36,15 @@ define(
                 });
             };
 
-            me.getBackendRequest = (mainModuleName, subModuleName, controller, action, parameters = {}) => {
-                const parameterPrefix = me.getParameterPrefix(mainModuleName, subModuleName);
-                const params = {};
-
-                parameters['controller'] = controller;
-                parameters['action'] = action;
-
-                $.each(parameters, function (name, value) {
-                    params[parameterPrefix + '[' + name + ']'] = value;
-                });
-
-                return params;
-            };
-
-            me.getParameterPrefix = function (mainModuleName, subModuleName) {
-                return 'tx_' + extKey + '_' + mainModuleName + '_' + extKey + subModuleName.replace(/_/g, '');
-            };
-
             me.getNewsletterStatistics = () => {
-                const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'statistics', {
-                    uidNewsletter: me.selectedNewsletter['__identity']
-                });
+                const params = getBackendRequest(
+                    'web',
+                    'tx_newsletter_m1',
+                    'Newsletter',
+                    'statistics',
+                    {
+                        uidNewsletter: me.selectedNewsletter['__identity']
+                    });
                 $.ajax({
                     url: moduleUrl,
                     data: params,
@@ -124,11 +89,16 @@ define(
             }
 
             me.getNewsletterEmailsList = (newsletter) => {
-                const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Email', 'list', {
-                    uidNewsletter: newsletter['__identity'],
-                    start: 0,
-                    limit: 500,
-                });
+                const params = getBackendRequest(
+                    'web',
+                    'tx_newsletter_m1',
+                    'Email',
+                    'list',
+                    {
+                        uidNewsletter: newsletter['__identity'],
+                        start: 0,
+                        limit: 500,
+                    });
 
                 $.ajax({
                     url: moduleUrl,
@@ -150,11 +120,16 @@ define(
             }
 
             me.getNewsletterLinksList = (newsletter) => {
-                const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Link', 'list', {
-                    uidNewsletter: newsletter['__identity'],
-                    start: 0,
-                    limit: 500,
-                });
+                const params = getBackendRequest(
+                    'web',
+                    'tx_newsletter_m1',
+                    'Link',
+                    'list',
+                    {
+                        uidNewsletter: newsletter['__identity'],
+                        start: 0,
+                        limit: 500,
+                    });
 
                 $.ajax({
                     url: moduleUrl,
@@ -176,11 +151,9 @@ define(
             }
         };
 
-
         $(document).ready(function () {
             const statistics = new Statistics();
 
-            // Grid Options are properties passed to the grid
             const gridOptions = {
                 columnDefs: [
                     {
@@ -363,91 +336,82 @@ define(
         function updateTimeLineChartData(chart, stats) {
             chart.data.labels = [];
             chart.data.datasets = [];
-            console.log(chart)
             const emailNotSentCount = [];
             const emailSentCount = [];
             const emailOpenedCount = [];
             const emailBouncedCount = [];
             const linkOpenedCount = [];
+            let date = '';
             $.each(stats, function (name, value) {
-                chart.data.labels.push(new Date(value.time * 1000).toLocaleString("en-GB"));
+                const newDate = new Date(value.time * 1000).toLocaleTimeString([], {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+
+                if (newDate !== date) {
+                    chart.data.labels.push(newDate)
+                } else {
+                    chart.data.labels.push('')
+                }
+
+                date = newDate;
                 emailNotSentCount.push(value['emailNotSentCount'])
                 emailSentCount.push(value['emailSentCount'])
                 emailOpenedCount.push(value['emailOpenedCount'])
                 emailBouncedCount.push(value['emailBouncedCount'])
                 linkOpenedCount.push(value['linkOpenedCount'])
             });
+            updateChartDatasets(
+                chart,
+                'emailSentCount',
+                emailSentCount,
+                'rgba(54, 162, 235, 1)',
+                'rgb(44,116,128)',
+                true,
+                4
+            );
+            updateChartDatasets(
+                chart,
+                'emailNotSentCount',
+                emailNotSentCount,
+                'rgba(145,145,145, 1)',
+                'rgb(121,121,121)',
+                true,
+                3
+            );
+            updateChartDatasets(
+                chart,
+                'emailOpenedCount',
+                emailOpenedCount,
+                'rgba(46,227,54, 1)',
+                'rgb(28,140,33)',
+                true,
+                10
+            );
+            updateChartDatasets(
+                chart,
+                'emailBouncedCount',
+                emailBouncedCount,
+                'rgba(255,86,86,1)',
+                'rgb(131,45,45)',
+                true,
+                1
+            );
 
-            chart.data.datasets.push({
-                label: [
-                    'emailSentCount',
-                ],
-                data: emailSentCount,
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.5)',
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                ],
-                fill: true,
-                hoverOffset: 4
-            })
-            chart.data.datasets.push({
-                label: [
-                    'emailNotSentCount',
-                ],
-                data: emailNotSentCount,
-                backgroundColor: [
-                    'rgba(145,145,145, 0.5)',
-                ],
-                borderColor: [
-                    'rgba(145,145,145, 1)',
-                ],
-                fill: true,
-                hoverOffset: 0
-            })
-            chart.data.datasets.push({
-                label: [
-                    'emailOpenedCount',
-                ],
-                data: emailOpenedCount,
-                backgroundColor: [
-                    'rgba(46,227,54, 0.5)',
-                ],
-                borderColor: [
-                    'rgba(46,227,54, 1)',
-                ],
-                fill: true,
-                hoverOffset: 1
-            })
-            chart.data.datasets.push({
-                label: [
-                    'emailBouncedCount',
-                ],
-                data: emailBouncedCount,
-                backgroundColor: [
-                    'rgba(255,86,86,0.5)',
-                ],
-                borderColor: [
-                    'rgba(255,86,86,1)',
-                ],
-                fill: true,
-                hoverOffset: 2
-            })
-            chart.data.datasets.push({
-                label: [
-                    'linkOpenedCount',
-                ],
-                data: linkOpenedCount,
-                backgroundColor: [
-                    'rgba(255, 205, 86, 0.5)',
-                ],
-                borderColor: [
-                    'rgba(255, 205, 86, 1)',
-                ],
-                fill: true,
-                hoverOffset: 3
-            })
+            updateChartDatasets(
+                chart,
+                'linkOpenedCount',
+                linkOpenedCount,
+                'rgba(255, 205, 86, 1)',
+                'rgb(124,99,41)',
+                true,
+                0
+            );
+
             chart.update();
         }
 
@@ -481,7 +445,7 @@ define(
                         type: 'time',
                         time: {
                             // Luxon format string
-                            tooltipFormat: 'DD T'
+                            tooltipFormat: 'DD T',
                         },
                         title: {
                             display: true,

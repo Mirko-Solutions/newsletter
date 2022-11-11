@@ -1,0 +1,22 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:newsletter="http://typo3.org/ns/Mirko/Newsletter/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<newsletter:includeCssFile name="module.css"/>
+<div class="newsletter newsletter__container">
+    <f:form name="newsletter" action="newsletter" class="form-horizontal" arguments="{id:configuration.pageId}">
+        <div class="newsletter__pageSelectionContainer">
+            <f:form.select id="page-selector" name="page" options="{pages}" optionValueField="name"
+                           optionLabelField="label" value="{page}"
+                           additionalAttributes="{data-global-event='change', data-action-submit: '$form'}"/>
+
+        </div>
+        <f:render section="content"/>
+    </f:form>
+</div>
+
+<script type="text/javascript">
+    const moduleUrl = '{f:format.raw(value: moduleUrl)}';
+    const emailShowUrl = '{f:format.raw(value: configuration.emailShowUrl)}';
+</script>
+</html>

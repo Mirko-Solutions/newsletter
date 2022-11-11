@@ -1,3 +1,6 @@
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
 /* - - - - - - - - - - - - - - - - - - - - -
 Newsletter style
 
@@ -64,6 +67,10 @@ ul.errors li,
 ul.warnings li,
 ul.infos li {
   list-style: none;
+}
+
+ol, ul {
+  padding-left: 2em;
 }
 
 
@@ -224,11 +231,13 @@ ul.x-tab-strip li {
 }
 
 .extendButton {
+  width: max-content;
   &:hover {
     cursor: pointer;
     text-shadow: #9d9d9d 1px 0 10px;
     transition: text-shadow 0.1s linear;
   }
+
   transition: text-shadow 0.1s linear;
 }
 
@@ -250,13 +259,39 @@ ul.x-tab-strip li {
     .sending-actions {
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
     }
 
     .planing-container, .testing-container {
-      border: 1px solid #c0c0c0;
       padding: 20px;
       display: flex;
       flex-direction: column;
+    }
+  }
+}
+
+.newsletter {
+  &__container {
+    background: rgb(255,255,255);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(221,221,221,1) 100%);
+  }
+
+  &__content {
+    border: 1px solid #ddd;
+    padding: 20px;
+  }
+
+  &____pageSelectionContainer {
+    padding-bottom: 20px;
+  }
+
+  #page-selector {
+    width: max-content;
+    margin: 0;
+    font-size: 22px;
+
+    option:hover {
+      background-color: grey;
     }
   }
 }

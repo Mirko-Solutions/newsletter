@@ -1,24 +1,9 @@
-{namespace newsletter=Mirko\Newsletter\ViewHelpers}
+<f:layout name="Default"/>
 
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
-
-<newsletter:includeCssFile name="module.css"/>
-
-<f:form name="newsletter" action="newsletter" class="form-horizontal" arguments="{id:configuration.pageId}">
-    <label for="page" class="form-label">
-        <f:translate key="Mode"/>
-    </label>
-    <f:form.select class="form-select" id="page" name="page" options="{pages}" optionValueField="name"
-                   optionLabelField="label" value="{page}"
-                   additionalAttributes="{data-global-event='change', data-action-submit: '$form'}"/>
-
-    <f:if condition="{page} ">
-        <f:render partial="Statistics/{page}" arguments="{_all}"/>
-    </f:if>
-</f:form>
-
-<script type="text/javascript">
-    const moduleUrl = '{f:format.raw(value: moduleUrl)}';
-    const emailShowUrl = '{f:format.raw(value: configuration.emailShowUrl)}';
-</script>
-</html>
+<f:section name="content">
+    <div class="newsletter__content">
+        <f:if condition="{page} ">
+            <f:render partial="Statistics/{page}" arguments="{_all}"/>
+        </f:if>
+    </div>
+</f:section>

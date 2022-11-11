@@ -13,7 +13,7 @@ legend {
 label {
   display: block;
   margin: 1em 0;
-
+  font-size: 14px;
   b {
     //font-weight: normal;
   }
@@ -30,6 +30,7 @@ textarea, select, input[type="text"], input[type="email"], input[type="search"],
   padding: 0.375rem 2.25rem 0.375rem 0.75rem;
   border: 1px solid #ddd;
   max-width: 100%; // ????
+  font-size: 13px;
 }
 
 input[type="checkbox"], input[type="radio"] {
@@ -98,4 +99,8 @@ input[type="image"] {
   -4px -4px 6px 0 rgba(116, 125, 136, 0),
   inset -4px -4px 6px 0 rgba(255, 255, 255, .2),
   inset 4px 4px 6px 0 rgba(49, 49, 49, 0.4);
+}
+
+.form-select {
+  font-size: 13px;
 }

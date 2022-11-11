@@ -52,6 +52,10 @@ class ModuleController extends ActionController
      */
     private NewsletterModuleService $newsletterModuleService;
 
+    private string $page;
+
+    private array $configuration;
+
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
         NewsletterModuleService $newsletterModuleService
@@ -111,6 +115,27 @@ class ModuleController extends ActionController
         $moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue());
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Libraries/Libraries');
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Libraries/Utility');
+
+        $this->page = $this->request->hasArgument('page') ? $this->request->getArgument('page') : array_key_first(
+            $this->subMenus
+        );
+
+        $pageType = '';
+
+        $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
+
+        if (!empty($record['doktype']) && $record['doktype'] === 254) {
+            $pageType = 'folder';
+        } elseif (!empty($record['doktype'])) {
+            $pageType = 'page';
+        }
+
+        $this->configuration = [
+            'pageId' => $this->pageId,
+            'pageType' => $pageType,
+            'emailShowUrl' => UriBuilder::buildFrontendUri($this->pageId, 'Email', 'show'),
+        ];
 
         return $moduleTemplate;
     }
@@ -118,30 +143,13 @@ class ModuleController extends ActionController
     public function newsletterAction(): ResponseInterface
     {
         $moduleTemplate = $this->initializeModuleTemplate($this->request);
-        $page = $this->request->hasArgument('page') ? $this->request->getArgument('page') : array_key_first(
-            $this->subMenus
-        );
-
-        $pageType = '';
-        $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
-        if (!empty($record['doktype']) && $record['doktype'] == 254) {
-            $pageType = 'folder';
-        } elseif (!empty($record['doktype'])) {
-            $pageType = 'page';
-        }
-
-        $configuration = [
-            'pageId' => $this->pageId,
-            'pageType' => $pageType,
-        ];
-
 
         $this->view->assignMultiple(
             [
-                'configuration' => $configuration,
-                'page' => $page,
+                'configuration' => $this->configuration,
+                'page' => $this->page,
                 'pages' => $this->subMenus,
-                'pageData' => $this->newsletterModuleService->getDataForPage($page, $this->pageId),
+                'pageData' => $this->newsletterModuleService->getDataForPage($this->page, $this->pageId),
                 'moduleUrl' => UriBuilder::getInstance()->buildUriFromRoute($this->request->getPluginName())
             ]
         );
@@ -152,31 +160,15 @@ class ModuleController extends ActionController
     public function statisticsAction(): ResponseInterface
     {
         $moduleTemplate = $this->initializeModuleTemplate($this->request);
-        $page = $this->request->hasArgument('page') ? $this->request->getArgument('page') : array_key_first(
-            $this->subMenus
-        );
 
-        $pageType = '';
-        $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
-        if (!empty($record['doktype']) && $record['doktype'] == 254) {
-            $pageType = 'folder';
-        } elseif (!empty($record['doktype'])) {
-            $pageType = 'page';
-        }
-
-        $configuration = [
-            'pageId' => $this->pageId,
-            'pageType' => $pageType,
-            'emailShowUrl' => UriBuilder::buildFrontendUri($this->pageId, 'Email', 'show'),
-        ];
-
+        $this->configuration['emailShowUrl'] = UriBuilder::buildFrontendUri($this->pageId, 'Email', 'show');
 
         $this->view->assignMultiple(
             [
-                'configuration' => $configuration,
-                'page' => $page,
+                'configuration' => $this->configuration,
+                'page' => $this->page,
                 'pages' => $this->subMenus,
-                'pageData' => $this->newsletterModuleService->getDataForPage($page, $this->pageId),
+                'pageData' => $this->newsletterModuleService->getDataForPage($this->page, $this->pageId),
                 'moduleUrl' => UriBuilder::getInstance()->buildUriFromRoute($this->request->getPluginName())
             ]
         );

@@ -2,44 +2,14 @@ define(
     [
         'jquery',
         'TYPO3/CMS/Backend/Notification',
+        'TYPO3/CMS/Newsletter/Libraries/Utility',
         'TYPO3/CMS/Newsletter/Libraries/Grid'
-    ], function ($, Notification, agGrid) {
-        const getTimeZone = () => {
-            const timezoneOffset = new Date().getTimezoneOffset()
-            const offset = Math.abs(timezoneOffset)
-            const offsetOperator = timezoneOffset < 0 ? '+' : '-'
-            const offsetHours = (offset / 60).toString().padStart(2, '0')
-            const offsetMinutes = (offset % 60).toString().padStart(2, '0')
-
-            return `${offsetOperator}${offsetHours}:${offsetMinutes}`
-        }
-        const generateFlashMessageFromResponse = (response) => {
-            response.flashMessages.forEach((message) => {
-                switch (message.severity) {
-                    case -2:
-                        Notification.notice(message.title, message.message);
-                        break;
-                    case -1:
-                        Notification.info(message.title, message.message);
-                        break;
-                    case 0:
-                        Notification.success(message.title, message.message);
-                        break;
-                    case 1:
-                        Notification.warning(message.title, message.message);
-                        break;
-                    case 2:
-                        Notification.error(message.title, message.message);
-                }
-            })
-        }
-
+    ], function ($, Notification, Utility, agGrid) {
         const NewsLetterSending = function () {
             const me = this;
-            const extKey = 'newsletter';
 
             me.getListRecipient = function ($id, gridOptions) {
-                var params = me.getBackendRequest('web', 'tx_newsletter_m1', 'RecipientList', 'listRecipient', {
+                var params = getBackendRequest('web', 'tx_newsletter_m1', 'RecipientList', 'listRecipient', {
                     uidRecipientList: $id,
                     start: 0,
                     limit: 0
@@ -63,24 +33,6 @@ define(
                 });
             };
 
-            me.getBackendRequest = function (mainModuleName, subModuleName, controller, action, parameters) {
-                var parameterPrefix = me.getParameterPrefix(mainModuleName, subModuleName);
-                var params = {};
-
-                parameters['controller'] = controller;
-                parameters['action'] = action;
-
-                $.each(parameters, function (name, value) {
-                    params[parameterPrefix + '[' + name + ']'] = value;
-                });
-
-                return params;
-            };
-
-            me.getParameterPrefix = function (mainModuleName, subModuleName) {
-                return 'tx_' + extKey + '_' + mainModuleName + '_' + extKey + subModuleName.replace(/_/g, '');
-            };
-
             me.createNewsletter = function (button, isTest) {
                 const newNewsletterObj = {};
                 $.each(button.closest("form").serializeArray(), function (i, field) {
@@ -96,7 +48,7 @@ define(
                 });
                 newNewsletterObj['isTest'] = isTest
 
-                const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'create', {
+                const params = getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'create', {
                     newNewsletter: newNewsletterObj,
                 });
 
@@ -109,11 +61,8 @@ define(
                     },
                     success: function (response) {
                         $('.action-button').removeClass('disabled');
-                        try {
-                            generateFlashMessageFromResponse(response);
-                        } catch (e) {
-                            // Notification.error('Error', 'something went wrong');
-                        }
+
+                        generateFlashMessageFromResponse(Notification, response);
                     },
                     error: function (response) {
                         $('.action-button').removeClass('disabled');
