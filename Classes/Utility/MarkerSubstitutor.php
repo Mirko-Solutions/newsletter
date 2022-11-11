@@ -123,7 +123,9 @@ class MarkerSubstitutor
             "###$name###",
             "http://$name",
             "https://$name",
-            urlencode("###$name###"), // If the marker is in a link and the "links spy" option is activated it will be urlencoded
+            urlencode(
+                "###$name###"
+            ), // If the marker is in a link and the "links spy" option is activated it will be urlencoded
             urlencode("http://$name"),
             urlencode("https://$name"),
         ];

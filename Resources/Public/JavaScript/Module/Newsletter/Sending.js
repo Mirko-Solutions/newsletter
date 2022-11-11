@@ -83,19 +83,19 @@ define(
 
             me.createNewsletter = function (button, isTest) {
                 const newNewsletterObj = {};
-                $.each( button.closest("form").serializeArray(), function(i, field) {
+                $.each(button.closest("form").serializeArray(), function (i, field) {
                     if (!field.name.startsWith('tx_newsletter_web_newslettertxnewsletterm1[newsletter]')) {
                         return;
                     }
-                    const name = field.name.replace('tx_newsletter_web_newslettertxnewsletterm1[newsletter][','').replace('[__identity]', '').replace(']', '')
-                    let value =  field.value;
+                    const name = field.name.replace('tx_newsletter_web_newslettertxnewsletterm1[newsletter][', '').replace('[__identity]', '').replace(']', '')
+                    let value = field.value;
                     if (name === 'plannedTime') {
-                        value = value +':00'+ getTimeZone();
+                        value = value + ':00' + getTimeZone();
                     }
                     newNewsletterObj[name] = value;
                 });
-                newNewsletterObj.isTest = isTest
-
+                newNewsletterObj['isTest'] = isTest
+                console.log(newNewsletterObj)
                 const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'create', {
                     newNewsletter: newNewsletterObj,
                 });
@@ -155,11 +155,11 @@ define(
             })
 
             $('#sendTestEmail-action').on('click', function () {
-                sender.createNewsletter($(this), true);
+                sender.createNewsletter($(this), 1);
             })
 
             $('#addToQueue-action').on('click', function () {
-                sender.createNewsletter($(this), false);
+                sender.createNewsletter($(this), 0);
             })
         });
     });

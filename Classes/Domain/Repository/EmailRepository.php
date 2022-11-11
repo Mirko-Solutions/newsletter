@@ -25,7 +25,9 @@ class EmailRepository extends AbstractRepository
 
         $db = Tools::getDatabaseConnection();
         $escaped = $db->fullQuoteStr($authcode, 'tx_newsletter_domain_model_email');
-        $query->statement('SELECT * FROM `tx_newsletter_domain_model_email` WHERE auth_code = ' . $escaped . ' LIMIT 1');
+        $query->statement(
+            'SELECT * FROM `tx_newsletter_domain_model_email` WHERE auth_code = ' . $escaped . ' LIMIT 1'
+        );
 
         return $query->execute()->getFirst();
     }
@@ -46,7 +48,7 @@ class EmailRepository extends AbstractRepository
         $count = $db->exec_SELECTcountRows('*', 'tx_newsletter_domain_model_email', 'newsletter = ' . $uidNewsletter);
         self::$emailCountCache[$uidNewsletter] = $count;
 
-        return (int) $count;
+        return (int)$count;
     }
 
     /**
@@ -85,18 +87,23 @@ class EmailRepository extends AbstractRepository
         // Minimal sanitization before SQL
         $authCode = $db->fullQuoteStr($authCode, 'tx_newsletter_domain_model_email');
 
-        $db->sql_query('UPDATE tx_newsletter_domain_model_email SET open_time = ' . time() . " WHERE open_time = 0 AND auth_code = $authCode");
+        $db->sql_query(
+            'UPDATE tx_newsletter_domain_model_email SET open_time = ' . time(
+            ) . " WHERE open_time = 0 AND auth_code = $authCode"
+        );
         $updateEmailCount = $db->sql_affected_rows();
 
         // Tell the target that he opened the email, but only the first time
         if ($updateEmailCount) {
-            $rs = $db->sql_query("
+            $rs = $db->sql_query(
+                "
             SELECT tx_newsletter_domain_model_newsletter.recipient_list, tx_newsletter_domain_model_email.recipient_address
             FROM tx_newsletter_domain_model_email
             LEFT JOIN tx_newsletter_domain_model_newsletter ON (tx_newsletter_domain_model_email.newsletter = tx_newsletter_domain_model_newsletter.uid)
             LEFT JOIN tx_newsletter_domain_model_recipientlist ON (tx_newsletter_domain_model_newsletter.recipient_list = tx_newsletter_domain_model_recipientlist.uid)
             WHERE tx_newsletter_domain_model_email.auth_code = $authCode AND recipient_list IS NOT NULL
-            LIMIT 1");
+            LIMIT 1"
+            );
 
             if (list($recipientListUid, $emailAddress) = $db->sql_fetch_row($rs)) {
                 $recipientListRepository = $this->objectManager->get(RecipientListRepository::class);

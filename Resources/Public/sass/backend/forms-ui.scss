@@ -65,22 +65,24 @@ input[type="image"] {
   transition: all 0.3s ease;
   position: relative;
   display: inline-block;
-  box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
-  7px 7px 20px 0px rgba(0,0,0,.1),
-  4px 4px 5px 0px rgba(0,0,0,.1);
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+  7px 7px 20px 0px rgba(0, 0, 0, .1),
+  4px 4px 5px 0px rgba(0, 0, 0, .1);
   outline: none;
   background: rgb(255, 255, 255);
   background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   border: none;
 }
+
 .action-button:before {
   height: 0%;
   width: 2px;
 }
+
 .action-button:hover {
   background: rgb(232, 232, 232);
-  box-shadow:  4px 4px 6px 0 rgba(255,255,255,0),
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0),
   -4px -4px 6px 0 rgba(116, 125, 136, 0),
-  inset -4px -4px 6px 0 rgba(255,255,255,.2),
+  inset -4px -4px 6px 0 rgba(255, 255, 255, .2),
   inset 4px 4px 6px 0 rgba(49, 49, 49, 0.4);
 }

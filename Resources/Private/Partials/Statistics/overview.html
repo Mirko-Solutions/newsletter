@@ -1,10 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div id="NewsletterList" class="ag-theme-alpine" style="height: 500px; min-width: 500px"></div>
 
-</body>
-</html>
+<div class="tabs">
+    <div class="tabs__header">
+        <div class="tabs__list">
+            <div class="tabs__item tabs__item_active" data-tab="overview">
+                <span class="tabs__button">overview</span>
+            </div>
+            <div class="tabs__item" data-tab="emails">
+                <span class="tabs__button">emails</span>
+            </div>
+            <div class="tabs__item" data-tab="links">
+                <span class="tabs__button">links</span>
+            </div>
+        </div>
+    </div>
+    <div class="tabs__body">
+        <div class="tab tab_active" data-tab="overview">
+            <p>test</p>
+            <div class="overviewContainer">
+                <div class="overviewStats">
+                    <div class="overviewStats__pieChartContainer">
+                        <canvas id="overviewStatsPieChart" width="250" height="250"></canvas>
+                    </div>
+                    <div class="overviewStats__group">
+                        <div class="overview__recipients-count">
+                            <span class="statsCounter"></span> recipients
+                        </div>
+                        <div class="overview__emailsOpened">
+                            <span class="statsCounter status-green"></span> emails opened
+                        </div>
+                        <div class="overview__emailsBounced">
+                            <span class="statsCounter status-red"></span> emails bounced
+                        </div>
+                        <div class="overview__clickedLinks">
+                            <span class="statsCounter status-yellow"></span> clicked links
+                        </div>
+                        <div class="overview__plannedDate">
+                            Planned to be sent on <span class="statsCounter"></span>
+                        </div>
+                        <div class="overview__startDate">
+                            Started sending on <span class="statsCounter"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="timelineChartContainer">
+                    <canvas id="timelineChart" height="300px"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="tab" data-tab="emails">
+            <div id="EmailList" class="ag-theme-alpine" style="height: 500px; min-width: 500px"></div>
+        </div>
+        <div class="tab" data-tab="links">
+            <div id="LinksList" class="ag-theme-alpine" style="height: 500px; min-width: 500px"></div>
+        </div>
+    </div>
+</div>

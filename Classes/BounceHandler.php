@@ -53,6 +53,7 @@ class BounceHandler
     {
         // Check that th configured fetchmail is actually available
         $fetchmail = Tools::confParam('path_to_fetchmail');
+
         $output = $exitStatus = null;
         exec("$fetchmail --version 2>&1", $output, $exitStatus);
         if ($exitStatus) {
@@ -176,6 +177,7 @@ fetchmail output was:
             $this->email->setBounceTime(new DateTime());
             $emailRepository = $this->objectManager->get(EmailRepository::class);
             $emailRepository->update($this->email);
+            $emailRepository->persistAll();
         }
 
         Tools::getLogger(__CLASS__)->info('Bounced email found with bounce level ' . $bounceLevel);

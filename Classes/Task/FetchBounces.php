@@ -39,6 +39,10 @@ class FetchBounces extends \TYPO3\CMS\Scheduler\Task\AbstractTask
         $bounceAccountRepository = $objectManager->get(BounceAccountRepository::class);
         $bounceAccountCount = count($bounceAccountRepository->findAll());
 
-        return LocalizationUtility::translate('task_fetch_bounce_additional_information', 'newsletter', [$bounceAccountCount]);
+        return LocalizationUtility::translate(
+            'task_fetch_bounce_additional_information',
+            'newsletter',
+            [$bounceAccountCount]
+        );
     }
 }

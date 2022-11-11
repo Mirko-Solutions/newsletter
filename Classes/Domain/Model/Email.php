@@ -5,11 +5,12 @@ namespace Mirko\Newsletter\Domain\Model;
 use DateTime;
 use Mirko\Newsletter\Utility\UriBuilder;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
  * Email
  */
-class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements EmailInterface
+class Email extends AbstractEntity implements EmailInterface
 {
     /**
      * beginTime
@@ -58,7 +59,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
      * newsletter
      *
      * @Extbase\ORM\Lazy
-     * @var \Mirko\Newsletter\Domain\Model\Newsletter
+     * @var Newsletter
      */
     protected $newsletter;
 

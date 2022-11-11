@@ -53,7 +53,7 @@ abstract class UriBuilder
     /**
      * @return \TYPO3\CMS\Backend\Routing\UriBuilder
      */
-    public static function getInstance() : \TYPO3\CMS\Backend\Routing\UriBuilder
+    public static function getInstance(): \TYPO3\CMS\Backend\Routing\UriBuilder
     {
         return GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
     }

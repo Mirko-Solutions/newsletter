@@ -21,7 +21,7 @@ class RecipientListTca extends AbstractFormElement
     {
         $result = [];
         $uid = (int)$this->data['databaseRow']['uid'];
-        if ($uid != 0) {
+        if ($uid !== 0) {
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $recipientListRepository = $objectManager->get(RecipientListRepository::class);
             $recipientList = $recipientListRepository->findByUidInitialized($uid);

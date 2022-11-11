@@ -107,7 +107,10 @@ class Validator
             return $this->getResult();
         }
 
-        $this->infos[] = sprintf($this->lang->getLL('validation_content_url'), '<a target="_blank" href="' . $url . '">' . $url . '</a>');
+        $this->infos[] = sprintf(
+            $this->lang->getLL('validation_content_url'),
+            '<a target="_blank" href="' . $url . '">' . $url . '</a>'
+        );
 
         $this->errorTooShort();
         $this->errorOops();
@@ -181,7 +184,10 @@ class Validator
      */
     private function errorPageBeingGenerated()
     {
-        if (mb_strpos($this->content, 'Page is being generated.') && mb_strpos($this->content, 'If this message does not disappear within')) {
+        if (mb_strpos($this->content, 'Page is being generated.') && mb_strpos(
+                $this->content,
+                'If this message does not disappear within'
+            )) {
             $this->errors[] = $this->lang->getLL('validation_mail_being_generated');
         }
     }
@@ -232,8 +238,12 @@ class Validator
     {
         preg_match_all('|<link rel="stylesheet" type="text/css" href="([^"]+)"[^>]+>|Ui', $this->content, $urls);
         foreach ($urls[1] as $i => $url) {
-            $this->content = str_replace($urls[0][$i], "<!-- fetched URL: $url -->
-<style type=\"text/css\">\n<!--\n" . $this->getURL($url) . "\n-->\n</style>", $this->content);
+            $this->content = str_replace(
+                $urls[0][$i],
+                "<!-- fetched URL: $url -->
+<style type=\"text/css\">\n<!--\n" . $this->getURL($url) . "\n-->\n</style>",
+                $this->content
+            );
         }
 
         if (count($urls[1])) {
@@ -246,7 +256,13 @@ class Validator
      */
     private function warningJavascript()
     {
-        $this->content = preg_replace('|<script[^>]*type="text/javascript"[^>]*>[^<]*</script>|i', '', $this->content, -1, $count);
+        $this->content = preg_replace(
+            '|<script[^>]*type="text/javascript"[^>]*>[^<]*</script>|i',
+            '',
+            $this->content,
+            -1,
+            $count
+        );
         if ($count) {
             $this->warnings[] = $this->lang->getLL('validation_mail_contains_javascript');
         }
@@ -257,7 +273,10 @@ class Validator
      */
     private function errorImageInCSS()
     {
-        if (preg_match('|background-image: url\([^\)]+\)|', $this->content) || preg_match('|list-style-image: url\([^\)]+\)|', $this->content)) {
+        if (preg_match('|background-image: url\([^\)]+\)|', $this->content) || preg_match(
+                '|list-style-image: url\([^\)]+\)|',
+                $this->content
+            )) {
             $this->errors[] = $this->lang->getLL('validation_mail_contains_css_images');
         }
     }
@@ -296,7 +315,10 @@ class Validator
                 }
             }
             foreach ($forbiddenCssPropertiesWarnings as $property) {
-                $this->warnings[] = sprintf($this->lang->getLL('validation_mail_contains_css_some_property'), $property);
+                $this->warnings[] = sprintf(
+                    $this->lang->getLL('validation_mail_contains_css_some_property'),
+                    $property
+                );
             }
         }
     }

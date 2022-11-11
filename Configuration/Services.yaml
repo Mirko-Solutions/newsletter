@@ -6,7 +6,7 @@ services:
 
   Mirko\Newsletter\:
     resource: '../Classes/*'
-    exclude: ['../Classes/Domain/Model/*', '../Classes/Tca/*']
+    exclude: [ '../Classes/Domain/Model/*', '../Classes/Tca/*' ]
 
   Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider:
     arguments:

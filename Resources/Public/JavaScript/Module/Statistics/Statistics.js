@@ -32,6 +32,8 @@ define(
             let selectedNewsletter = {};
             let overviewChart;
             let timeLineChart;
+            let emailStatsTable;
+            let linksStatsTable;
 
             me.getNewsletterList = (gridOptions) => {
                 const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'list');
@@ -128,58 +130,6 @@ define(
                     limit: 500,
                 });
 
-                const eGridDiv = document.getElementById("EmailList");
-                const gridOptions = {
-                    columnDefs: [
-                        {
-                            headerName: 'id',
-                            field: "__identity"
-                        },
-                        {
-                            headerName: 'Recipient address',
-                            field: "recipientAddress"
-                        },
-                        {
-                            headerName: 'Sent',
-                            field: "beginTime",
-                            cellRenderer: (data) => {
-                                return data.value ? (new Date(data.value)).toLocaleDateString() : '';
-                            }
-                        },
-                        {
-                            headerName: 'Open time',
-                            field: "openTime",
-                            cellRenderer: (data) => {
-                                return data.value ? (new Date(data.value)).toLocaleDateString() : '';
-                            }
-                        },
-                        {
-                            headerName: 'Bounce time',
-                            field: "openTime",
-                            cellRenderer: (data) => {
-                                return data.value ? (new Date(data.value)).toLocaleDateString() : '';
-                            }
-                        },
-                        {
-                            headerName: 'Unsubscribed',
-                            field: "unsubscribed"
-                        },
-                        {
-                            headerName: "View",
-                            cellRenderer: (data) => {
-                                return '<a href="' + emailShowUrl + ' \'&type=1342671779&injectOpenSpy=0&injectLinksSpy=0&c=' + data.data['authCode'] + '">view</a>';
-                            }
-                        },
-                    ],
-
-                    defaultColDef: {sortable: true, filter: true},
-                    pagination: true,
-                    // sets 10 rows per page (default is 100)
-                    paginationPageSize: 10,
-                    animateRows: true,
-                };
-                new agGrid.Grid(eGridDiv, gridOptions);
-
                 $.ajax({
                     url: moduleUrl,
                     data: params,
@@ -187,7 +137,7 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        gridOptions.api.setRowData(response.data);
+                        me.emailStatsTable.api.setRowData(response.data);
                     },
                     error: function (response) {
                         const r = $.parseJSON(response.responseText);
@@ -206,39 +156,6 @@ define(
                     limit: 500,
                 });
 
-                const eGridDiv = document.getElementById("LinksList");
-                const gridOptions = {
-                    columnDefs: [
-                        {
-                            headerName: 'id',
-                            field: "__identity"
-                        },
-                        {
-                            headerName: '% of opened',
-                            field: "openedPercentage",
-                            cellRenderer: (data) => {
-                                return data.value + ' %';
-                            }
-
-                        },
-                        {
-                            headerName: '# of opened',
-                            field: "openedCount"
-                        },
-                        {
-                            headerName: 'url',
-                            field: "url"
-                        },
-                    ],
-
-                    defaultColDef: {sortable: true, filter: true},
-                    pagination: true,
-                    // sets 10 rows per page (default is 100)
-                    paginationPageSize: 10,
-                    animateRows: true,
-                };
-                new agGrid.Grid(eGridDiv, gridOptions);
-
                 $.ajax({
                     url: moduleUrl,
                     data: params,
@@ -246,7 +163,7 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        gridOptions.api.setRowData(response.data);
+                        me.linksStatsTable.api.setRowData(response.data);
                     },
                     error: function (response) {
                         const r = $.parseJSON(response.responseText);
@@ -311,7 +228,8 @@ define(
 
             const eGridDiv = document.getElementById("NewsletterList");
             new agGrid.Grid(eGridDiv, gridOptions);
-
+            statistics.linksStatsTable = loadLinksStatsTables();
+            statistics.emailStatsTable = loadEmailStatsTables();
             statistics.getNewsletterList(gridOptions);
             statistics.overviewChart = loadOverviewStatsChart();
             statistics.timeLineChart = loadTimelineStatsChart();
@@ -333,6 +251,99 @@ define(
             });
         });
 
+        function loadLinksStatsTables() {
+            const eGridDiv = document.getElementById("LinksList");
+            const gridOptions = {
+                columnDefs: [
+                    {
+                        headerName: 'id',
+                        field: "__identity"
+                    },
+                    {
+                        headerName: '% of opened',
+                        field: "openedPercentage",
+                        cellRenderer: (data) => {
+                            return data.value + ' %';
+                        }
+
+                    },
+                    {
+                        headerName: '# of opened',
+                        field: "openedCount"
+                    },
+                    {
+                        headerName: 'url',
+                        field: "url"
+                    },
+                ],
+
+                defaultColDef: {sortable: true, filter: true},
+                pagination: true,
+                // sets 10 rows per page (default is 100)
+                paginationPageSize: 10,
+                animateRows: true,
+            };
+            new agGrid.Grid(eGridDiv, gridOptions);
+
+            return gridOptions;
+        }
+
+        function loadEmailStatsTables() {
+            const eGridDiv = document.getElementById("EmailList");
+            const gridOptions = {
+                columnDefs: [
+                    {
+                        headerName: 'id',
+                        field: "__identity"
+                    },
+                    {
+                        headerName: 'Recipient address',
+                        field: "recipientAddress"
+                    },
+                    {
+                        headerName: 'Sent',
+                        field: "beginTime",
+                        cellRenderer: (data) => {
+                            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
+                        }
+                    },
+                    {
+                        headerName: 'Open time',
+                        field: "openTime",
+                        cellRenderer: (data) => {
+                            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
+                        }
+                    },
+                    {
+                        headerName: 'Bounce time',
+                        field: "openTime",
+                        cellRenderer: (data) => {
+                            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
+                        }
+                    },
+                    {
+                        headerName: 'Unsubscribed',
+                        field: "unsubscribed"
+                    },
+                    {
+                        headerName: "View",
+                        cellRenderer: (data) => {
+                            return '<a href="' + emailShowUrl + ' \'&type=1342671779&injectOpenSpy=0&injectLinksSpy=0&c=' + data.data['authCode'] + '">view</a>';
+                        }
+                    },
+                ],
+
+                defaultColDef: {sortable: true, filter: true},
+                pagination: true,
+                // sets 10 rows per page (default is 100)
+                paginationPageSize: 10,
+                animateRows: true,
+            };
+            new agGrid.Grid(eGridDiv, gridOptions);
+
+            return gridOptions;
+        }
+
         function updatePieChartData(chart, label, data) {
             chart.data.datasets.pop();
             chart.data.datasets.push({
@@ -350,8 +361,9 @@ define(
         }
 
         function updateTimeLineChartData(chart, stats) {
-            chart.data.labels.pop();
-            chart.data.datasets.pop();
+            chart.data.labels = [];
+            chart.data.datasets = [];
+            console.log(chart)
             const emailNotSentCount = [];
             const emailSentCount = [];
             const emailOpenedCount = [];

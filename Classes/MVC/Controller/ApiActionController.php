@@ -15,9 +15,9 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class ApiActionController extends ActionController
 {
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface
+     * @var PersistenceManagerInterface
      */
-    protected $persistenceManager;
+    protected PersistenceManagerInterface $persistenceManager;
 
     /**
      * Injects the PersistenceManager.
@@ -51,7 +51,10 @@ class ApiActionController extends ActionController
 
         if ($this->view instanceof JsonView) {
             $this->view->setVariablesToRender(['flashMessages', 'error', 'success']);
-            $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+            $this->view->assign(
+                'flashMessages',
+                $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
             $this->view->assign('error', $message);
             $this->view->assign('success', false);
         }
@@ -65,7 +68,7 @@ class ApiActionController extends ActionController
      *
      * @return string
      */
-    protected function translate($key, array $args = [])
+    protected function translate(string $key, array $args = []): string
     {
         return LocalizationUtility::translate($key, 'newsletter', $args);
     }
@@ -73,8 +76,11 @@ class ApiActionController extends ActionController
     /**
      * Flush flashMessages into view
      */
-    protected function flushFlashMessages()
+    protected function flushFlashMessages(): void
     {
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 }

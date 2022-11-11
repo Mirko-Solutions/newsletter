@@ -231,6 +231,6 @@ class Uri
 
     public static function isAbsolute($uri)
     {
-        return (bool) preg_match(self::getPattern(), $uri);
+        return (bool)preg_match(self::getPattern(), $uri);
     }
 }

@@ -7,6 +7,7 @@ use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -50,10 +51,9 @@ class Tools
     {
         // Look for a config in the module TS first.
         static $configTS;
-        if (!is_array($configTS) && isset($GLOBALS['TYPO3_DB'])) {
-            $beConfManager = self::getObjectManager()->get(BackendConfigurationManager::class);
-            $configTS = $beConfManager->getTypoScriptSetup();
-            $configTS = $configTS['module.']['tx_newsletter.']['config.'];
+        if (!is_array($configTS)) {
+            $configTS = $backendConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtensionConfiguration::class)
+                ->get('newsletter');
         }
 
         if (isset($configTS[$key])) {
@@ -133,6 +133,7 @@ class Tools
         $beginTime = new DateTime();
         $newsletter->setBeginTime($beginTime);
         $this->newsletterRepository->update($newsletter);
+        $this->emailRepository->persistAll();
 
         $emailSpooledCount = 0;
         $recipientList = $newsletter->getRecipientList();
@@ -163,6 +164,7 @@ class Tools
         // Unlock the newsletter by setting its end_time
         $newsletter->setEndTime(new DateTime());
         $this->newsletterRepository->update($newsletter);
+        $this->emailRepository->persistAll();
     }
 
     /**
@@ -226,15 +228,16 @@ class Tools
             // Mark it as started sending
             $email->setBeginTime(new DateTime());
             $this->emailRepository->update($email);
-
+            $this->emailRepository->persistAll();
             // Send the email
             $mailers[$language]->send($email);
 
             // Mark it as sent already
             $email->setEndTime(new DateTime());
             $this->emailRepository->update($email);
-
+            $this->emailRepository->persistAll();
             ++$emailSentCount;
+            sleep(2);
         }
 
         // Log numbers

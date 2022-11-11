@@ -60,18 +60,12 @@ class ModuleContainerViewHelper extends AbstractViewHelper
         $this->pageRenderer->loadRequireJs();
 
         $extPath = ExtensionManagementUtility::extPath('newsletter');
-        $extRelPath = '/' . mb_substr($extPath, mb_strlen(Environment::getPublicPath() . '/'));
         $this->renderChildren();
 
-//        $this->pageRenderer->enableCompressJavaScript();
-//        $this->pageRenderer->enableCompressCss();
-//        $this->pageRenderer->enableConcatenateCss();
-//        $this->pageRenderer->enableConcatenateJavascript();
-
-        $this->pageRenderer->disableCompressCss();
-        $this->pageRenderer->disableCompressJavascript();
-        $this->pageRenderer->disableConcatenateCss();
-        $this->pageRenderer->disableConcatenateJavascript();
+        $this->pageRenderer->enableCompressJavaScript();
+        $this->pageRenderer->enableCompressCss();
+        $this->pageRenderer->enableConcatenateCss();
+        $this->pageRenderer->enableConcatenateJavascript();
 
         $doc->setTitle($pageTitle);
         $doc->setContent($this->pageRenderer->getBodyContent());

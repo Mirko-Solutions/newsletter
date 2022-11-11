@@ -351,6 +351,7 @@ class Mailer
         $arguments['l'] = $authCode;
         if ($isPlainText) {
             $arguments['p'] = 1;
+            $arguments['type'] = 1342671779;
         }
         $newUrl = UriBuilder::buildFrontendUri($email->getPid(), 'Link', 'clicked', $arguments);
 

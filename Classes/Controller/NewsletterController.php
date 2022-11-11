@@ -3,14 +3,14 @@
 namespace Mirko\Newsletter\Controller;
 
 use DateTime;
-use Mirko\Newsletter\Domain\Model\Newsletter;
-use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
-use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
-use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use Mirko\Newsletter\Tools;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter;
 
@@ -24,14 +24,14 @@ class NewsletterController extends ApiActionController
      *
      * @var NewsletterRepository
      */
-    protected $newsletterRepository;
+    protected NewsletterRepository $newsletterRepository;
 
     /**
      * bounceAccountRepository
      *
      * @var BounceAccountRepository
      */
-    protected $bounceAccountRepository;
+    protected BounceAccountRepository $bounceAccountRepository;
 
     /**
      * injectNewsletterRepository
@@ -58,7 +58,7 @@ class NewsletterController extends ApiActionController
      *
      * @var int
      */
-    protected $pid;
+    protected int $pid = 0;
 
     /**
      * Initializes the current action
@@ -94,7 +94,7 @@ class NewsletterController extends ApiActionController
         $this->addFlashMessage(
             'Loaded Newsletters from Server side.',
             'Newsletters loaded successfully',
-            FlashMessage::NOTICE
+            AbstractMessage::NOTICE
         );
 
         $this->view->assign('total', $newsletters->count());
@@ -112,9 +112,9 @@ class NewsletterController extends ApiActionController
     {
         $newsletter = $this->newsletterRepository->getLatest($this->pid);
         if (!$newsletter) {
-            $newsletter = $this->objectManager->get(Newsletter::class);
+            $newsletter = GeneralUtility::makeInstance(Newsletter::class);
             $newsletter->setPid($this->pid);
-            $newsletter->setUid(-1); // We set a fake uid so ExtJS will see it as a real record
+            $newsletter->setUid(-1);
             // Set the first Bounce Account found if any
             $newsletter->setBounceAccount($this->bounceAccountRepository->findFirst());
         }
@@ -152,12 +152,12 @@ class NewsletterController extends ApiActionController
     /**
      * Creates a new Newsletter and forwards to the list action.
      *
-     * @param Newsletter|null $newNewsletter a fresh Newsletter object which has not yet been added to the repository
+     * @param Newsletter $newNewsletter a fresh Newsletter object which has not yet been added to the repository
      *
      * @throws IllegalObjectTypeException
      * @Extbase\IgnoreValidation("newNewsletter")
      */
-    public function createAction(Newsletter $newNewsletter = null)
+    public function createAction(Newsletter $newNewsletter)
     {
         $limitTestRecipientCount = 10; // This is a low limit, technically, but it does not make sense to test a newsletter for more people than that anyway
         $recipientList = $newNewsletter->getRecipientList();
@@ -170,7 +170,7 @@ class NewsletterController extends ApiActionController
             $this->addFlashMessage(
                 $this->translate('flashmessage_test_maximum_recipients', [$count, $limitTestRecipientCount]),
                 $this->translate('flashmessage_test_maximum_recipients_title'),
-                FlashMessage::ERROR
+                AbstractMessage::ERROR
             );
             $this->view->assign('success', false);
         } // If we attempt to create a newsletter which contains errors, abort and don't save in DB
@@ -178,7 +178,7 @@ class NewsletterController extends ApiActionController
             $this->addFlashMessage(
                 'The newsletter HTML content does not validate. See tab "Newsletter > Status" for details.',
                 $this->translate('flashmessage_newsletter_invalid'),
-                FlashMessage::ERROR
+                AbstractMessage::ERROR
             );
             $this->view->assign('success', false);
         } else {
@@ -201,21 +201,19 @@ class NewsletterController extends ApiActionController
 
                     $this->addFlashMessage(
                         $this->translate('flashmessage_test_newsletter_sent'),
-                        $this->translate('flashmessage_test_newsletter_sent_title'),
-                        FlashMessage::OK
+                        $this->translate('flashmessage_test_newsletter_sent_title')
                     );
                 } catch (\Exception $exception) {
                     $this->addFlashMessage(
                         $exception->getMessage(),
                         $this->translate('flashmessage_test_newsletter_error'),
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                     );
                 }
             } else {
                 $this->addFlashMessage(
                     $this->translate('flashmessage_newsletter_queued'),
-                    $this->translate('flashmessage_newsletter_queued_title'),
-                    FlashMessage::OK
+                    $this->translate('flashmessage_newsletter_queued_title')
                 );
             }
         }
@@ -236,7 +234,7 @@ class NewsletterController extends ApiActionController
      *
      * @param int $uidNewsletter
      */
-    public function statisticsAction($uidNewsletter)
+    public function statisticsAction(int $uidNewsletter)
     {
         $newsletter = $this->newsletterRepository->findByUid($uidNewsletter);
 
@@ -262,7 +260,7 @@ class NewsletterController extends ApiActionController
      *
      * @return array
      */
-    public static function resolveJsonViewConfiguration()
+    public static function resolveJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,
@@ -293,7 +291,7 @@ class NewsletterController extends ApiActionController
         ];
     }
 
-    public static function resolvePlannedJsonViewConfiguration()
+    public static function resolvePlannedJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,

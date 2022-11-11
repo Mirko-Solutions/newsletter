@@ -202,7 +202,7 @@ abstract class RecipientList extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
      *
      * @return array
      */
-    public function getExtract($limit = 30)
+    public function getExtract(int $limit = 30)
     {
         $out = [];
         if ($this->getError()) {
@@ -260,8 +260,9 @@ abstract class RecipientList extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
      * normal => field which can be used within newsletter
      *
      * @param string $fieldname
+     * @return string
      */
-    private function getFieldTitle($fieldname)
+    private function getFieldTitle(string $fieldname)
     {
         $knownFields = ['email', 'plain_only', 'L', 'sender_email', 'sender_name', 'replyto_email', 'replyto_name'];
 

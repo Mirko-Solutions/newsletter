@@ -19,7 +19,7 @@ class BounceAccountDataProvider implements FormDataProviderInterface
      */
     public function addData(array $result)
     {
-        if ($result['tableName'] == 'tx_newsletter_domain_model_bounceaccount') {
+        if ($result['tableName'] === 'tx_newsletter_domain_model_bounceaccount') {
             $encryptedFields = ['password', 'config'];
             foreach ($encryptedFields as $field) {
                 $result['databaseRow'][$field] = $this->getDecryptedFieldValue($field, $result['databaseRow'][$field]);

@@ -4,11 +4,12 @@ namespace Mirko\Newsletter\Domain\Model;
 
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
  * BounceAccount
  */
-class BounceAccount extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class BounceAccount extends AbstractEntity
 {
     /**
      * email

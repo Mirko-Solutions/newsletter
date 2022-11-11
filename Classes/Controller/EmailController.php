@@ -2,19 +2,19 @@
 
 namespace Mirko\Newsletter\Controller;
 
+use Mirko\Newsletter\Tools;
+use TYPO3\CMS\Core\Mail\MailMessage;
 use Mirko\Newsletter\Domain\Model\Email;
+use Mirko\Newsletter\Utility\EmailParser;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Mirko\Newsletter\Domain\Model\Newsletter;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use Mirko\Newsletter\Domain\Model\RecipientList;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\MVC\Controller\ApiActionController;
-use Mirko\Newsletter\Tools;
-use Mirko\Newsletter\Utility\EmailParser;
-use TYPO3\CMS\Core\Mail\MailMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Controller for the Email object
@@ -26,7 +26,7 @@ class EmailController extends ApiActionController
      *
      * @var EmailRepository
      */
-    protected $emailRepository;
+    protected EmailRepository $emailRepository;
 
     /**
      * injectEmailRepository
@@ -45,9 +45,9 @@ class EmailController extends ApiActionController
      * @param int $start
      * @param int $limit
      *
-     * @return string The rendered list view
+     * return The rendered list view
      */
-    public function listAction($uidNewsletter, $start, $limit)
+    public function listAction(int $uidNewsletter, int $start, int $limit)
     {
         $emails = $this->emailRepository->findAllByNewsletter($uidNewsletter, $start, $limit);
 
@@ -63,14 +63,14 @@ class EmailController extends ApiActionController
         $this->addFlashMessage(
             'Loaded all Emails from Server side.',
             'Emails loaded successfully',
-            FlashMessage::NOTICE
+            AbstractMessage::NOTICE
         );
         $this->view->assign('total', $this->emailRepository->getCount($uidNewsletter));
         $this->view->assign('data', $emails);
         $this->view->assign('success', true);
         $this->view->assign(
             'flashMessages',
-            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
         );
     }
 
@@ -119,10 +119,8 @@ class EmailController extends ApiActionController
             'L',
         ];
         foreach ($otherArgs as $arg) {
-            if (!isset($args[$arg])) {
-                if (isset($_GET[$arg])) {
-                    $args[$arg] = $_GET[$arg];
-                }
+            if (!isset($args[$arg]) && isset($_GET[$arg])) {
+                $args[$arg] = $_GET[$arg];
             }
         }
 
@@ -131,22 +129,20 @@ class EmailController extends ApiActionController
         if ($isPreview) {
             // Create a fake newsletter and configure it with given parameters
             /** @var Newsletter $newsletter */
-            $newsletter = $this->objectManager->get(Newsletter::class);
+            $newsletter = GeneralUtility::makeInstance(Newsletter::class);
             $newsletter->setPid(@$args['pid']);
             $newsletter->setUidRecipientList(@$args['uidRecipientList']);
 
-            if ($newsletter) {
-                // Find the recipient
-                $recipientList = $newsletter->getRecipientList();
-                $recipientList->init();
-                while ($record = $recipientList->getRecipient()) {
-                    // Got him
-                    if ($record['email'] == $args['email']) {
-                        // Build a fake email
-                        $email = $this->objectManager->get(Email::class);
-                        $email->setRecipientAddress($record['email']);
-                        $email->setRecipientData($record);
-                    }
+            // Find the recipient
+            $recipientList = $newsletter->getRecipientList();
+            $recipientList->init();
+            while ($record = $recipientList->getRecipient()) {
+                // Got him
+                if ($record['email'] === $args['email']) {
+                    // Build a fake email
+                    $email = GeneralUtility::makeInstance(Email::class);
+                    $email->setRecipientAddress($record['email']);
+                    $email->setRecipientData($record);
                 }
             }
         } else {
@@ -206,10 +202,8 @@ class EmailController extends ApiActionController
         $args = $this->request->getArguments();
 
         // For compatibility with old links
-        if (!isset($args['c'])) {
-            if (isset($_GET['c'])) {
-                $args['c'] = $_GET['c'];
-            }
+        if (!isset($args['c']) && isset($_GET['c'])) {
+            $args['c'] = $_GET['c'];
         }
 
         // If we have an authentification code, look for the original email which was already sent
@@ -219,6 +213,7 @@ class EmailController extends ApiActionController
                 // Mark the email as requested to be unsubscribed
                 $email->setUnsubscribed(true);
                 $this->emailRepository->update($email);
+                $this->emailRepository->persistAll();
                 $recipientAddress = $email->getRecipientAddress();
 
                 $newsletter = $email->getNewsletter();
@@ -238,7 +233,6 @@ class EmailController extends ApiActionController
         if (is_numeric($redirect)) {
             $uriBuilder = $this->controllerContext->getUriBuilder();
             $uriBuilder->reset();
-            $uriBuilder->setUseCacheHash(false);
             $uriBuilder->setTargetPageUid((int)$redirect);
             // Append the recipient address just in case you want to do something with it at the destination
             $uriBuilder->setArguments(

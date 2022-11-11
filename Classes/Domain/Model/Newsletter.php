@@ -3,25 +3,26 @@
 namespace Mirko\Newsletter\Domain\Model;
 
 use DateTime;
-use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
-use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
-use Mirko\Newsletter\Domain\Repository\EmailRepository;
-use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
-use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use DateTimeInterface;
 use Mirko\Newsletter\Tools;
-use Mirko\Newsletter\Utility\Validator;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
+use TYPO3\CMS\Core\Core\Environment;
+use Mirko\Newsletter\Utility\Validator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
+use Mirko\Newsletter\Domain\Repository\EmailRepository;
+use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
+use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Newsletter represents a page to be sent to a specific time to several recipients.
  */
-class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class Newsletter extends AbstractEntity
 {
     /**
      * When the newsletter will start sending emails
@@ -121,8 +122,8 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * bounceAccount
      *
-     * @Extbase\ORM\Lazy 
-     * @var \Mirko\Newsletter\Domain\Model\BounceAccount
+     * @Extbase\ORM\Lazy
+     * @var BounceAccount
      */
     protected $bounceAccount;
 
@@ -136,8 +137,8 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * recipientList
      *
-     * @Extbase\ORM\Lazy 
-     * @var \Mirko\Newsletter\Domain\Model\RecipientList
+     * @Extbase\ORM\Lazy
+     * @var RecipientList
      */
     protected $recipientList;
 
@@ -149,7 +150,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $uidRecipientList;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -170,7 +171,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the ObjectManager
      *
-     * @return \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @return ObjectManagerInterface
      */
     protected function getObjectManager()
     {
@@ -395,7 +396,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
         // Return the senderName defined in extension configuration
         $sender = Tools::confParam('sender_name');
-        if ($sender == 'user') {
+        if ($sender === 'user') {
             // Use the page-owner as user
             $rs = $db->sql_query(
                 "SELECT realName
@@ -404,7 +405,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 							  WHERE pages.uid = $this->pid"
             );
 
-            list($sender) = $db->sql_fetch_row($rs);
+            [$sender] = $db->sql_fetch_row($rs);
             if ($sender) {
                 return $sender;
             }
@@ -449,7 +450,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
         /* Anything in typo3_conf_vars? */
         $email = Tools::confParam('sender_email');
-        if ($email == 'user') {
+        if ($email === 'user') {
             /* Use the page-owner as user */
             $rs = $db->sql_query(
                 "SELECT email
@@ -458,7 +459,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 			WHERE p.uid = $this->pid"
             );
 
-            list($email) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
+            [$email] = Tools::getDatabaseConnection()->sql_fetch_row($rs);
             if (GeneralUtility::validEmail($email)) {
                 return $email;
             }
@@ -467,11 +468,6 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         /* Maybe it was a hardcoded email address? */
         if (GeneralUtility::validEmail($email)) {
             return $email;
-        }
-
-        /* If this did not yield an email address, try to use the system-user */
-        if (ini_get('safe_mode') || Environment::isWindows()) {
-            return 'no-reply@' . $_SERVER['HTTP_HOST'];
         }
 
         return trim(exec('whoami')) . '@' . trim(exec('hostname'));
@@ -532,9 +528,9 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         }
 
         // Return the replytoEmail defined in extension configuration
-        $replytoEmail = Tools::confParam('replyto_email');
-        if (GeneralUtility::validEmail($replytoEmail)) {
-            return $replytoEmail;
+        $replyToEmail = Tools::confParam('replyto_email');
+        if (GeneralUtility::validEmail($replyToEmail)) {
+            return $replyToEmail;
         }
 
         // Return empty
@@ -765,13 +761,13 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function scheduleNextNewsletter()
     {
         $plannedTime = $this->getPlannedTime();
-        list($year, $month, $day, $hour, $minute) = explode('-', date('Y-n-j-G-i', $plannedTime->format('U')));
+        [$year, $month, $day, $hour, $minute] = explode('-', date('Y-n-j-G-i', $plannedTime->format('U')));
 
         switch ($this->getRepetition()) {
             case 0:
                 return;
             case 1:
-                $day += 1;
+                ++$day;
                 break;
             case 2:
                 $day += 7;
@@ -780,7 +776,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
                 $day += 14;
                 break;
             case 4:
-                $month += 1;
+                ++$month;
                 break;
             case 5:
                 $month += 3;
@@ -789,7 +785,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
                 $month += 6;
                 break;
             case 7:
-                $year += 1;
+                ++$year;
                 break;
         }
         $newPlannedTime = mktime($hour, $minute, 0, $month, $day, $year);
@@ -923,7 +919,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         }
 
         if ($plannedTime && !$beginTime) {
-            return sprintf($LANG->getLL('newsletter_status_planned'), $plannedTime->format(DateTime::ISO8601));
+            return sprintf($LANG->getLL('newsletter_status_planned'), $plannedTime->format(DateTimeInterface::ATOM));
         }
 
         if ($beginTime && !$endTime) {
@@ -942,7 +938,7 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
                 );
             }
 
-            return sprintf($LANG->getLL('newsletter_status_was_sent'), $endTime->format(DateTime::ISO8601));
+            return sprintf($LANG->getLL('newsletter_status_was_sent'), $endTime->format(DateTimeInterface::ATOM));
         }
 
         return 'unexpected status';
@@ -956,8 +952,6 @@ class Newsletter extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function getStatistics()
     {
         $newsletterRepository = $this->getObjectManager()->get(NewsletterRepository::class);
-        $stats = $newsletterRepository->getStatistics($this);
-
-        return $stats;
+        return $newsletterRepository->getStatistics($this);
     }
 }

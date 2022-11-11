@@ -2,11 +2,11 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
-use Mirko\Newsletter\MVC\Controller\ApiActionController;
-use Symfony\Component\Routing\Annotation\Route;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 
 /**
  * Controller for the RecipientList object
@@ -18,7 +18,7 @@ class RecipientListController extends ApiActionController
      *
      * @var RecipientListRepository
      */
-    protected $recipientListRepository;
+    protected RecipientListRepository $recipientListRepository;
 
     /**
      * injectRecipientListRepository
@@ -56,7 +56,7 @@ class RecipientListController extends ApiActionController
         $this->addFlashMessage(
             'Loaded RecipientLists from Server side.',
             'RecipientLists loaded successfully',
-            FlashMessage::NOTICE
+            AbstractMessage::NOTICE
         );
 
         $this->view->assign('total', $recipientLists->count());
@@ -64,7 +64,7 @@ class RecipientListController extends ApiActionController
         $this->view->assign('success', true);
         $this->view->assign(
             'flashMessages',
-            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
         );
     }
 
@@ -75,7 +75,7 @@ class RecipientListController extends ApiActionController
      * @param int $start
      * @param int $limit
      */
-    public function listRecipientAction($uidRecipientList, $start, $limit)
+    public function listRecipientAction(int $uidRecipientList, int $start, int $limit)
     {
         $recipientLists = $this->recipientListRepository->findByUidInitialized($uidRecipientList);
 
@@ -108,7 +108,7 @@ class RecipientListController extends ApiActionController
         $this->addFlashMessage(
             'Loaded Recipients from Server side.',
             'Recipients loaded successfully',
-            FlashMessage::NOTICE
+            AbstractMessage::NOTICE
         );
 
         $this->view->assign('metaData', $metaData);
@@ -117,7 +117,7 @@ class RecipientListController extends ApiActionController
         $this->view->assign('success', true);
         $this->view->assign(
             'flashMessages',
-            $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
         );
         $this->view->setVariablesToRender(['metaData', 'total', 'data', 'success', 'flashMessages']);
     }
@@ -139,7 +139,7 @@ class RecipientListController extends ApiActionController
         }
 
         $recipientList = $this->recipientListRepository->findByUidInitialized($uidRecipientList);
-        if (GeneralUtility::stdAuthCode($recipientList->_getCleanProperties()) != $authCode) {
+        if (GeneralUtility::stdAuthCode($recipientList->_getCleanProperties()) !== $authCode) {
             $this->response->setStatus(401);
 
             return 'not authorized !';
@@ -178,7 +178,7 @@ class RecipientListController extends ApiActionController
      *
      * @return array
      */
-    public static function resolveJsonViewConfiguration()
+    public static function resolveJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,

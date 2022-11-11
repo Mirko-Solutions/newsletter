@@ -6,10 +6,10 @@ if (!defined('TYPO3_MODE')) {
 
 // Includes typoscript files
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:newsletter/Configuration/TypoScript/setup.txt">'
+    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:newsletter/Configuration/TypoScript/setup.typoscript">'
 );
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptConstants(
-    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:newsletter/Configuration/TypoScript/constants.txt">'
+    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:newsletter/Configuration/TypoScript/constants.typoscript">'
 );
 
 // Register keys for CLI

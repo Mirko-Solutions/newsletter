@@ -12,7 +12,7 @@ class ApiNewsletterMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->hasHeader('content-type') && $request->getHeader('content-type')[0] == 'json') {
+        if ($request->hasHeader('content-type') && $request->getHeader('content-type')[0] === 'json') {
             $request = $request->withAttribute('jsonRequest', true);
         }
 

@@ -2,9 +2,9 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
-use Mirko\Newsletter\MVC\Controller\ApiActionController;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 
 /**
  * Controller for the BounceAccount object
@@ -16,10 +16,10 @@ class BounceAccountController extends ApiActionController
      *
      * @var BounceAccountRepository
      */
-    protected $bounceAccountRepository;
+    protected BounceAccountRepository $bounceAccountRepository;
 
     /**
-     * injectBounceAccounRepository
+     * injectBounceAccountRepository
      *
      * @param BounceAccountRepository $bounceAccountRepository
      */
@@ -31,7 +31,7 @@ class BounceAccountController extends ApiActionController
     /**
      * Displays all BounceAccounts
      *
-     * @return string The rendered list view
+     * return The rendered list view
      */
     public function listAction()
     {
@@ -64,7 +64,7 @@ class BounceAccountController extends ApiActionController
      *
      * @return array
      */
-    public static function resolveJsonViewConfiguration()
+    public static function resolveJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,
