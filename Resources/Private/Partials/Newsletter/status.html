@@ -16,7 +16,9 @@
             <f:if condition="{pageData.validationResult.errors}">
                 <f:then>
                     <f:for as="error" each="{pageData.validationResult.errors}">
-                        <li>{error}</li>
+                        <li>
+                            <f:format.html>{error}</f:format.html>
+                        </li>
                     </f:for>
                 </f:then>
                 <f:else>
@@ -33,7 +35,9 @@
             <f:if condition="{pageData.validationResult.warnings}">
                 <f:then>
                     <f:for as="warning" each="{pageData.validationResult.warnings}">
-                        <li>{warning}</li>
+                        <li>
+                            <f:format.html>{warning}</f:format.html>
+                        </li>
                     </f:for>
                 </f:then>
                 <f:else>
@@ -50,7 +54,9 @@
             <f:if condition="{pageData.validationResult.infos}">
                 <f:then>
                     <f:for as="info" each="{pageData.validationResult.infos}">
-                        <li>{info}</li>
+                        <li>
+                            <f:format.html>{info}</f:format.html>
+                        </li>
                     </f:for>
                 </f:then>
                 <f:else>

@@ -1,9 +1,11 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 
-<form name="newsletter">
+<form name="newsletter" id="newsletterForm">
     <div class="settings">
-        <h1>Settings</h1>
-        <f:form.hidden name="newsletter[pid]" value="{pageData.newsletter.pid}" />
+        <h1>
+            <f:translate key="settings"/>
+        </h1>
+        <f:form.hidden name="newsletter[pid]" value="{pageData.newsletter.pid}"/>
         <div>
             <h2>
                 <f:translate key="sender"/>
@@ -11,37 +13,44 @@
             <label for="">
                 <f:translate
                         key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.sender_name"/>
-                <f:form.textfield name="newsletter[senderName]" value="{pageData.newsletter.senderName}"></f:form.textfield>
+                <f:form.textfield id='senderName' name="newsletter[senderName]"
+                                  value="{pageData.newsletter.senderName}"></f:form.textfield>
             </label>
 
             <label for="">
                 <f:translate
                         key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.sender_email"/>
-                <f:form.textfield name="newsletter[senderEmail]" value="{pageData.newsletter.senderEmail}"></f:form.textfield>
+                <f:form.textfield id="senderEmail" name="newsletter[senderEmail]"
+                                  value="{pageData.newsletter.senderEmail}"></f:form.textfield>
             </label>
         </div>
         <div>
-            <h2>
+            <h2 class="extendButton">
                 <f:translate key="advanced_settings"/>
+                ->
             </h2>
-            <div>
+            <div class="advanced-settings hidden">
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.replyto_name"/>
-                    <f:form.textfield name="newsletter[replytoName]" value="{pageData.newsletter.replytoName}"></f:form.textfield>
+                    <f:form.textfield name="newsletter[replytoName]"
+                                      value="{pageData.newsletter.replytoName}"></f:form.textfield>
                 </label>
 
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.replyto_email"/>
-                    <f:form.textfield name="newsletter[replytoEmail]" value="{pageData.newsletter.replytoEmail}"></f:form.textfield>
+                    <f:form.textfield id="replytoEmail" name="newsletter[replytoEmail]"
+                                      value="{pageData.newsletter.replytoEmail}"></f:form.textfield>
                 </label>
 
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.bounce_account"/>
-                    <f:form.select name="newsletter[uidBounceAccount]" class="form-select" options="{pageData.bounceAccounts}"
-                                   value="{pageData.newsletter.bounceAccount}" prependOptionLabel="" prependOptionValue=""
+                    <f:form.select name="newsletter[uidBounceAccount]" class="form-select"
+                                   options="{pageData.bounceAccounts}"
+                                   value="{pageData.newsletter.bounceAccount}" prependOptionLabel=""
+                                   prependOptionValue=""
                                    optionValueField="uid" optionLabelField="email"></f:form.select>
                 </label>
 
@@ -75,13 +84,15 @@
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.inject_open_spy"/>
-                    <f:form.checkbox name="newsletter[injectOpenSpy]" checked="{pageData.newsletter.injectOpenSpy}" value="1"></f:form.checkbox>
+                    <f:form.checkbox name="newsletter[injectOpenSpy]" checked="{pageData.newsletter.injectOpenSpy}"
+                                     value="1"></f:form.checkbox>
                 </label>
 
                 <label for="">
                     <f:translate
                             key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.inject_links_spy"/>
-                    <f:form.checkbox name="newsletter[injectLinksSpy]" checked="{pageData.newsletter.injectLinksSpy}" value="1"></f:form.checkbox>
+                    <f:form.checkbox name="newsletter[injectLinksSpy]" checked="{pageData.newsletter.injectLinksSpy}"
+                                     value="1"></f:form.checkbox>
                 </label>
             </div>
         </div>
@@ -91,11 +102,12 @@
             <f:translate
                     key="LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.recipient_list"/>
         </h1>
-        <f:form.select name="newsletter[recipientList]" id="recipientListSelector" class="form-select" optionValueField="uid"
+        <f:form.select name="newsletter[recipientList]" id="recipientListSelector" class="form-select"
+                       optionValueField="uid"
                        optionLabelField="title" options="{pageData.recipientList}"
                        value="{pageData.newsletter.recipientList}"></f:form.select>
         <div class="sending-container">
-            <div id="myGrid" class="ag-theme-alpine" style="height: 500px; min-width: 500px"></div>
+            <div id="recipientListTable" class="ag-theme-alpine" style="height: 500px; min-width: 500px"></div>
 
             <div class="sending-actions">
                 <div class="testing-container">
@@ -122,7 +134,8 @@
                                 key="LLL:EXT:newsletter/Resources/Private/Language/locallang.xlf:date_start_sending"/>
                         :
                     </p>
-                    <input type="datetime-local" name="tx_newsletter_web_newslettertxnewsletterm1[newsletter][plannedTime]"
+                    <input type="datetime-local"
+                           name="tx_newsletter_web_newslettertxnewsletterm1[newsletter][plannedTime]"
                            value="{f:format.date(date: pageData.newsletter.plannedTime, format: 'Y-m-d H:i')}">
                     <span id="addToQueue-action" class="action-button">
                         <f:translate

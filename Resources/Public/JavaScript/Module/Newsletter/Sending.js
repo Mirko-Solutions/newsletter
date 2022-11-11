@@ -95,7 +95,7 @@ define(
                     newNewsletterObj[name] = value;
                 });
                 newNewsletterObj['isTest'] = isTest
-                console.log(newNewsletterObj)
+
                 const params = me.getBackendRequest('web', 'tx_newsletter_m1', 'Newsletter', 'create', {
                     newNewsletter: newNewsletterObj,
                 });
@@ -104,9 +104,11 @@ define(
                     url: moduleUrl,
                     data: params,
                     beforeSend: function (xhr) {
+                        $('.action-button').addClass('disabled');
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
+                        $('.action-button').removeClass('disabled');
                         try {
                             generateFlashMessageFromResponse(response);
                         } catch (e) {
@@ -114,11 +116,9 @@ define(
                         }
                     },
                     error: function (response) {
+                        $('.action-button').removeClass('disabled');
                         Notification.error('Error', 'something went wrong', 5);
                     },
-                    done: function () {
-                        console.log('d1');
-                    }
                 });
             }
         };
@@ -142,7 +142,7 @@ define(
                 animateRows: true,
             };
 
-            const eGridDiv = document.getElementById("myGrid");
+            const eGridDiv = document.getElementById("recipientListTable");
             new agGrid.Grid(eGridDiv, gridOptions);
             sender.getListRecipient($('#recipientListSelector').val(), gridOptions);
             $('#recipientListSelector').on('change', function () {
@@ -154,12 +154,59 @@ define(
                 }
             })
 
-            $('#sendTestEmail-action').on('click', function () {
+            $(".disabled").on('click', function (e) {
+                e.preventDefault();
+                return;
+            })
+
+            $('.extendButton').on('click', function (e) {
+                $(this).next().toggleClass('hidden')
+            })
+
+            $('#sendTestEmail-action').on('click', function (e) {
+                if (validateForm()) {
+                    return;
+                }
+
                 sender.createNewsletter($(this), 1);
             })
 
-            $('#addToQueue-action').on('click', function () {
+            $('#addToQueue-action').on('click', function (e) {
+                if (validateForm()) {
+                    return;
+                }
+
                 sender.createNewsletter($(this), 0);
             })
+
+            function validateForm() {
+                const senderName = $('#senderName').val();
+                const senderEmail = $('#senderEmail').val();
+                const replyToEmail = $('#replytoEmail').val();
+                let error = false;
+                $(".error").remove();
+
+                if (senderName.length < 1) {
+                    $('#senderName').after('<span class="error">This field is required</span>');
+                    error = true;
+                }
+                const regEx = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                const validSenderEmail = regEx.test(senderEmail);
+                if (!validSenderEmail) {
+                    error = true;
+                    $('#senderEmail').after('<span class="error">Enter a valid email</span>');
+                }
+                if (replyToEmail.length > 1) {
+                    const validReplyToEmail = regEx.test(replyToEmail);
+                    if (!validReplyToEmail) {
+                        error = true;
+                        $('#replytoEmail').after('<span class="error">Enter a valid email</span>');
+                    }
+                }
+
+                console.log(error)
+                return error;
+            }
+
         });
     });

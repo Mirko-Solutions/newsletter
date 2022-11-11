@@ -74,6 +74,19 @@ input[type="image"] {
   border: none;
 }
 
+.error {
+  font-size: 11px;
+  color: #bb0d0d;
+}
+
+.action-button.disabled {
+  cursor: not-allowed;
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0),
+  -4px -4px 6px 0 rgba(116, 125, 136, 0),
+  inset -4px -4px 6px 0 rgba(255, 255, 255, .2),
+  inset 4px 4px 6px 0 rgba(49, 49, 49, 0.4);
+}
+
 .action-button:before {
   height: 0%;
   width: 2px;

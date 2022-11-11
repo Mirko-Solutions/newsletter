@@ -223,6 +223,19 @@ ul.x-tab-strip li {
   }
 }
 
+.extendButton {
+  &:hover {
+    cursor: pointer;
+    text-shadow: #9d9d9d 1px 0 10px;
+    transition: text-shadow 0.1s linear;
+  }
+  transition: text-shadow 0.1s linear;
+}
+
+.hidden {
+  display: none;
+}
+
 .tabs-container {
   width: 100%;
   margin-top: 30px;

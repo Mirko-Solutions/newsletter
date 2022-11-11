@@ -938,7 +938,7 @@ class Newsletter extends AbstractEntity
                 );
             }
 
-            return sprintf($LANG->getLL('newsletter_status_was_sent'), $endTime->format(DateTimeInterface::ATOM));
+            return sprintf($LANG->getLL('newsletter_status_was_sent'), $endTime->format('D, d M y H:i:s'));
         }
 
         return 'unexpected status';
