@@ -1,0 +1,106 @@
+@import "module";
+
+.tabs {
+  margin: 20px 0;
+
+  &__list {
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__button {
+    background: #c9c9c9;
+    padding: 10px;
+    border: none;
+    margin: 5px 5px 0 0;
+    font-size: 16px;
+    font-weight: bolder;
+
+    &:hover {
+      cursor: pointer;
+      background: #b4b2b2;
+    }
+  }
+
+  &__item_active {
+    span {
+      &:hover {
+        background: #f1f1f1;
+        cursor: default;
+      }
+
+      background: #f1f1f1;
+    }
+  }
+
+  &__body {
+    .tab {
+      display: none;
+    }
+
+    .tab_active {
+      display: block;
+      background: #f1f1f1;
+      padding: 20px;
+    }
+  }
+}
+
+.overviewStats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+  @media screen and (max-width: $tablet-width) {
+    flex-direction: column
+  }
+
+  &__pieChartContainer {
+    max-width: 300px;
+    height: auto;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+
+    div {
+      padding: 10px 0;
+    }
+  }
+
+  .status-grey {
+    color: rgb(145, 145, 145);
+  }
+
+  .status-blue {
+    color: rgb(54, 162, 235);
+  }
+
+  .status-red {
+    color: rgb(255, 99, 132);
+  }
+
+  .status-green {
+    color: rgb(46, 227, 54);
+  }
+
+  .status-yellow {
+    color: rgb(255, 205, 86);
+  }
+
+  .statsCounter {
+    font-weight: bolder;
+    font-size: 18px;
+  }
+}
+
+.overviewContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineChartContainer {
+  width: 100%;
+  height: 300px;
+}

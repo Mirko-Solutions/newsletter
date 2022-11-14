@@ -46,9 +46,12 @@ class MarkerSubstitutor
         $markers = $this->getMarkers($email);
         $result = $src;
 
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['newsletter']['substituteMarkersHook'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['newsletter']['substituteMarkersHook'] as $_classRef) {
-                $_procObj = GeneralUtility::getUserObj($_classRef);
+        if (array_key_exists(
+                'substituteMarkersHook',
+                $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']
+            ) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['substituteMarkersHook'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['substituteMarkersHook'] as $_classRef) {
+                $_procObj = GeneralUtility::makeInstance($_classRef);
                 $result = $_procObj->substituteMarkersHook($result, $name, $markers, $email);
             }
         }
@@ -123,7 +126,9 @@ class MarkerSubstitutor
             "###$name###",
             "http://$name",
             "https://$name",
-            urlencode("###$name###"), // If the marker is in a link and the "links spy" option is activated it will be urlencoded
+            urlencode(
+                "###$name###"
+            ), // If the marker is in a link and the "links spy" option is activated it will be urlencoded
             urlencode("http://$name"),
             urlencode("https://$name"),
         ];

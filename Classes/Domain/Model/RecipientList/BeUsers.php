@@ -57,6 +57,7 @@ class BeUsers extends GentleSql
 				WHERE uid IN (' . implode(',', $config) . ")
 				AND email <> ''
 				AND disable = 0
-				AND tx_newsletter_bounce < 10");
+				AND tx_newsletter_bounce < 10"
+        );
     }
 }

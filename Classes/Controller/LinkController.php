@@ -2,22 +2,23 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\Domain\Repository\LinkRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use Mirko\Newsletter\Domain\Repository\LinkRepository;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 
 /**
  * Controller for the Link object
  */
-class LinkController extends ExtDirectActionController
+class LinkController extends ApiActionController
 {
     /**
      * linkRepository
      *
      * @var LinkRepository
      */
-    protected $linkRepository;
+    protected LinkRepository $linkRepository;
 
     /**
      * injectLinkRepository
@@ -36,28 +37,38 @@ class LinkController extends ExtDirectActionController
      * @param int $start
      * @param int $limit
      */
-    public function listAction($uidNewsletter, $start, $limit)
+    public function listAction($uidNewsletter, $start, $limit): void
     {
         $links = $this->linkRepository->findAllByNewsletter($uidNewsletter, $start, $limit);
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded all Links from Server side.', 'Links loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded all Links from Server side.',
+            'Links loaded successfully',
+            AbstractMessage::NOTICE
+        );
 
         $this->view->assign('total', $this->linkRepository->getCount($uidNewsletter));
         $this->view->assign('data', $links);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 
     /**
      * Register when a link was clicked and redirect to link's URL.
      * For this method we don't use Extbase parameters system to have an URL as short as possible
+     * @throws PageNotFoundException|StopActionException
      */
     public function clickedAction()
     {
@@ -66,10 +77,8 @@ class LinkController extends ExtDirectActionController
         // For compatibility with old links
         $oldArgs = ['n', 'l', 'p'];
         foreach ($oldArgs as $arg) {
-            if (!isset($args[$arg])) {
-                if (isset($_REQUEST[$arg])) {
-                    $args[$arg] = $_REQUEST[$arg];
-                }
+            if (!isset($args[$arg]) && isset($_REQUEST[$arg])) {
+                $args[$arg] = $_REQUEST[$arg];
             }
         }
 
@@ -90,7 +99,7 @@ class LinkController extends ExtDirectActionController
      *
      * @return array
      */
-    public static function resolveJsonViewConfiguration()
+    public static function resolveJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,

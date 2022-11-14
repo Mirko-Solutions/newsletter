@@ -1,12 +1,26 @@
 {
-  "name": "Newsletter",
+  "name": "newsletter",
   "private": true,
   "dependencies": {
-    "gulp": "^3.9.1",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^9.1.0",
+    "babel-preset-env": "^1.7.0",
+    "chart.js": "^3.9.1",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
     "gulp-composer": "^0.4.5",
+    "gulp-concat": "^2.6.1",
     "gulp-jscs": "^4.1.0",
     "gulp-jshint": "^2.1.0",
     "gulp-shell": "^0.6.5",
-    "jshint": "^2.9.5"
+    "jshint": "^2.9.5",
+    "webpack": "^5.74.0",
+    "webpack-stream": "^7.0.0"
+  },
+  "devDependencies": {
+    "gulp-babel": "^8.0.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-uglify": "^3.0.2",
+    "sass": "^1.55.0"
   }
 }

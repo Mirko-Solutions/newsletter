@@ -4,11 +4,13 @@ namespace Mirko\Newsletter\Domain\Model;
 
 use DateTime;
 use Mirko\Newsletter\Utility\UriBuilder;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
  * Email
  */
-class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements EmailInterface
+class Email extends AbstractEntity implements EmailInterface
 {
     /**
      * beginTime
@@ -28,7 +30,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
      * recipientAddress
      *
      * @var string
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $recipientAddress = '';
 
@@ -56,8 +58,8 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
     /**
      * newsletter
      *
-     * @lazy
-     * @var \Mirko\Newsletter\Domain\Model\Newsletter
+     * @Extbase\ORM\Lazy
+     * @var Newsletter
      */
     protected $newsletter;
 
@@ -65,7 +67,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
      * Whether the recipient of this email requested to unsubscribe.
      *
      * @var bool
-     * @validate NotEmpty
+     * @Extbase\Validate(validator="NotEmpty")
      */
     protected $unsubscribed = false;
 
@@ -322,7 +324,7 @@ class Email extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Em
      */
     private function getUriArguments()
     {
-        $args = ['c' => $this->getAuthCode()];
+        $args = ['c' => $this->getAuthCode(), 'type' => 1342671779];
 
         $recipientData = $this->getRecipientData();
         $language = array_key_exists('L', $recipientData) ? $recipientData['L'] : 0;

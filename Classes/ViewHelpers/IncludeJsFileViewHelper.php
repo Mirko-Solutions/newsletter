@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\ViewHelpers;
 
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
@@ -17,24 +18,37 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class IncludeJsFileViewHelper extends AbstractViewHelper
 {
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+
+        $this->registerArgument('name', 'string', 'Name', false, null);
+        $this->registerArgument('extKey', 'string', 'Extension key', false, null);
+        $this->registerArgument(
+            'pathInsideExt',
+            'string',
+            'Path inside extension',
+            false,
+            'Resources/Public/dist/'
+        );
+    }
+
     /**
      * Calls addJsFile on the Instance of TYPO3\CMS\Core\Page\PageRenderer.
-     *
-     * @param string $name the file to include
-     * @param string $extKey the extension, where the file is located
-     * @param string $pathInsideExt the path to the file relative to the ext-folder
      */
-    public function render($name = null, $extKey = null, $pathInsideExt = 'Resources/Public/JavaScript/')
+    public function render()
     {
-        if ($extKey == null) {
-            $extKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
+        $name = $this->arguments['name'];
+        $extKey = $this->arguments['extKey'];
+        $pathInsideExt = $this->arguments['pathInsideExt'];
+
+        if ($extKey === null) {
+            $extKey = $this->renderingContext->getRequest()->getControllerExtensionKey();
         }
-        if (TYPO3_MODE === 'FE') {
-            $extPath = ExtensionManagementUtility::extPath($extKey);
-            $extRelPath = mb_substr($extPath, mb_strlen(PATH_site));
-        } else {
-            $extRelPath = ExtensionManagementUtility::extRelPath($extKey);
-        }
+
+        $extPath = ExtensionManagementUtility::extPath($extKey);
+        $extRelPath = '/'. mb_substr($extPath, mb_strlen(Environment::getPublicPath() . '/'));
+
         $this->pageRenderer->addJsFile($extRelPath . $pathInsideExt . $name);
     }
 }

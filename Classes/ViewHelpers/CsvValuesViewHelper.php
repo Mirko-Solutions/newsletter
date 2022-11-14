@@ -9,15 +9,30 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CsvValuesViewHelper extends AbstractViewHelper
 {
+    const DELIM = ',';
+    const QUOTE = '"';
+
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+
+        $this->registerArgument('values', 'array', 'Format array of values to CSV format');
+    }
+
     /**
      * Format array of values to CSV format
      *
-     * @param array $values array of values to output in CSV format
-     *
      * @return string
      */
-    public function render(array $values)
+    public function render()
     {
-        return GeneralUtility::csvValues($values);
+        $row = $this->arguments['values'];
+
+        $out = [];
+
+        foreach ($row as $value) {
+            $out[] = str_replace(self::DELIM, self::QUOTE . self::QUOTE, $value);
+        }
+        return self::QUOTE . implode(self::QUOTE . self::DELIM . self::QUOTE, $out) . self::QUOTE;
     }
 }

@@ -1,0 +1,72 @@
+module.tx_newsletter {
+    view {
+        templateRootPath = {$module.tx_newsletter.view.templateRootPath}
+        partialRootPath = {$module.tx_newsletter.view.partialRootPath}
+        layoutRootPath = {$module.tx_newsletter.view.layoutRootPath}
+    }
+
+    features {
+        rewrittenPropertyMapper = 0
+    }
+
+    persistence {
+        storagePid = {$module.tx_newsletter.persistence.storagePid}
+    }
+
+    settings {
+        storagePid = {$module.tx_newsletter.persistence.storagePid}
+    }
+}
+
+config.tx_extbase {
+
+    mvc {
+        requestHandlers {
+            Mirko\Newsletter\MVC\ExtDirect\RequestHandler = Mirko\Newsletter\MVC\ExtDirect\RequestHandler
+        }
+    }
+}
+
+
+###############################
+# Declare a page type for blank page where the entire content will be output by ourselve
+###############################
+tx_newsletter_blank_page = PAGE
+tx_newsletter_blank_page {
+    typeNum = 1342671779
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+    }
+
+    10 = COA_INT
+    10 {
+        10 = USER_INT
+        10 {
+            userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+            extensionName = Newsletter
+            vendorName = Mirko
+            pluginName = p
+            features {
+                requireCHashArgumentForActionArguments = 0
+            }
+
+            switchableControllerActions {
+                Email {
+                    1 = show
+                    2 = opened
+                    3 = unsubscribe
+                }
+
+                Link {
+                    1 = clicked
+                }
+
+                RecipientList {
+                    1 = export
+                }
+            }
+        }
+    }
+}

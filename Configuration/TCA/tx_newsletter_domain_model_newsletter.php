@@ -20,6 +20,7 @@ return [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.planned_time',
             'config' => [
                 'type' => 'input',
+                'renderType' => 'inputDateTime',
                 'size' => 12,
                 'eval' => 'datetime,required',
             ],
@@ -81,17 +82,29 @@ return [
         ],
         'attachments' => [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.attachments',
-            'config' => [
-                'type' => 'group',
-                'internal_type' => 'file',
-                'allowed' => '',
-                'disallowed' => 'php,php3',
-                'max_size' => 500,
-                'uploadfolder' => 'uploads/tx_newsletter',
-                'size' => 3,
-                'minitems' => 0,
-                'maxitems' => 10,
-            ],
+            'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
+                'attachments',
+                [
+                    'maxitems' => 10,
+                    'minitems' => 0,
+                    'max_size' => 500,
+                    'internal_type' => 'folder',
+                    'disallowed' => 'php,php3',
+                    'uploadfolder' => 'uploads/tx_newsletter',
+                    'appearance' => [
+                        'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference'
+                    ],
+                    'overrideChildTca' => [
+                        'types' => [
+                            '0' => [
+                                'showitem' => '
+                                --palette--;;imageoverlayPalette,
+                                --palette--;;filePalette'
+                            ],
+                        ],
+                    ],
+                ],
+            )
         ],
         'sender_name' => [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_newsletter.sender_name',

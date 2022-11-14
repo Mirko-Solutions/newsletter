@@ -1,0 +1,106 @@
+
+fieldset {
+  padding: 1em 1em;
+  margin: 1em 0;
+}
+
+legend {
+  padding: 0;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+label {
+  display: block;
+  margin: 1em 0;
+  font-size: 14px;
+  b {
+    //font-weight: normal;
+  }
+
+  // can I use :not here?
+  textarea, select, input[type="text"], input[type="email"], input[type="search"], input[type="tel"], input[type="url"], input[type="password"], input[type="color"], input[type="file"], input[type="color"], input[type="number"], input[type="range"], input[type="date"], input[type="month"], input[type="week"], input[type="time"], input[type="datetime"], input[type="datetime-local"] {
+    display: block;
+    width: 100%; // good?
+  }
+}
+
+textarea, select, input[type="text"], input[type="email"], input[type="search"], input[type="tel"], input[type="url"], input[type="password"], input[type="color"], input[type="file"], input[type="color"], input[type="number"], input[type="range"], input[type="date"], input[type="month"], input[type="week"], input[type="time"], input[type="datetime"], input[type="datetime-local"] {
+  margin: .2em 0;
+  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+  border: 1px solid #ddd;
+  max-width: 100%; // ????
+  font-size: 13px;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  height: 20px;
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  width: 20px;
+}
+
+input[type="search"] {
+  box-sizing: border-box;
+}
+
+input[type="file"] {
+  border-width: 0;
+  padding: 0;
+}
+
+
+input[type="image"] {
+  vertical-align: bottom;
+}
+
+.action-button {
+  width: max-content;
+  height: 40px;
+  color: #000000;
+  margin: 10px 0;
+  padding: 10px 25px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+  7px 7px 20px 0px rgba(0, 0, 0, .1),
+  4px 4px 5px 0px rgba(0, 0, 0, .1);
+  outline: none;
+  background: rgb(255, 255, 255);
+  background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
+  border: none;
+}
+
+.error {
+  font-size: 11px;
+  color: #bb0d0d;
+}
+
+.action-button.disabled {
+  cursor: not-allowed;
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0),
+  -4px -4px 6px 0 rgba(116, 125, 136, 0),
+  inset -4px -4px 6px 0 rgba(255, 255, 255, .2),
+  inset 4px 4px 6px 0 rgba(49, 49, 49, 0.4);
+}
+
+.action-button:before {
+  height: 0%;
+  width: 2px;
+}
+
+.action-button:hover {
+  background: rgb(232, 232, 232);
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0),
+  -4px -4px 6px 0 rgba(116, 125, 136, 0),
+  inset -4px -4px 6px 0 rgba(255, 255, 255, .2),
+  inset 4px 4px 6px 0 rgba(49, 49, 49, 0.4);
+}
+
+.form-select {
+  font-size: 13px;
+}

@@ -3,12 +3,15 @@
 namespace Mirko\Newsletter;
 
 use DateTime;
+use GuzzleHttp\Exception\RequestException;
 use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -16,11 +19,28 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 /**
  * Toolbox for newsletter and dependant extensions.
  */
-abstract class Tools
+class Tools
 {
     private static $configuration = null;
 
-    private static $OPEN_SSL_CIPHER = 'aes-256-cbc';
+    private static string $OPEN_SSL_CIPHER = 'aes-256-cbc';
+
+    private EmailRepository $emailRepository;
+
+    private NewsletterRepository $newsletterRepository;
+
+    public function __construct(
+        EmailRepository $emailRepository,
+        NewsletterRepository $newsletterRepository
+    ) {
+        $this->emailRepository = $emailRepository;
+        $this->newsletterRepository = $newsletterRepository;
+    }
+
+    public static function getInstance()
+    {
+        return GeneralUtility::makeInstance(self::class);
+    }
 
     /**
      * Get a newsletter-conf-template parameter
@@ -33,10 +53,11 @@ abstract class Tools
     {
         // Look for a config in the module TS first.
         static $configTS;
-        if (!is_array($configTS) && isset($GLOBALS['TYPO3_DB'])) {
-            $beConfManager = self::getObjectManager()->get(BackendConfigurationManager::class);
-            $configTS = $beConfManager->getTypoScriptSetup();
-            $configTS = $configTS['module.']['tx_newsletter.']['config.'];
+        if (!is_array($configTS)) {
+            $configTS = $backendConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                ExtensionConfiguration::class
+            )
+                ->get('newsletter');
         }
 
         if (isset($configTS[$key])) {
@@ -45,10 +66,10 @@ abstract class Tools
 
         // Else fallback to the extension config.
         if (!is_array(self::$configuration)) {
-            self::$configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['newsletter']);
+            self::$configuration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
         }
 
-        return self::$configuration[$key];
+        return self::$configuration[$key] ?? null;
     }
 
     /**
@@ -79,9 +100,12 @@ abstract class Tools
         $mailer->setNewsletter($newsletter, $language);
 
         // hook for modifying the mailer before finish preconfiguring
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['newsletter']['getConfiguredMailerHook'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['newsletter']['getConfiguredMailerHook'] as $_classRef) {
-                $_procObj = GeneralUtility::getUserObj($_classRef);
+        if (array_key_exists(
+                'getConfiguredMailerHook',
+                $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']
+            ) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'] as $_classRef) {
+                $_procObj = GeneralUtility::makeInstance($_classRef);
                 $mailer = $_procObj->getConfiguredMailerHook($mailer, $newsletter);
             }
         }
@@ -92,13 +116,11 @@ abstract class Tools
     /**
      * Create the spool for all newsletters who need it
      */
-    public static function createAllSpool()
+    public function createAllSpool()
     {
-        $newsletterRepository = self::getNewsletterRepository();
-
-        $newsletters = $newsletterRepository->findAllReadyToSend();
+        $newsletters = $this->newsletterRepository->findAllReadyToSend();
         foreach ($newsletters as $newsletter) {
-            self::createSpool($newsletter);
+            $this->createSpool($newsletter);
         }
     }
 
@@ -107,19 +129,18 @@ abstract class Tools
      *
      * @param Newsletter $newsletter
      */
-    public static function createSpool(Newsletter $newsletter)
+    public function createSpool(Newsletter $newsletter)
     {
         // If newsletter is locked because spooling now, or already spooled, then skip
         if ($newsletter->getBeginTime()) {
             return;
         }
 
-        $newsletterRepository = self::getNewsletterRepository();
-
         // Lock the newsletter by setting its begin_time
         $beginTime = new DateTime();
         $newsletter->setBeginTime($beginTime);
-        $newsletterRepository->update($newsletter);
+        $this->newsletterRepository->update($newsletter);
+        $this->emailRepository->persistAll();
 
         $emailSpooledCount = 0;
         $recipientList = $newsletter->getRecipientList();
@@ -128,55 +149,50 @@ abstract class Tools
         while ($receiver = $recipientList->getRecipient()) {
             // Register the recipient
             if (GeneralUtility::validEmail($receiver['email'])) {
-                $db->exec_INSERTquery(
-                    'tx_newsletter_domain_model_email',
-                    [
-                        'pid' => $newsletter->getPid(),
-                        'recipient_address' => $receiver['email'],
-                        'recipient_data' => serialize($receiver),
-                        'newsletter' => $newsletter->getUid(),
-                    ]
-                );
-
-                $db->exec_UPDATEquery(
-                    'tx_newsletter_domain_model_email',
-                    'uid = ' . (int) $db->sql_insert_id(),
-                    [
-                        'auth_code' => 'MD5(CONCAT(uid, recipient_address))',
-                    ],
-                    ['auth_code']
-                );
-
+                $emailInstance = new Email();
+                $emailInstance->setPid($newsletter->getPid());
+                $emailInstance->setRecipientData($receiver);
+                $emailInstance->setNewsletter($newsletter);
+                $this->emailRepository->add($emailInstance);
+                $this->emailRepository->persistAll();
+                $emailInstance->setRecipientAddress($receiver['email']);
+                $this->emailRepository->update($emailInstance);
+                $this->emailRepository->persistAll();
                 ++$emailSpooledCount;
             }
         }
-        self::getLogger(__CLASS__)->info("Queued $emailSpooledCount emails to be sent for newsletter " . $newsletter->getUid());
+        self::getLogger(__CLASS__)->info(
+            "Queued $emailSpooledCount emails to be sent for newsletter " . $newsletter->getUid()
+        );
 
         // Schedule repeated newsletter if any
         $newsletter->scheduleNextNewsletter();
 
         // Unlock the newsletter by setting its end_time
         $newsletter->setEndTime(new DateTime());
-        $newsletterRepository->update($newsletter);
+        $this->newsletterRepository->update($newsletter);
+        $this->emailRepository->persistAll();
     }
 
     /**
      * Run the spool for all Newsletters, with a security to avoid parallel sending
      */
-    public static function runAllSpool()
+    public function runAllSpool()
     {
         $db = self::getDatabaseConnection();
 
         // Try to detect if a spool is already running
         // If there is no records for the last 30 seconds, previous spool session is assumed to have ended.
         // If there are newer records, then stop here, and assume the running mailer will take care of it.
-        $rs = $db->sql_query('SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30));
+        $rs = $db->sql_query(
+            'SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30)
+        );
         list($num_records) = $db->sql_fetch_row($rs);
         if ($num_records != 0) {
             return;
         }
 
-        self::runSpool();
+        $this->runSpool();
     }
 
     /**
@@ -184,15 +200,12 @@ abstract class Tools
      *
      * @param Newsletter $limitNewsletter if specified, run spool only for that Newsletter
      */
-    public static function runSpool(Newsletter $limitNewsletter = null)
+    public function runSpool(Newsletter $limitNewsletter = null)
     {
         $emailSentCount = 0;
         $mailers = [];
 
-        $newsletterRepository = self::getNewsletterRepository();
-        $emailRepository = self::getObjectManager()->get(EmailRepository::class);
-
-        $allUids = $newsletterRepository->findAllNewsletterAndEmailUidToSend($limitNewsletter);
+        $allUids = $this->newsletterRepository->findAllNewsletterAndEmailUidToSend($limitNewsletter);
 
         $oldNewsletterUid = null;
         foreach ($allUids as $uids) {
@@ -205,32 +218,33 @@ abstract class Tools
                 $mailers = [];
 
                 /** @var Newsletter $newsletter */
-                $newsletter = $newsletterRepository->findByUid($newsletterUid);
+                $newsletter = $this->newsletterRepository->findByUid($newsletterUid);
             }
 
             // Define the language of email
             /** @var Email $email */
-            $email = $emailRepository->findByUid($emailUid);
+            $email = $this->emailRepository->findByUid($emailUid);
             $recipientData = $email->getRecipientData();
-            $language = $recipientData['L'];
+            $language = $recipientData['L'] ?? '';
 
             // Was a language with this page defined, if not create one
-            if (!is_object($mailers[$language])) {
+            if (!array_key_exists($language, $mailers) || !is_object($mailers[$language])) {
                 $mailers[$language] = self::getConfiguredMailer($newsletter, $language);
             }
 
             // Mark it as started sending
             $email->setBeginTime(new DateTime());
-            $emailRepository->update($email);
-
+            $this->emailRepository->update($email);
+            $this->emailRepository->persistAll();
             // Send the email
             $mailers[$language]->send($email);
 
             // Mark it as sent already
             $email->setEndTime(new DateTime());
-            $emailRepository->update($email);
-
+            $this->emailRepository->update($email);
+            $this->emailRepository->persistAll();
             ++$emailSentCount;
+            sleep(2);
         }
 
         // Log numbers
@@ -297,7 +311,7 @@ abstract class Tools
      */
     public static function getUserAgent()
     {
-        $userAgent = TYPO3_user_agent . ' Newsletter (https://github.com/Mirko/newsletter)';
+        $userAgent = $GLOBALS['TYPO3_CONF_VARS']['HTTP']['headers']['User-Agent'] . ' Newsletter (https://github.com/Mirko/newsletter)';
 
         return $userAgent;
     }
@@ -309,17 +323,85 @@ abstract class Tools
      *
      * @return string
      */
-    public static function getUrl($url)
+    public static function getUrl($url, $includeHeader = 0, $requestHeaders = null, &$report = null)
     {
         // Specify User-Agent header if we fetch an URL, but not if it's a file on disk
         if (Utility\Uri::isAbsolute($url)) {
-            $headers = [self::getUserAgent()];
-        } else {
-            $headers = null;
+            $requestHeaders = [self::getUserAgent()];
         }
 
-        $report = [];
-        $content = GeneralUtility::getUrl($url, 0, $headers, $report);
+        if (isset($report)) {
+            $report['error'] = 0;
+            $report['message'] = '';
+        }
+        // Looks like it's an external file, use Guzzle by default
+        if (preg_match('/^(?:http|ftp)s?|s(?:ftp|cp):/', $url)) {
+            $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
+            if (is_array($requestHeaders)) {
+                $configuration = ['headers' => $requestHeaders];
+            } else {
+                $configuration = [];
+            }
+            $includeHeader = (int)$includeHeader;
+            $method = $includeHeader === 2 ? 'HEAD' : 'GET';
+            try {
+                if (isset($report)) {
+                    $report['lib'] = 'GuzzleHttp';
+                }
+                $response = $requestFactory->request($url, $method, $configuration);
+            } catch (RequestException $exception) {
+                if (isset($report)) {
+                    $report['error'] = $exception->getCode() ?: 1518707554;
+                    $report['message'] = $exception->getMessage();
+                    $report['exception'] = $exception;
+                }
+                return false;
+            }
+            $content = '';
+            // Add the headers to the output
+            if ($includeHeader) {
+                $parsedURL = parse_url($url);
+                $content = $method . ' ' . ($parsedURL['path'] ?? '/')
+                    . (!empty($parsedURL['query']) ? '?' . $parsedURL['query'] : '') . ' HTTP/1.0' . CRLF
+                    . 'Host: ' . $parsedURL['host'] . CRLF
+                    . 'Connection: close' . CRLF;
+                if (is_array($requestHeaders)) {
+                    $content .= implode(CRLF, $requestHeaders) . CRLF;
+                }
+                foreach ($response->getHeaders() as $headerName => $headerValues) {
+                    $content .= $headerName . ': ' . implode(', ', $headerValues) . CRLF;
+                }
+                // Headers are separated from the body with two CRLFs
+                $content .= CRLF;
+            }
+
+            $content .= $response->getBody()->getContents();
+
+            if (isset($report)) {
+                if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+                    $report['http_code'] = $response->getStatusCode();
+                    $report['content_type'] = $response->getHeaderLine('Content-Type');
+                    $report['error'] = $response->getStatusCode();
+                    $report['message'] = $response->getReasonPhrase();
+                } elseif (empty($content)) {
+                    $report['error'] = $response->getStatusCode();
+                    $report['message'] = $response->getReasonPhrase();
+                } elseif ($includeHeader) {
+                    // Set only for $includeHeader to work exactly like PHP variant
+                    $report['http_code'] = $response->getStatusCode();
+                    $report['content_type'] = $response->getHeaderLine('Content-Type');
+                }
+            }
+        } else {
+            if (isset($report)) {
+                $report['lib'] = 'file';
+            }
+            $content = @file_get_contents($url);
+            if ($content === false && isset($report)) {
+                $report['error'] = -1;
+                $report['message'] = 'Couldn\'t get URL: ' . $url;
+            }
+        }
 
         // Throw Exception if content could not be fetched so that it is properly caught in Validator
         if ($content === false) {
@@ -329,6 +411,40 @@ abstract class Tools
         }
 
         return $content;
+    }
+
+    public static function getBaseUrl($pid = null)
+    {
+
+        // Is anything hardcoded from TYPO3_CONF_VARS ?
+        $domain = Tools::confParam('fetch_path');
+
+        // Else we try to resolve a domain in page root line
+
+        // Else we try to find it in sys_template (available at least since TYPO3 4.6 Introduction Package)
+        if (!$domain && $pid) {
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+
+            $domain = $siteFinder->getSiteByPageId($pid)->getBase()->getHost();
+        }
+
+        if (!$domain) {
+            $domain = $_SERVER['HTTP_HOST'];
+        }
+
+        // If still no domain, can't continue
+        if (!$domain) {
+            throw new \Exception(
+                "Could not find the domain name. Use Newsletter configuration page to set 'fetch_path'"
+            );
+        }
+
+        // Force scheme if found from domain record, or if fetch_path was not configured properly (before Newsletter 2.6.0)
+        if (!preg_match('~^https?://~', $domain)) {
+            $domain = 'http://' . $domain;
+        }
+
+        return $domain;
     }
 
     /**
@@ -342,16 +458,6 @@ abstract class Tools
     }
 
     /**
-     * Returns the Newsletter Repository
-     *
-     * @return NewsletterRepository
-     */
-    private static function getNewsletterRepository()
-    {
-        return self::getObjectManager()->get(NewsletterRepository::class);
-    }
-
-    /**
      * Returns the the connection to database
      *
      * @return DatabaseConnection
@@ -359,5 +465,13 @@ abstract class Tools
     public static function getDatabaseConnection()
     {
         return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
+     * @return NewsletterRepository
+     */
+    public function getNewsletterRepository(): NewsletterRepository
+    {
+        return $this->newsletterRepository;
     }
 }

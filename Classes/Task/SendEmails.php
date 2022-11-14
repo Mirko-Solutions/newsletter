@@ -21,8 +21,9 @@ class SendEmails extends AbstractTask
      */
     public function execute()
     {
-        Tools::createAllSpool();
-        Tools::runAllSpool();
+        $tools = Tools::getInstance();
+        $tools->createAllSpool();
+        $tools->runAllSpool();
 
         return true;
     }
@@ -37,8 +38,7 @@ class SendEmails extends AbstractTask
      */
     public function getAdditionalInformation()
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $newsletterRepository = $objectManager->get(NewsletterRepository::class);
+        $newsletterRepository = Tools::getInstance()->getNewsletterRepository();
 
         $newslettersToSend = $newsletterRepository->findAllReadyToSend();
         $newslettersBeingSent = $newsletterRepository->findAllBeingSent();
@@ -55,6 +55,10 @@ class SendEmails extends AbstractTask
 
         $emailsPerRound = Tools::confParam('mails_per_round');
 
-        return LocalizationUtility::translate('task_send_emails_additional_information', 'newsletter', [$emailsPerRound, $emailNotSentCount, $newslettersToSendCount, $newslettersBeingSentCount]);
+        return LocalizationUtility::translate(
+            'task_send_emails_additional_information',
+            'newsletter',
+            [$emailsPerRound, $emailNotSentCount, $newslettersToSendCount, $newslettersBeingSentCount]
+        );
     }
 }

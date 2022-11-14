@@ -2,31 +2,31 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\Domain\Model\Email;
-use Mirko\Newsletter\Domain\Model\Newsletter;
-use Mirko\Newsletter\Domain\Model\RecipientList;
-use Mirko\Newsletter\Domain\Repository\EmailRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
 use Mirko\Newsletter\Tools;
-use Mirko\Newsletter\Utility\EmailParser;
 use TYPO3\CMS\Core\Mail\MailMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use Mirko\Newsletter\Domain\Model\Email;
+use Mirko\Newsletter\Utility\EmailParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
+use Mirko\Newsletter\Domain\Model\Newsletter;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use Mirko\Newsletter\Domain\Model\RecipientList;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use Mirko\Newsletter\Domain\Repository\EmailRepository;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
 
 /**
  * Controller for the Email object
  */
-class EmailController extends ExtDirectActionController
+class EmailController extends ApiActionController
 {
     /**
      * emailRepository
      *
      * @var EmailRepository
      */
-    protected $emailRepository;
+    protected EmailRepository $emailRepository;
 
     /**
      * injectEmailRepository
@@ -45,24 +45,33 @@ class EmailController extends ExtDirectActionController
      * @param int $start
      * @param int $limit
      *
-     * @return string The rendered list view
+     * return The rendered list view
      */
-    public function listAction($uidNewsletter, $start, $limit)
+    public function listAction(int $uidNewsletter, int $start, int $limit)
     {
         $emails = $this->emailRepository->findAllByNewsletter($uidNewsletter, $start, $limit);
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded all Emails from Server side.', 'Emails loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded all Emails from Server side.',
+            'Emails loaded successfully',
+            AbstractMessage::NOTICE
+        );
         $this->view->assign('total', $this->emailRepository->getCount($uidNewsletter));
         $this->view->assign('data', $emails);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 
     /**
@@ -88,9 +97,9 @@ class EmailController extends ExtDirectActionController
     {
         // Override settings to NOT embed images inlines (doesn't make sense for web display)
         global $TYPO3_CONF_VARS;
-        $theConf = unserialize($TYPO3_CONF_VARS['EXT']['extConf']['newsletter']);
+        $theConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
         $theConf['attach_images'] = false;
-        $TYPO3_CONF_VARS['EXT']['extConf']['newsletter'] = serialize($theConf);
+        $TYPO3_CONF_VARS['EXTENSIONS']['newsletter'] = $theConf;
 
         $newsletter = null;
         $email = null;
@@ -110,10 +119,8 @@ class EmailController extends ExtDirectActionController
             'L',
         ];
         foreach ($otherArgs as $arg) {
-            if (!isset($args[$arg])) {
-                if (isset($_GET[$arg])) {
-                    $args[$arg] = $_GET[$arg];
-                }
+            if (!isset($args[$arg]) && isset($_GET[$arg])) {
+                $args[$arg] = $_GET[$arg];
             }
         }
 
@@ -122,22 +129,20 @@ class EmailController extends ExtDirectActionController
         if ($isPreview) {
             // Create a fake newsletter and configure it with given parameters
             /** @var Newsletter $newsletter */
-            $newsletter = $this->objectManager->get(Newsletter::class);
+            $newsletter = GeneralUtility::makeInstance(Newsletter::class);
             $newsletter->setPid(@$args['pid']);
             $newsletter->setUidRecipientList(@$args['uidRecipientList']);
 
-            if ($newsletter) {
-                // Find the recipient
-                $recipientList = $newsletter->getRecipientList();
-                $recipientList->init();
-                while ($record = $recipientList->getRecipient()) {
-                    // Got him
-                    if ($record['email'] == $args['email']) {
-                        // Build a fake email
-                        $email = $this->objectManager->get(Email::class);
-                        $email->setRecipientAddress($record['email']);
-                        $email->setRecipientData($record);
-                    }
+            // Find the recipient
+            $recipientList = $newsletter->getRecipientList();
+            $recipientList->init();
+            while ($record = $recipientList->getRecipient()) {
+                // Got him
+                if ($record['email'] === $args['email']) {
+                    // Build a fake email
+                    $email = GeneralUtility::makeInstance(Email::class);
+                    $email->setRecipientAddress($record['email']);
+                    $email->setRecipientData($record);
                 }
             }
         } else {
@@ -197,10 +202,8 @@ class EmailController extends ExtDirectActionController
         $args = $this->request->getArguments();
 
         // For compatibility with old links
-        if (!isset($args['c'])) {
-            if (isset($_GET['c'])) {
-                $args['c'] = $_GET['c'];
-            }
+        if (!isset($args['c']) && isset($_GET['c'])) {
+            $args['c'] = $_GET['c'];
         }
 
         // If we have an authentification code, look for the original email which was already sent
@@ -210,6 +213,7 @@ class EmailController extends ExtDirectActionController
                 // Mark the email as requested to be unsubscribed
                 $email->setUnsubscribed(true);
                 $this->emailRepository->update($email);
+                $this->emailRepository->persistAll();
                 $recipientAddress = $email->getRecipientAddress();
 
                 $newsletter = $email->getNewsletter();
@@ -229,12 +233,13 @@ class EmailController extends ExtDirectActionController
         if (is_numeric($redirect)) {
             $uriBuilder = $this->controllerContext->getUriBuilder();
             $uriBuilder->reset();
-            $uriBuilder->setUseCacheHash(false);
-            $uriBuilder->setTargetPageUid((int) $redirect);
+            $uriBuilder->setTargetPageUid((int)$redirect);
             // Append the recipient address just in case you want to do something with it at the destination
-            $uriBuilder->setArguments([
-                'recipient' => $recipientAddress,
-            ]);
+            $uriBuilder->setArguments(
+                [
+                    'recipient' => $recipientAddress,
+                ]
+            );
             $redirect = $uriBuilder->build();
         }
 
@@ -261,10 +266,12 @@ class EmailController extends ExtDirectActionController
 
         // Use the page-owner as user
         if ($notificationEmail == 'user') {
-            $rs = Tools::getDatabaseConnection()->sql_query('SELECT email
+            $rs = Tools::getDatabaseConnection()->sql_query(
+                'SELECT email
 			FROM be_users
 			LEFT JOIN pages ON be_users.uid = pages.perms_userid
-			WHERE pages.uid = ' . $newsletter->getPid());
+			WHERE pages.uid = ' . $newsletter->getPid()
+            );
 
             list($notificationEmail) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
         }
@@ -276,11 +283,19 @@ class EmailController extends ExtDirectActionController
 
         // Build email texts
         $baseUrl = $newsletter->getBaseUrl();
-        $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid() . ']=edit';
-        $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid() . ']=edit';
-        $urlNewsletter = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_newsletter][' . $newsletter->getUid() . ']=edit';
+        $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid(
+            ) . ']=edit';
+        $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid(
+            ) . ']=edit';
+        $urlNewsletter = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_newsletter][' . $newsletter->getUid(
+            ) . ']=edit';
         $subject = LocalizationUtility::translate('unsubscribe_notification_subject', 'newsletter');
-        $body = LocalizationUtility::translate('unsubscribe_notification_body', 'newsletter', [$email->getRecipientAddress(), $urlRecipient, $recipientList->getTitle(), $urlRecipientList, $newsletter->getTitle(), $urlNewsletter]);
+        $body = LocalizationUtility::translate(
+            'unsubscribe_notification_body',
+            'newsletter',
+            [$email->getRecipientAddress(), $urlRecipient, $recipientList->getTitle(
+            ), $urlRecipientList, $newsletter->getTitle(), $urlNewsletter]
+        );
 
         // Actually sends email
         $message = GeneralUtility::makeInstance(MailMessage::class);

@@ -37,7 +37,6 @@ return [
         'newsletter' => [
             'label' => 'LLL:EXT:newsletter/Resources/Private/Language/locallang_db.xlf:tx_newsletter_domain_model_link.newsletter',
             'config' => [
-                'readOnly' => true,
                 'type' => 'inline',
                 'foreign_table' => 'tx_newsletter_domain_model_newsletter',
                 'minitems' => 0,

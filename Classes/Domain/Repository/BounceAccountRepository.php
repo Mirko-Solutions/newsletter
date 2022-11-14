@@ -19,7 +19,11 @@ class BounceAccountRepository extends AbstractRepository
 
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurationManager = $objectManager->get(ConfigurationManager::class);
-        $storagePid = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'newsletter', 'storagePid');
+        $storagePid = $configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'newsletter',
+            'storagePid'
+        );
 
         if ($storagePid['storagePid']) {
             $query->getQuerySettings()->setRespectStoragePage(true);

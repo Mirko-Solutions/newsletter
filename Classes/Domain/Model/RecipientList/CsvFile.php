@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
 use Mirko\Newsletter\Tools;
+use TYPO3\CMS\Core\Core\Environment;
 
 /**
  * Recipient List using CSV file
@@ -85,24 +86,45 @@ class CsvFile extends AbstractArray
      *
      * @return string csvFilename
      */
-    public function getCsvFilename()
+    public function getCsvFileName(): string
     {
-        return $this->csvFilename;
+        $file = $this->getFileReferences($this->getUid());
+        if (!is_array($file)) {
+            return '';
+        }
+
+        return $file['name'];
     }
 
     /**
-     * Return the path where CSV files are contained
+     * Return the path where CSV file are contained
      *
      * @return string
      */
-    protected function getPathname()
+    protected function getAbsoluteFilePath(): string
     {
-        return PATH_site . 'uploads/tx_newsletter';
+        $file = $this->getFileReferences($this->getUid());
+        if (!is_array($file)) {
+            return '';
+        }
+
+        return   Environment::getPublicPath(). "/fileadmin{$file['identifier']}";
+    }
+
+    protected function getFileReferences($uid) {
+        $fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
+        $fileObjects = $fileRepository->findByRelation('tx_newsletter_domain_model_recipientlist', 'csv_filename', $uid);
+
+        if (empty($fileObjects)) {
+            return null;
+        }
+
+        return $fileObjects[0]->getOriginalFile()->getProperties();
     }
 
     public function init()
     {
-        $this->loadCsvFromFile($this->getPathname() . '/' . $this->getCsvFilename());
+        $this->loadCsvFromFile($this->getAbsoluteFilePath());
     }
 
     /**
@@ -131,7 +153,6 @@ class CsvFile extends AbstractArray
 
         $sepchar = $this->getCsvSeparator() ? $this->getCsvSeparator() : ',';
         $keys = array_unique(array_map('trim', explode($sepchar, $this->getCsvFields())));
-
         if ($csvdata && $sepchar && count($keys)) {
             $lines = explode("\n", $csvdata);
             foreach ($lines as $line) {

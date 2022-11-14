@@ -2,24 +2,24 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 
 /**
  * Controller for the BounceAccount object
  */
-class BounceAccountController extends ExtDirectActionController
+class BounceAccountController extends ApiActionController
 {
     /**
      * bounceAccountRepository
      *
      * @var BounceAccountRepository
      */
-    protected $bounceAccountRepository;
+    protected BounceAccountRepository $bounceAccountRepository;
 
     /**
-     * injectBounceAccounRepository
+     * injectBounceAccountRepository
      *
      * @param BounceAccountRepository $bounceAccountRepository
      */
@@ -31,20 +31,26 @@ class BounceAccountController extends ExtDirectActionController
     /**
      * Displays all BounceAccounts
      *
-     * @return string The rendered list view
+     * return The rendered list view
      */
     public function listAction()
     {
         $bounceAccounts = $this->bounceAccountRepository->findAll();
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded BounceAccounts from Server side.', 'BounceAccounts loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded BounceAccounts from Server side.',
+            'BounceAccounts loaded successfully',
+            FlashMessage::NOTICE
+        );
 
         $this->view->assign('total', $bounceAccounts->count());
         $this->view->assign('data', $bounceAccounts);
@@ -58,7 +64,7 @@ class BounceAccountController extends ExtDirectActionController
      *
      * @return array
      */
-    public static function resolveJsonViewConfiguration()
+    public static function resolveJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,

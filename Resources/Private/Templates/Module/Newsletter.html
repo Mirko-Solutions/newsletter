@@ -1,0 +1,9 @@
+<f:layout name="Default"/>
+
+<f:section name="content">
+    <div class="newsletter__content">
+        <f:if condition="{page} ">
+            <f:render partial="Newsletter/{page}" arguments="{_all}"/>
+        </f:if>
+    </div>
+</f:section>

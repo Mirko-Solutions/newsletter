@@ -23,16 +23,8 @@ abstract class AbstractRepository extends Repository
         return $query;
     }
 
-    /**
-     * Override parent method to update the object and persist changes immediately. By commiting immediately
-     * stay compatible with raw sql query via $TYPO3_DB.
-     * TODO this method should be destroyed once "old code" is completely replaced with extbase concepts
-     *
-     * @param \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $modifiedObject
-     */
-    public function update($modifiedObject)
+    public function persistAll()
     {
-        parent::update($modifiedObject);
         $this->persistenceManager->persistAll();
     }
 }

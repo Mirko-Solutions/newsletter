@@ -54,7 +54,9 @@ class NewsletterRepository extends AbstractRepository
         $query = $this->createQuery();
         $query->matching(
             $query->logicalAnd(
-                $query->lessThanOrEqual('plannedTime', time()), $query->logicalNot($query->equals('plannedTime', 0)), $query->equals('beginTime', 0)
+                $query->lessThanOrEqual('plannedTime', time()),
+                $query->logicalNot($query->equals('plannedTime', 0)),
+                $query->equals('beginTime', 0)
             )
         );
 
@@ -69,7 +71,9 @@ class NewsletterRepository extends AbstractRepository
     public function findAllBeingSent()
     {
         $query = $this->createQuery();
-        $query->statement('SELECT * FROM `tx_newsletter_domain_model_newsletter` WHERE uid IN (SELECT newsletter FROM `tx_newsletter_domain_model_email` WHERE end_time = 0)');
+        $query->statement(
+            'SELECT * FROM `tx_newsletter_domain_model_newsletter` WHERE uid IN (SELECT newsletter FROM `tx_newsletter_domain_model_email` WHERE end_time = 0)'
+        );
 
         return $query->execute()->toArray();
     }
@@ -88,7 +92,10 @@ class NewsletterRepository extends AbstractRepository
 
         $stateDifferences = [];
         $emailCount = $this->fillStateDifferences(
-            $stateDifferences, 'tx_newsletter_domain_model_email', 'newsletter = ' . $uidNewsletter, [
+            $stateDifferences,
+            'tx_newsletter_domain_model_email',
+            'newsletter = ' . $uidNewsletter,
+            [
                 'end_time' => ['increment' => 'emailSentCount', 'decrement' => 'emailNotSentCount'],
                 'open_time' => ['increment' => 'emailOpenedCount', 'decrement' => 'emailSentCount'],
                 'bounce_time' => ['increment' => 'emailBouncedCount', 'decrement' => 'emailSentCount'],
@@ -98,16 +105,20 @@ class NewsletterRepository extends AbstractRepository
         $linkRepository = $this->objectManager->get(LinkRepository::class);
         $linkCount = $linkRepository->getCount($uidNewsletter);
         $this->fillStateDifferences(
-            $stateDifferences, 'tx_newsletter_domain_model_link LEFT JOIN tx_newsletter_domain_model_linkopened ON (tx_newsletter_domain_model_linkopened.link = tx_newsletter_domain_model_link.uid)', 'tx_newsletter_domain_model_link.newsletter = ' . $uidNewsletter, [
+            $stateDifferences,
+            'tx_newsletter_domain_model_link LEFT JOIN tx_newsletter_domain_model_linkopened ON (tx_newsletter_domain_model_linkopened.link = tx_newsletter_domain_model_link.uid)',
+            'tx_newsletter_domain_model_link.newsletter = ' . $uidNewsletter,
+            [
                 'open_time' => ['increment' => 'linkOpenedCount'],
             ]
         );
 
         // Find out the very first event (when the newsletter was planned)
         $plannedTime = $newsletter ? $newsletter->getPlannedTime() : null;
-        $emailCount = $newsletter ? $newsletter->getEmailCount() : $emailCount; // We re-calculate email count so get correct number if newsletter is not sent yet
+        $emailCount = $newsletter ? $newsletter->getEmailCount(
+        ) : $emailCount; // We re-calculate email count so get correct number if newsletter is not sent yet
         $previousState = [
-            'time' => $plannedTime ? (int) $plannedTime->format('U') : null,
+            'time' => $plannedTime ? (int)$plannedTime->format('U') : null,
             'emailNotSentCount' => $emailCount,
             'emailSentCount' => 0,
             'emailOpenedCount' => 0,
@@ -233,7 +244,7 @@ class NewsletterRepository extends AbstractRepository
         $db = Tools::getDatabaseConnection();
 
         // Apply limit of emails per round
-        $mails_per_round = (int) Tools::confParam('mails_per_round');
+        $mails_per_round = (int)Tools::confParam('mails_per_round');
         if ($mails_per_round) {
             $limit = ' LIMIT ' . $mails_per_round;
         } else {
@@ -248,12 +259,14 @@ class NewsletterRepository extends AbstractRepository
         }
 
         // Find the uid of emails and newsletters that need to be sent
-        $rs = $db->sql_query('SELECT tx_newsletter_domain_model_newsletter.uid AS newsletter, tx_newsletter_domain_model_email.uid AS email
+        $rs = $db->sql_query(
+            'SELECT tx_newsletter_domain_model_newsletter.uid AS newsletter, tx_newsletter_domain_model_email.uid AS email
 						FROM tx_newsletter_domain_model_email
 						INNER JOIN tx_newsletter_domain_model_newsletter ON (tx_newsletter_domain_model_email.newsletter = tx_newsletter_domain_model_newsletter.uid)
 						WHERE tx_newsletter_domain_model_email.begin_time = 0
                         ' . $newsletterUid . '
-						ORDER BY tx_newsletter_domain_model_email.newsletter ' . $limit);
+						ORDER BY tx_newsletter_domain_model_email.newsletter ' . $limit
+        );
 
         $result = [];
         while ($record = $db->sql_fetch_assoc($rs)) {

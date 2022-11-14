@@ -4,7 +4,7 @@
   "description": "TYPO3 extension to send any pages as Newsletter and provide statistics on opened emails and clicked links.",
   "homepage": "https://github.com/Mirko-Solutions/newsletter",
   "license": "GPL-2.0+",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "keywords": [
     "TYPO3 CMS",
     "TYPO3",
@@ -13,14 +13,15 @@
     "statistics"
   ],
   "require": {
-    "php": ">=5.6.0",
+    "php": ">=7.4.0",
     "ext-dom": "*",
     "ext-openssl": "*",
-    "typo3/cms-backend": "^7.6 || ^8.7",
-    "typo3/cms-core": "^7.6 || ^8.7",
-    "typo3/cms-extbase": "^7.6 || ^8.7",
-    "typo3/cms-fluid": "^7.6 || ^8.7",
-    "typo3/cms-scheduler": "^7.6 || ^8.7"
+    "friendsoftypo3/typo3db-legacy": ">=1.1.2",
+    "typo3/cms-backend": "^11.5",
+    "typo3/cms-core": "^11.5",
+    "typo3/cms-extbase": "^11.5",
+    "typo3/cms-fluid": "^11.5",
+    "typo3/cms-scheduler": "^11.5"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.1"

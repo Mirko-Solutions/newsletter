@@ -7,9 +7,11 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Utility\UriBuilder;
 use Swift_Attachment;
 use Swift_EmbeddedFile;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * This is the holy inner core of newsletter.
@@ -21,20 +23,35 @@ class Mailer
      * @var Newsletter
      */
     private $newsletter;
+
     private $html;
+
     private $htmlTemplate;
+
     private $title;
+
     private $titleTemplate;
+
     private $senderName;
+
     private $senderEmail;
+
     private $replytoName;
+
     private $replytoEmail;
+
     private $bounceAddress;
+
     private $siteUrl;
+
     private $homeUrl;
+
     private $attachments = [];
+
     private $attachmentsEmbedded = [];
+
     private $attachmentsMapping = [];
+
     private $linksCache = [];
 
     /**
@@ -49,6 +66,10 @@ class Mailer
      */
     private $domain;
 
+    private string $realPath;
+
+    private array $extConf;
+
     /**
      * Constructor that set up basic internal data structures. Do not call directly
      */
@@ -57,8 +78,8 @@ class Mailer
         global $TYPO3_CONF_VARS;
 
         /* Read some basic settings */
-        $this->extConf = unserialize($TYPO3_CONF_VARS['EXT']['extConf']['newsletter']);
-        $this->realPath = PATH_site;
+        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
+        $this->realPath = Environment::getPublicPath() . '/';
         $this->substitutor = new Utility\MarkerSubstitutor();
     }
 
@@ -76,9 +97,7 @@ class Mailer
     public function getPlain()
     {
         $plainConverter = $this->newsletter->getPlainConverterInstance();
-        $plainText = $plainConverter->getPlaintext($this->getHtml(), $this->domain);
-
-        return $plainText;
+        return $plainConverter->getPlaintext($this->getHtml(), $this->domain);
     }
 
     /**
@@ -95,7 +114,9 @@ class Mailer
         $this->siteUrl = $newsletter->getBaseUrl() . '/';
         $this->linksCache = [];
         $this->newsletter = $newsletter;
-        $this->homeUrl = $this->siteUrl . ExtensionManagementUtility::siteRelPath('newsletter');
+        $this->homeUrl = $this->siteUrl . PathUtility::stripPathSitePrefix(
+                ExtensionManagementUtility::extPath('newsletter')
+            );
         $this->senderName = $newsletter->getSenderName();
         $this->senderEmail = $newsletter->getSenderEmail();
         $this->replytoName = $newsletter->getReplytoName();
@@ -107,7 +128,11 @@ class Mailer
         // Build html
         $validatedContent = $newsletter->getValidatedContent($language);
         if (count($validatedContent['errors'])) {
-            throw new \Exception('The newsletter HTML content does not validate. The sending is aborted. See errors: ' . serialize($validatedContent['errors']));
+            throw new \Exception(
+                'The newsletter HTML content does not validate. The sending is aborted. See errors: ' . serialize(
+                    $validatedContent['errors']
+                )
+            );
         }
         $this->setHtml($validatedContent['content']);
 
@@ -118,8 +143,8 @@ class Mailer
         $files = $newsletter->getAttachments();
         foreach ($files as $file) {
             if (trim($file) != '') {
-                $filename = PATH_site . "uploads/tx_newsletter/$file";
-                $this->attachments[] = Swift_Attachment::fromPath($filename);
+                $filename = Environment::getPublicPath() . "/uploads/tx_newsletter/$file";
+                $this->attachments[] = $filename;
             }
         }
     }
@@ -223,9 +248,11 @@ class Mailer
         // If the same image was already embeded, reuse its marker, otherwise create a marker and keep the embed files to be replaced
         if (isset($this->attachmentsMapping[$absolutePath])) {
             return $this->attachmentsMapping[$absolutePath];
-        } elseif (file_exists($absolutePath)) {
+        }
+
+        if (file_exists($absolutePath)) {
             $swiftEmbeddedMarker = '###_#_SWIFT_EMBEDDED_MARKER_' . count($this->attachmentsEmbedded) . '_#_###';
-            $this->attachmentsEmbedded[$swiftEmbeddedMarker] = Swift_EmbeddedFile::fromPath($absolutePath);
+            $this->attachmentsEmbedded[$swiftEmbeddedMarker] = $absolutePath;
             $this->attachmentsMapping[$absolutePath] = $swiftEmbeddedMarker;
 
             return $swiftEmbeddedMarker;
@@ -241,7 +268,11 @@ class Mailer
     {
         $url = $email->getOpenedUrl();
 
-        $this->html = str_ireplace('</body>', '<div><img src="' . $url . '" width="0" height="0" /></div></body>', $this->html);
+        $this->html = str_ireplace(
+            '</body>',
+            '<div><img src="' . $url . '" width="0" height="0" /></div></body>',
+            $this->html
+        );
     }
 
     /**
@@ -288,17 +319,28 @@ class Mailer
         } // Finally if it's not a preview and link was not in cache, check database
         else {
             // Look for the link database, it may already exist
-            $res = $db->sql_query('SELECT uid FROM tx_newsletter_domain_model_link WHERE url = ' . $db->fullQuoteStr($url, 'tx_newsletter_domain_model_link') . ' AND newsletter = ' . $db->fullQuoteStr($this->newsletter->getUid(), 'tx_newsletter_domain_model_link') . ' LIMIT 1');
+            $res = $db->sql_query(
+                'SELECT uid FROM tx_newsletter_domain_model_link WHERE url = ' . $db->fullQuoteStr(
+                    $url,
+                    'tx_newsletter_domain_model_link'
+                ) . ' AND newsletter = ' . $db->fullQuoteStr(
+                    $this->newsletter->getUid(),
+                    'tx_newsletter_domain_model_link'
+                ) . ' LIMIT 1'
+            );
             $row = $db->sql_fetch_row($res);
             if ($row) {
                 $linkId = $row[0];
             } // Otherwise create it
             else {
-                $db->exec_INSERTquery('tx_newsletter_domain_model_link', [
-                    'pid' => $this->newsletter->getPid(),
-                    'url' => $url,
-                    'newsletter' => $this->newsletter->getUid(),
-                ]);
+                $db->exec_INSERTquery(
+                    'tx_newsletter_domain_model_link',
+                    [
+                        'pid' => $this->newsletter->getPid(),
+                        'url' => $url,
+                        'newsletter' => $this->newsletter->getUid(),
+                    ]
+                );
 
                 $linkId = $db->sql_insert_id();
             }
@@ -314,7 +356,7 @@ class Mailer
         if ($isPlainText) {
             $arguments['p'] = 1;
         }
-        $newUrl = UriBuilder::buildFrontendUri($email->getPid(), 'Link', 'clicked', $arguments);
+        $newUrl = UriBuilder::buildFrontendUri($email->getPid(), 'Link', 'clicked', $arguments) . '&type=1342671779';
 
         return $newUrl;
     }
@@ -392,17 +434,23 @@ class Mailer
     {
         // Possibly override sender info from recipientData
         $recipientData = $email->getRecipientData();
-        $senderEmail = isset($recipientData['sender_email']) && GeneralUtility::validEmail($recipientData['sender_email']) ? $recipientData['sender_email'] : $this->senderEmail;
+        $senderEmail = isset($recipientData['sender_email']) && GeneralUtility::validEmail(
+            $recipientData['sender_email']
+        ) ? $recipientData['sender_email'] : $this->senderEmail;
         $senderName = isset($recipientData['sender_name']) && $recipientData['sender_name'] ? $recipientData['sender_name'] : $this->senderName;
-        $replytoEmail = isset($recipientData['replyto_email']) && GeneralUtility::validEmail($recipientData['replyto_email']) ? $recipientData['replyto_email'] : $this->replytoEmail;
+        $replytoEmail = isset($recipientData['replyto_email']) && GeneralUtility::validEmail(
+            $recipientData['replyto_email']
+        ) ? $recipientData['replyto_email'] : $this->replytoEmail;
         $replytoName = isset($recipientData['replyto_name']) && $recipientData['replyto_name'] ? $recipientData['replyto_name'] : $this->replytoName;
 
         /* @var $message MailMessage */
         $message = GeneralUtility::makeInstance(MailMessage::class);
         $message->setTo($email->getRecipientAddress())
-            ->setFrom([
-                $senderEmail => $senderName,
-            ])
+            ->setFrom(
+                [
+                    $senderEmail => $senderName,
+                ]
+            )
             ->setSubject($this->title);
 
         if ($replytoEmail) {
@@ -412,7 +460,10 @@ class Mailer
         $unsubscribeUrls = ['<' . $email->getUnsubscribeUrl() . '>'];
         if ($this->bounceAddress) {
             $message->setReturnPath($this->bounceAddress);
-            array_unshift($unsubscribeUrls, '<mailto:' . $this->bounceAddress . '?subject=unsubscribe-' . $email->getAuthCode() . '>');
+            array_unshift(
+                $unsubscribeUrls,
+                '<mailto:' . $this->bounceAddress . '?subject=unsubscribe-' . $email->getAuthCode() . '>'
+            );
         }
 
         // Add header for easy unsubscribe, either by email, or standard URL
@@ -425,23 +476,24 @@ class Mailer
 
         // Specify message-id for bounce identification
         $msgId = $message->getHeaders()->get('Message-ID');
-        $msgId->setId($email->getAuthCode() . '@' . $this->domain);
+
+        if ($msgId) {
+            $msgId->setId($email->getAuthCode() . '@' . $this->domain);
+        }
 
         // Build plaintext
         $plain = $this->getPlain();
 
         if ($recipientData['plain_only']) {
-            $message->setBody($plain, 'text/plain');
+            $message->html($plain, 'text/plain');
         } else {
             // Attach inline files and replace markers used for URL
             foreach ($this->attachmentsEmbedded as $marker => $attachment) {
-                $embeddedSrc = $message->embed($attachment);
-                $plain = str_replace($marker, $embeddedSrc, $plain);
-                $this->html = str_replace($marker, $embeddedSrc, $this->html);
+                $embeddedSrc = $message->embedFromPath($attachment);
+                $this->html = str_replace($marker, $embeddedSrc->toString(), $this->html);
             }
 
-            $message->setBody($this->html, 'text/html');
-            $message->addPart($plain, 'text/plain');
+            $message->html($this->html, 'text/html');
         }
 
         return $message;

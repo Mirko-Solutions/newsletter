@@ -2,22 +2,23 @@
 
 namespace Mirko\Newsletter\Controller;
 
-use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
-use Mirko\Newsletter\MVC\Controller\ExtDirectActionController;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Mirko\Newsletter\MVC\Controller\ApiActionController;
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 
 /**
  * Controller for the RecipientList object
  */
-class RecipientListController extends ExtDirectActionController
+class RecipientListController extends ApiActionController
 {
     /**
      * recipientListRepository
      *
      * @var RecipientListRepository
      */
-    protected $recipientListRepository;
+    protected RecipientListRepository $recipientListRepository;
 
     /**
      * injectRecipientListRepository
@@ -44,18 +45,27 @@ class RecipientListController extends ExtDirectActionController
         }
 
         $this->view->setVariablesToRender(['total', 'data', 'success', 'flashMessages']);
-        $this->view->setConfiguration([
-            'data' => [
-                '_descendAll' => self::resolveJsonViewConfiguration(),
-            ],
-        ]);
+        $this->view->setConfiguration(
+            [
+                'data' => [
+                    '_descendAll' => self::resolveJsonViewConfiguration(),
+                ],
+            ]
+        );
 
-        $this->addFlashMessage('Loaded RecipientLists from Server side.', 'RecipientLists loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded RecipientLists from Server side.',
+            'RecipientLists loaded successfully',
+            AbstractMessage::NOTICE
+        );
 
         $this->view->assign('total', $recipientLists->count());
         $this->view->assign('data', $recipientLists);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
     }
 
     /**
@@ -65,7 +75,7 @@ class RecipientListController extends ExtDirectActionController
      * @param int $start
      * @param int $limit
      */
-    public function listRecipientAction($uidRecipientList, $start, $limit)
+    public function listRecipientAction(int $uidRecipientList, int $start, int $limit)
     {
         $recipientLists = $this->recipientListRepository->findByUidInitialized($uidRecipientList);
 
@@ -95,13 +105,20 @@ class RecipientListController extends ExtDirectActionController
             }
         }
 
-        $this->addFlashMessage('Loaded Recipients from Server side.', 'Recipients loaded successfully', FlashMessage::NOTICE);
+        $this->addFlashMessage(
+            'Loaded Recipients from Server side.',
+            'Recipients loaded successfully',
+            AbstractMessage::NOTICE
+        );
 
         $this->view->assign('metaData', $metaData);
         $this->view->assign('total', $recipientLists->getCount());
         $this->view->assign('data', $recipients);
         $this->view->assign('success', true);
-        $this->view->assign('flashMessages', $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush());
+        $this->view->assign(
+            'flashMessages',
+            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+        );
         $this->view->setVariablesToRender(['metaData', 'total', 'data', 'success', 'flashMessages']);
     }
 
@@ -122,7 +139,7 @@ class RecipientListController extends ExtDirectActionController
         }
 
         $recipientList = $this->recipientListRepository->findByUidInitialized($uidRecipientList);
-        if (GeneralUtility::stdAuthCode($recipientList->_getCleanProperties()) != $authCode) {
+        if (GeneralUtility::stdAuthCode($recipientList->_getCleanProperties()) !== $authCode) {
             $this->response->setStatus(401);
 
             return 'not authorized !';
@@ -132,7 +149,11 @@ class RecipientListController extends ExtDirectActionController
 
         $this->response->setHeader('Content-Type', 'text/' . $format, true);
         $this->response->setHeader('Content-Description', 'File transfer', true);
-        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $title . '.' . $format . '"', true);
+        $this->response->setHeader(
+            'Content-Disposition',
+            'attachment; filename="' . $title . '.' . $format . '"',
+            true
+        );
 
         $recipients = [];
         while ($recipient = $recipientList->getRecipient()) {
@@ -157,7 +178,7 @@ class RecipientListController extends ExtDirectActionController
      *
      * @return array
      */
-    public static function resolveJsonViewConfiguration()
+    public static function resolveJsonViewConfiguration(): array
     {
         return [
             '_exposeObjectIdentifier' => true,

@@ -7,6 +7,7 @@ use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
 
 /**
  * Link
@@ -25,7 +26,7 @@ class Link extends AbstractEntity
      * Here the type is intentionally wrong because for some reasons it does not
      * work in TYPO3 7.3 and older if we specify the correct type of Newsletter
      *
-     * @lazy
+     * @Extbase\ORM\Lazy
      * @var int
      */
     protected $newsletter;

@@ -7,17 +7,17 @@ if (!defined('TYPO3_MODE')) {
 // ========== Register BE Modules
 if (TYPO3_MODE == 'BE') {
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Mirko.' . $_EXTKEY,
+        'Mirko.newsletter',
         'web', // Make newsletter module a submodule of 'user'
         'tx_newsletter_m1', // Submodule key
         'before:info', // Position
         [
-            'Module' => 'index',
-            'Newsletter' => 'list, listPlanned, create, statistics',
-            'Email' => 'list',
-            'Link' => 'list',
-            'BounceAccount' => 'list',
-            'RecipientList' => 'list, listRecipient',
+            \Mirko\Newsletter\Controller\ModuleController::class => 'newsletter, statistics',
+            \Mirko\Newsletter\Controller\NewsletterController::class => 'list, listPlanned, create, statistics',
+            \Mirko\Newsletter\Controller\EmailController::class => 'list',
+            \Mirko\Newsletter\Controller\LinkController::class => 'list',
+            \Mirko\Newsletter\Controller\BounceAccountController::class => 'list',
+            \Mirko\Newsletter\Controller\RecipientListController::class => 'list, listRecipient',
         ],
         [
             'access' => 'user,group',
@@ -27,17 +27,62 @@ if (TYPO3_MODE == 'BE') {
     );
 }
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_newsletter_domain_model_newsletter', 'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_newsletter.xlf');
+\Mirko\Newsletter\Utility\BackendDataProviderRegistration::registerBackendDataProvider(
+    'newsletter',
+    'status',
+    \Mirko\Newsletter\DataProvider\Backend\StatusPageDataProvider::class
+);
+\Mirko\Newsletter\Utility\BackendDataProviderRegistration::registerBackendDataProvider(
+    'newsletter',
+    'sending',
+    \Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider::class
+);
+\Mirko\Newsletter\Utility\BackendDataProviderRegistration::registerBackendDataProvider(
+    'statistics',
+    'overview',
+    \Mirko\Newsletter\DataProvider\Backend\StatisticPageDataProvider::class
+);
+
+
+\Mirko\Newsletter\Utility\PlainConverterRegistration::registerPlainConverter(
+    'builtin',
+    \Mirko\Newsletter\Domain\Model\PlainConverter\Lynx::class
+);
+\Mirko\Newsletter\Utility\PlainConverterRegistration::registerPlainConverter(
+    'lynx',
+    \Mirko\Newsletter\Domain\Model\PlainConverter\Builtin::class
+);
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
+    'tx_newsletter_domain_model_newsletter',
+    'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_newsletter.xlf'
+);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_newsletter_domain_model_newsletter');
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_newsletter_domain_model_bounceaccount', 'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_bounceaccount.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_newsletter_domain_model_bounceaccount');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
+    'tx_newsletter_domain_model_bounceaccount',
+    'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_bounceaccount.xlf'
+);
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages(
+    'tx_newsletter_domain_model_bounceaccount'
+);
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_newsletter_domain_model_recipientlist', 'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_recipientlist.xlf');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_newsletter_domain_model_recipientlist');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
+    'tx_newsletter_domain_model_recipientlist',
+    'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_recipientlist.xlf'
+);
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages(
+    'tx_newsletter_domain_model_recipientlist'
+);
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_newsletter_domain_model_email', 'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_email.xlf');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
+    'tx_newsletter_domain_model_email',
+    'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_email.xlf'
+);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_newsletter_domain_model_email');
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_newsletter_domain_model_link', 'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_link.xlf');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
+    'tx_newsletter_domain_model_link',
+    'EXT:newsletter/Resources/Private/Language/locallang_csh_tx_newsletter_domain_model_link.xlf'
+);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_newsletter_domain_model_link');
