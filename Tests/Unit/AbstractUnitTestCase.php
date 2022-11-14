@@ -13,7 +13,7 @@ class AbstractUnitTestCase extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
         if (is_readable($path)) {
             $allConfig = $manager->getLocalConfiguration();
-            $config = $allConfig['EXT']['extConf']['newsletter'];
+            $config = $allConfig['EXTENSIONS']['newsletter'];
         }
 
         if (!isset($config)) {
@@ -24,6 +24,6 @@ class AbstractUnitTestCase extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ]);
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['newsletter'] = $config;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['newsletter'] = $config;
     }
 }

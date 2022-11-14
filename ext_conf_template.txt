@@ -30,3 +30,9 @@ mails_per_round = 100
 
 # cat=basic; type=string; label=Redirect page (pid|url) on unsubscribe: If this value is set, on unsubscribe the user will be redirected to the corresponding page.
 unsubscribe_redirect =
+
+# cat=basic; type=string; label=Default replyTo name: Specify default value for replyTo name. Can be overridden for each newsletter.
+replyto_name =
+
+# cat=basic; type=string; label=Default replyTo email: Specify default value for replyTo email name. Can be overridden for each newsletter.
+replyto_email =

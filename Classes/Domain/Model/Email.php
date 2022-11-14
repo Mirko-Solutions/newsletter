@@ -324,7 +324,7 @@ class Email extends AbstractEntity implements EmailInterface
      */
     private function getUriArguments()
     {
-        $args = ['c' => $this->getAuthCode()];
+        $args = ['c' => $this->getAuthCode(), 'type' => 1342671779];
 
         $recipientData = $this->getRecipientData();
         $language = array_key_exists('L', $recipientData) ? $recipientData['L'] : 0;

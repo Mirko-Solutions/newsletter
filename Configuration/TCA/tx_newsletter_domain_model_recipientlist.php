@@ -16,7 +16,6 @@ return [
     'interface' => [
         'showRecordFieldList' => 'hidden,title',
     ],
-    'feInterface' => $TCA['tx_newsletter_domain_model_recipientlist']['feInterface'],
     'columns' => [
         'hidden' => [
             'exclude' => 1,

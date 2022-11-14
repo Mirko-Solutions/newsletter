@@ -73,7 +73,7 @@ class Newsletter extends AbstractEntity
      *
      * @var string
      */
-    protected $attachments;
+    protected string $attachments = '';
 
     /**
      * The name of the newsletter sender

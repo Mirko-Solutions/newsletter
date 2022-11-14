@@ -3,11 +3,13 @@
 namespace Mirko\Newsletter;
 
 use DateTime;
+use GuzzleHttp\Exception\RequestException;
 use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -21,7 +23,7 @@ class Tools
 {
     private static $configuration = null;
 
-    private static $OPEN_SSL_CIPHER = 'aes-256-cbc';
+    private static string $OPEN_SSL_CIPHER = 'aes-256-cbc';
 
     private EmailRepository $emailRepository;
 
@@ -52,7 +54,9 @@ class Tools
         // Look for a config in the module TS first.
         static $configTS;
         if (!is_array($configTS)) {
-            $configTS = $backendConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            $configTS = $backendConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                ExtensionConfiguration::class
+            )
                 ->get('newsletter');
         }
 
@@ -62,10 +66,10 @@ class Tools
 
         // Else fallback to the extension config.
         if (!is_array(self::$configuration)) {
-            self::$configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['newsletter']);
+            self::$configuration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
         }
 
-        return self::$configuration[$key];
+        return self::$configuration[$key] ?? null;
     }
 
     /**
@@ -96,9 +100,12 @@ class Tools
         $mailer->setNewsletter($newsletter, $language);
 
         // hook for modifying the mailer before finish preconfiguring
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['newsletter']['getConfiguredMailerHook'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['newsletter']['getConfiguredMailerHook'] as $_classRef) {
-                $_procObj = GeneralUtility::getUserObj($_classRef);
+        if (array_key_exists(
+                'getConfiguredMailerHook',
+                $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']
+            ) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'] as $_classRef) {
+                $_procObj = GeneralUtility::makeInstance($_classRef);
                 $mailer = $_procObj->getConfiguredMailerHook($mailer, $newsletter);
             }
         }
@@ -218,10 +225,10 @@ class Tools
             /** @var Email $email */
             $email = $this->emailRepository->findByUid($emailUid);
             $recipientData = $email->getRecipientData();
-            $language = $recipientData['L'];
+            $language = $recipientData['L'] ?? '';
 
             // Was a language with this page defined, if not create one
-            if (!is_object($mailers[$language])) {
+            if (!array_key_exists($language, $mailers) || !is_object($mailers[$language])) {
                 $mailers[$language] = self::getConfiguredMailer($newsletter, $language);
             }
 
@@ -316,17 +323,85 @@ class Tools
      *
      * @return string
      */
-    public static function getUrl($url)
+    public static function getUrl($url, $includeHeader = 0, $requestHeaders = null, &$report = null)
     {
         // Specify User-Agent header if we fetch an URL, but not if it's a file on disk
         if (Utility\Uri::isAbsolute($url)) {
-            $headers = [self::getUserAgent()];
-        } else {
-            $headers = null;
+            $requestHeaders = [self::getUserAgent()];
         }
 
-        $report = [];
-        $content = GeneralUtility::getUrl($url, 0, $headers, $report);
+        if (isset($report)) {
+            $report['error'] = 0;
+            $report['message'] = '';
+        }
+        // Looks like it's an external file, use Guzzle by default
+        if (preg_match('/^(?:http|ftp)s?|s(?:ftp|cp):/', $url)) {
+            $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
+            if (is_array($requestHeaders)) {
+                $configuration = ['headers' => $requestHeaders];
+            } else {
+                $configuration = [];
+            }
+            $includeHeader = (int)$includeHeader;
+            $method = $includeHeader === 2 ? 'HEAD' : 'GET';
+            try {
+                if (isset($report)) {
+                    $report['lib'] = 'GuzzleHttp';
+                }
+                $response = $requestFactory->request($url, $method, $configuration);
+            } catch (RequestException $exception) {
+                if (isset($report)) {
+                    $report['error'] = $exception->getCode() ?: 1518707554;
+                    $report['message'] = $exception->getMessage();
+                    $report['exception'] = $exception;
+                }
+                return false;
+            }
+            $content = '';
+            // Add the headers to the output
+            if ($includeHeader) {
+                $parsedURL = parse_url($url);
+                $content = $method . ' ' . ($parsedURL['path'] ?? '/')
+                    . (!empty($parsedURL['query']) ? '?' . $parsedURL['query'] : '') . ' HTTP/1.0' . CRLF
+                    . 'Host: ' . $parsedURL['host'] . CRLF
+                    . 'Connection: close' . CRLF;
+                if (is_array($requestHeaders)) {
+                    $content .= implode(CRLF, $requestHeaders) . CRLF;
+                }
+                foreach ($response->getHeaders() as $headerName => $headerValues) {
+                    $content .= $headerName . ': ' . implode(', ', $headerValues) . CRLF;
+                }
+                // Headers are separated from the body with two CRLFs
+                $content .= CRLF;
+            }
+
+            $content .= $response->getBody()->getContents();
+
+            if (isset($report)) {
+                if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+                    $report['http_code'] = $response->getStatusCode();
+                    $report['content_type'] = $response->getHeaderLine('Content-Type');
+                    $report['error'] = $response->getStatusCode();
+                    $report['message'] = $response->getReasonPhrase();
+                } elseif (empty($content)) {
+                    $report['error'] = $response->getStatusCode();
+                    $report['message'] = $response->getReasonPhrase();
+                } elseif ($includeHeader) {
+                    // Set only for $includeHeader to work exactly like PHP variant
+                    $report['http_code'] = $response->getStatusCode();
+                    $report['content_type'] = $response->getHeaderLine('Content-Type');
+                }
+            }
+        } else {
+            if (isset($report)) {
+                $report['lib'] = 'file';
+            }
+            $content = @file_get_contents($url);
+            if ($content === false && isset($report)) {
+                $report['error'] = -1;
+                $report['message'] = 'Couldn\'t get URL: ' . $url;
+            }
+        }
 
         // Throw Exception if content could not be fetched so that it is properly caught in Validator
         if ($content === false) {

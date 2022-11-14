@@ -301,7 +301,7 @@ define(
                     {
                         headerName: "View",
                         cellRenderer: (data) => {
-                            return '<a href="' + emailShowUrl + ' \'&type=1342671779&injectOpenSpy=0&injectLinksSpy=0&c=' + data.data['authCode'] + '">view</a>';
+                            return '<a href="' + emailShowUrl + '&type=1342671779&injectOpenSpy=0&injectLinksSpy=0&c=' + data.data['authCode'] + '">view</a>';
                         }
                     },
                 ],

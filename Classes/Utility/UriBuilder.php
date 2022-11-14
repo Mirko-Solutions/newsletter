@@ -109,6 +109,7 @@ abstract class UriBuilder
                 $uri = Tools::getBaseUrl($currentPid) . $uri;
             }
 
+            $uri = static::removeCHash($uri);
             self::$uriCache[$cacheKey] = $uri;
         }
 
@@ -120,6 +121,24 @@ abstract class UriBuilder
         }
 
         return $uri;
+    }
+
+    /**
+     * @param $uri
+     * @return string
+     */
+    private static function removeCHash($uri): string
+    {
+        $parsedUrl = parse_url($uri);
+
+        $query = $parsedUrl['query'];
+
+        parse_str($query, $params);
+
+        unset($params['cHash']);
+        $params = http_build_query($params);
+
+        return "{$parsedUrl['scheme']}://{$parsedUrl['host']}:{$parsedUrl['port']}{$parsedUrl['path']}?{$params}";
     }
 
     /**

@@ -66,6 +66,10 @@ class Mailer
      */
     private $domain;
 
+    private string $realPath;
+
+    private array $extConf;
+
     /**
      * Constructor that set up basic internal data structures. Do not call directly
      */
@@ -74,7 +78,7 @@ class Mailer
         global $TYPO3_CONF_VARS;
 
         /* Read some basic settings */
-        $this->extConf = unserialize($TYPO3_CONF_VARS['EXT']['extConf']['newsletter']);
+        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
         $this->realPath = Environment::getPublicPath() . '/';
         $this->substitutor = new Utility\MarkerSubstitutor();
     }
@@ -93,9 +97,7 @@ class Mailer
     public function getPlain()
     {
         $plainConverter = $this->newsletter->getPlainConverterInstance();
-        $plainText = $plainConverter->getPlaintext($this->getHtml(), $this->domain);
-
-        return $plainText;
+        return $plainConverter->getPlaintext($this->getHtml(), $this->domain);
     }
 
     /**
@@ -246,9 +248,11 @@ class Mailer
         // If the same image was already embeded, reuse its marker, otherwise create a marker and keep the embed files to be replaced
         if (isset($this->attachmentsMapping[$absolutePath])) {
             return $this->attachmentsMapping[$absolutePath];
-        } elseif (file_exists($absolutePath)) {
+        }
+
+        if (file_exists($absolutePath)) {
             $swiftEmbeddedMarker = '###_#_SWIFT_EMBEDDED_MARKER_' . count($this->attachmentsEmbedded) . '_#_###';
-            $this->attachmentsEmbedded[$swiftEmbeddedMarker] = Swift_EmbeddedFile::fromPath($absolutePath);
+            $this->attachmentsEmbedded[$swiftEmbeddedMarker] = $absolutePath;
             $this->attachmentsMapping[$absolutePath] = $swiftEmbeddedMarker;
 
             return $swiftEmbeddedMarker;
@@ -351,9 +355,8 @@ class Mailer
         $arguments['l'] = $authCode;
         if ($isPlainText) {
             $arguments['p'] = 1;
-            $arguments['type'] = 1342671779;
         }
-        $newUrl = UriBuilder::buildFrontendUri($email->getPid(), 'Link', 'clicked', $arguments);
+        $newUrl = UriBuilder::buildFrontendUri($email->getPid(), 'Link', 'clicked', $arguments) . '&type=1342671779';
 
         return $newUrl;
     }
@@ -486,7 +489,7 @@ class Mailer
         } else {
             // Attach inline files and replace markers used for URL
             foreach ($this->attachmentsEmbedded as $marker => $attachment) {
-                $embeddedSrc = $message->embed($attachment);
+                $embeddedSrc = $message->embedFromPath($attachment);
                 $this->html = str_replace($marker, $embeddedSrc->toString(), $this->html);
             }
 

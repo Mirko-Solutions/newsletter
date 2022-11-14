@@ -49,7 +49,7 @@ class MailerTest extends \Mirko\Newsletter\Tests\Functional\AbstractFunctionalTe
             'string_true' => 'foo',
         ]);
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['newsletter'] = serialize(['attach_images' => true]);
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['attach_images'] = true;
     }
 
     private function getData($pid, $injectOpenSpy, $injectLinksSpy)
