@@ -6,7 +6,7 @@ services:
 
   Mirko\Newsletter\:
     resource: '../Classes/*'
-    exclude: [ '../Classes/Domain/Model/*', '../Classes/Tca/*' ]
+    exclude: [  '../Classes/Tca/*' ]
 
   Mirko\Newsletter\DataProvider\Backend\SendingPageDataProvider:
     arguments:
@@ -17,12 +17,15 @@ services:
   Mirko\Newsletter\DataProvider\Backend\StatusPageDataProvider:
     arguments:
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+      $newsletterService: '@Mirko\Newsletter\Service\NewsletterService'
 
   Mirko\Newsletter\DataProvider\Backend\StatisticPageDataProvider:
     arguments:
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+      $newsletterService: '@Mirko\Newsletter\Service\NewsletterService'
 
   Mirko\Newsletter\Tools:
     arguments:
       $emailRepository: '@Mirko\Newsletter\Domain\Repository\EmailRepository'
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+      $newsletterService: '@Mirko\Newsletter\Service\NewsletterService'

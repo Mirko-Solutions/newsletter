@@ -110,8 +110,8 @@ class Mailer
      */
     public function setNewsletter(Newsletter $newsletter, $language = null)
     {
-        $this->domain = $newsletter->getDomain();
-        $this->siteUrl = $newsletter->getBaseUrl() . '/';
+        $this->domain = Tools::getDomain();
+        $this->siteUrl = Tools::getBaseUrl() . '/';
         $this->linksCache = [];
         $this->newsletter = $newsletter;
         $this->homeUrl = $this->siteUrl . PathUtility::stripPathSitePrefix(

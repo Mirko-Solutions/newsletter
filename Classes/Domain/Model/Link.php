@@ -39,19 +39,6 @@ class Link extends AbstractEntity
     protected $openedCount = 0;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
-     * Override parent to manually inject objectManager
-     */
-    public function initializeObject()
-    {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-    }
-
-    /**
      * Setter for url
      *
      * @param string $url url
@@ -88,7 +75,7 @@ class Link extends AbstractEntity
      */
     public function getNewsletter()
     {
-        $newsletterRepository = $this->objectManager->get(NewsletterRepository::class);
+        $newsletterRepository = GeneralUtility::makeInstance(NewsletterRepository::class);
 
         return $newsletterRepository->findByUid($this->newsletter);
     }
@@ -115,7 +102,7 @@ class Link extends AbstractEntity
 
     public function getOpenedPercentage()
     {
-        $emailRepository = $this->objectManager->get(EmailRepository::class);
+        $emailRepository = GeneralUtility::makeInstance(EmailRepository::class);
         $emailCount = $emailRepository->getCount($this->newsletter);
 
         if ($emailCount == 0) {

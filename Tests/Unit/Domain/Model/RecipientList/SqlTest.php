@@ -9,7 +9,7 @@ use Mirko\Newsletter\Domain\Model\RecipientList\Sql;
  */
 class SqlTest extends AbstractRecipientList
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Sql();
     }
@@ -28,7 +28,7 @@ class SqlTest extends AbstractRecipientList
     public function setSqlStatementForStringSetsSqlStatement()
     {
         $this->subject->setSqlStatement('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'sqlStatement', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getSqlStatement());
     }
 
     /**
@@ -45,7 +45,7 @@ class SqlTest extends AbstractRecipientList
     public function setSqlRegisterBounceForStringSetsSqlRegisterBounce()
     {
         $this->subject->setSqlRegisterBounce('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'sqlRegisterBounce', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getSqlRegisterBounce());
     }
 
     /**
@@ -62,6 +62,6 @@ class SqlTest extends AbstractRecipientList
     public function setSqlRegisterClickForStringSetsSqlRegisterClick()
     {
         $this->subject->setSqlRegisterClick('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'sqlRegisterClick', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getSqlRegisterClick());
     }
 }

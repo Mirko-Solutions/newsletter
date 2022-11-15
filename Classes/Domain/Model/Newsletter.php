@@ -4,20 +4,18 @@ namespace Mirko\Newsletter\Domain\Model;
 
 use DateTime;
 use DateTimeInterface;
+use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Core\Environment;
 use Mirko\Newsletter\Utility\Validator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use Mirko\Newsletter\Domain\Repository\BounceAccountRepository;
 use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Newsletter represents a page to be sent to a specific time to several recipients.
@@ -150,11 +148,6 @@ class Newsletter extends AbstractEntity
     protected $uidRecipientList;
 
     /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
      * @var Validator
      */
     protected $validator;
@@ -166,20 +159,6 @@ class Newsletter extends AbstractEntity
     {
         // Set default values for new newsletter
         $this->setPlannedTime(new DateTime());
-    }
-
-    /**
-     * Returns the ObjectManager
-     *
-     * @return ObjectManagerInterface
-     */
-    protected function getObjectManager()
-    {
-        if (!$this->objectManager) {
-            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        }
-
-        return $this->objectManager;
     }
 
     /**
@@ -627,7 +606,7 @@ class Newsletter extends AbstractEntity
      */
     public function setUidBounceAccount($uidBounceAccount = null)
     {
-        $bounceAccountRepository = $this->getObjectManager()->get(BounceAccountRepository::class);
+        $bounceAccountRepository = GeneralUtility::makeInstance(BounceAccountRepository::class);
         $bounceAccount = $bounceAccountRepository->findByUid($uidBounceAccount);
         $this->setBounceAccount($bounceAccount);
     }
@@ -682,59 +661,11 @@ class Newsletter extends AbstractEntity
      */
     public function setUidRecipientList($uidRecipientList)
     {
-        $recipientListRepository = $this->getObjectManager()->get(RecipientListRepository::class);
+        $recipientListRepository = GeneralUtility::makeInstance(RecipientListRepository::class);
         $recipientList = $recipientListRepository->findByUid($uidRecipientList);
         $this->setRecipientList($recipientList);
     }
 
-    /**
-     * Returns the proper base URL (scheme + domain + path) from which to fetch content for newsletter.
-     * This is either a sys_domain record from the page tree or the fetch_path property.
-     *
-     * @return string Base URL, eg: https://www.example.com/path
-     */
-    public function getBaseUrl()
-    {
-        // Is anything hardcoded from TYPO3_CONF_VARS ?
-        $domain = Tools::confParam('fetch_path');
-
-        // Else we try to resolve a domain in page root line
-
-        // Else we try to find it in sys_template (available at least since TYPO3 4.6 Introduction Package)
-        if (!$domain && $this->getPid()) {
-            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-
-            $domain = $siteFinder->getSiteByPageId($this->getPid())->getBase()->getHost();
-        }
-
-        if (!$domain) {
-            $domain = $_SERVER['HOSTNAME'];
-        }
-
-        // If still no domain, can't continue
-        if (!$domain) {
-            throw new \Exception(
-                "Could not find the domain name. Use Newsletter configuration page to set 'fetch_path'"
-            );
-        }
-
-        // Force scheme if found from domain record, or if fetch_path was not configured properly (before Newsletter 2.6.0)
-        if (!preg_match('~^https?://~', $domain)) {
-            $domain = 'http://' . $domain;
-        }
-
-        return $domain;
-    }
-
-    /**
-     * Get domain name
-     *
-     * @return string domain, eg: www.example.com
-     */
-    public function getDomain()
-    {
-        return parse_url($this->getBaseUrl(), PHP_URL_HOST);
-    }
 
     /**
      * Returns the title, NOT localized, of the page sent by this newsletter.
@@ -753,112 +684,6 @@ class Newsletter extends AbstractEntity
         }
 
         return $title;
-    }
-
-    /**
-     * Schedule the next newsletter if it defined to be repeated
-     */
-    public function scheduleNextNewsletter()
-    {
-        $plannedTime = $this->getPlannedTime();
-        [$year, $month, $day, $hour, $minute] = explode('-', date('Y-n-j-G-i', $plannedTime->format('U')));
-
-        switch ($this->getRepetition()) {
-            case 0:
-                return;
-            case 1:
-                ++$day;
-                break;
-            case 2:
-                $day += 7;
-                break;
-            case 3:
-                $day += 14;
-                break;
-            case 4:
-                ++$month;
-                break;
-            case 5:
-                $month += 3;
-                break;
-            case 6:
-                $month += 6;
-                break;
-            case 7:
-                ++$year;
-                break;
-        }
-        $newPlannedTime = mktime($hour, $minute, 0, $month, $day, $year);
-
-        // Clone this newsletter and give the new plannedTime
-        // We cannot use extbase because __clone() doesn't work and even if we clone manually the PID cannot be set
-        $db = Tools::getDatabaseConnection();
-        $db->sql_query(
-            "INSERT INTO tx_newsletter_domain_model_newsletter
-        (uid, pid, planned_time, begin_time, end_time, repetition, plain_converter, is_test, attachments, sender_name, sender_email, replyto_name, replyto_email, inject_open_spy, inject_links_spy, bounce_account, recipient_list)
-		SELECT null AS uid, pid, '$newPlannedTime' AS planned_time, 0 AS begin_time, 0 AS end_time, repetition, plain_converter, is_test, attachments, sender_name, sender_email, replyto_name, replyto_email, inject_open_spy, inject_links_spy, bounce_account, recipient_list
-		FROM tx_newsletter_domain_model_newsletter WHERE uid = " . $this->getUid()
-        );
-    }
-
-    /**
-     * Returns the count of recipient to which the newsletter was actually sent (or going to be sent if the process is not finished yet).
-     * This may differ from $newsletter->getRecipientList()->getCount()
-     * because the recipientList may change over time.
-     */
-    public function getEmailCount()
-    {
-        // If the newsletter didn't start, we rely on recipientList to tell us how many email there will be
-        if (!$this->getBeginTime()) {
-            $recipientList = $this->getRecipientList();
-            $recipientList->init();
-
-            return $recipientList->getCount();
-        }
-
-        $emailRepository = $this->getObjectManager()->get(EmailRepository::class);
-
-        return $emailRepository->getCount($this->uid);
-    }
-
-    /**
-     * Get the number of not yet sent email
-     */
-    public function getEmailNotSentCount()
-    {
-        $db = Tools::getDatabaseConnection();
-
-        // If the newsletter didn't start, then it means all emails are "not sent"
-        if (!$this->getBeginTime()) {
-            return $this->getEmailCount();
-        }
-
-        $numberOfNotSent = $db->exec_SELECTcountRows(
-            '*',
-            'tx_newsletter_domain_model_email',
-            'end_time = 0 AND newsletter = ' . $this->getUid()
-        );
-
-        return (int)$numberOfNotSent;
-    }
-
-    /**
-     * Returns the URL of the content of this newsletter
-     *
-     * @param int $language
-     *
-     * @return string
-     */
-    public function getContentUrl($language = null)
-    {
-        $append_url = Tools::confParam('append_url');
-        $baseUrl = $this->getBaseUrl();
-
-        if (!is_null($language)) {
-            $language = '&L=' . $language;
-        }
-
-        return $baseUrl . '/index.php?id=' . $this->getPid() . $language . $append_url;
     }
 
     /**
@@ -898,60 +723,17 @@ class Newsletter extends AbstractEntity
         return $this->getValidator()->validate($this, $language);
     }
 
-    /**
-     * Return a human readable status for the newsletter
-     *
-     * @return string
-     */
+
     public function getStatus()
     {
-        // Here we need to include the locallization file for ExtDirect calls, otherwise we get empty strings
-        global $LANG;
-        $LANG->includeLLFile('EXT:newsletter/Resources/Private/Language/locallang.xlf');
-
-        $plannedTime = $this->getPlannedTime();
-        $beginTime = $this->getBeginTime();
-        $endTime = $this->getEndTime();
-
-        // If we don't have a valid UID, it means we are a "fake model" newsletter not saved yet
-        if (!($this->getUid() > 0)) {
-            return $LANG->getLL('newsletter_status_not_planned');
-        }
-
-        if ($plannedTime && !$beginTime) {
-            return sprintf($LANG->getLL('newsletter_status_planned'), $plannedTime->format(DateTimeInterface::ATOM));
-        }
-
-        if ($beginTime && !$endTime) {
-            return $LANG->getLL('newsletter_status_generating_emails');
-        }
-
-        if ($beginTime && $endTime) {
-            $emailCount = $this->getEmailCount();
-            $emailNotSentCount = $this->getEmailNotSentCount();
-
-            if ($emailNotSentCount) {
-                return sprintf(
-                    $LANG->getLL('newsletter_status_sending'),
-                    $emailCount - $emailNotSentCount,
-                    $emailCount
-                );
-            }
-
-            return sprintf($LANG->getLL('newsletter_status_was_sent'), $endTime->format('D, d M y H:i:s'));
-        }
-
-        return 'unexpected status';
+        return GeneralUtility::makeInstance(NewsletterService::class)->getStatus($this);
     }
 
     /**
-     * Returns newsletter statistics to be used for pie and timeline chart
-     *
-     * @return array eg: array(array(time, emailNotSentCount, emailSentCount, emailOpenedCount, emailBouncedCount, emailCount, linkOpenedCount, linkCount, [and same fields but Percentage instead of Count] ))
+     * @return array
      */
     public function getStatistics()
     {
-        $newsletterRepository = $this->getObjectManager()->get(NewsletterRepository::class);
-        return $newsletterRepository->getStatistics($this);
+        return GeneralUtility::makeInstance(NewsletterService::class)->getStatistics($this);
     }
 }

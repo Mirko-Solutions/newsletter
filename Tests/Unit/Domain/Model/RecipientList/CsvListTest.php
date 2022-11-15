@@ -9,7 +9,7 @@ use Mirko\Newsletter\Domain\Model\RecipientList\CsvList;
  */
 class CsvListTest extends CsvFileTest
 {
-    protected function setUp()
+    protected function setUp():void
     {
         $this->subject = new CsvList();
     }
@@ -36,7 +36,8 @@ class CsvListTest extends CsvFileTest
     public function setCsvValuesForStringSetsCsvValues()
     {
         $this->subject->setCsvValues('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'csvValues', $this->subject);
+        $this->assertClassHasAttribute('csvValues', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getCsvValues());
     }
 
     protected function prepareDataForEnumeration()

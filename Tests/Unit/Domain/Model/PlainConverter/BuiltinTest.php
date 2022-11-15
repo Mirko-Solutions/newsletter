@@ -7,19 +7,19 @@ use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\PlainConverter\Builtin.
  */
-class BuiltinTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class BuiltinTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
      * @var Builtin
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Builtin();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }

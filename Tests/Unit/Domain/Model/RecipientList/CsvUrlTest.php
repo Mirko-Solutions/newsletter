@@ -9,7 +9,7 @@ use Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl;
  */
 class CsvUrlTest extends CsvFileTest
 {
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->subject = new CsvUrl();
     }
@@ -28,7 +28,7 @@ class CsvUrlTest extends CsvFileTest
     public function setCsvUrlForStringSetsCsvUrl()
     {
         $this->subject->setCsvUrl('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'csvUrl', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getCsvUrl());
     }
 
     protected function prepareDataForEnumeration()

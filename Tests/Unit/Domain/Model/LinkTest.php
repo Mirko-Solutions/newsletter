@@ -8,19 +8,19 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Link.
  */
-class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class LinkTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
      * @var Link
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Link();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }
@@ -39,7 +39,7 @@ class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function setUrlForStringSetsUrl()
     {
         $this->subject->setUrl('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'url', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getUrl());
     }
 
     /**
@@ -50,8 +50,9 @@ class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $newsletterFixture = new Newsletter();
         $this->subject->setNewsletter($newsletterFixture);
 
-        $this->assertAttributeSame(
-            $newsletterFixture, 'newsletter', $this->subject
+        $this->assertSame(
+            $newsletterFixture,
+            $this->subject->getNewsletter()
         );
     }
 
@@ -61,7 +62,8 @@ class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function getOpenedCountReturnsInitialValueForInteger()
     {
         $this->assertSame(
-            0, $this->subject->getOpenedCount()
+            0,
+            $this->subject->getOpenedCount()
         );
     }
 
@@ -72,8 +74,9 @@ class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $this->subject->setOpenedCount(12);
 
-        $this->assertAttributeSame(
-            12, 'openedCount', $this->subject
+        $this->assertSame(
+            12,
+            $this->subject->getOpenedCount()
         );
     }
 }

@@ -7,7 +7,7 @@ use Mirko\Newsletter\Utility\EmailParser;
 /**
  * Test case for class Mirko\Newsletter\Utility\EmailParser.
  */
-class EmailParserTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class EmailParserTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     public function dataProviderTestParser()
     {

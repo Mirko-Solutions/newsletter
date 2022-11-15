@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Controller;
 
 use DateTime;
+use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
@@ -34,6 +35,11 @@ class NewsletterController extends ApiActionController
     protected BounceAccountRepository $bounceAccountRepository;
 
     /**
+     * @var NewsletterService
+     */
+    private NewsletterService $newsletterService;
+
+    /**
      * injectNewsletterRepository
      *
      * @param NewsletterRepository $newsletterRepository
@@ -51,6 +57,16 @@ class NewsletterController extends ApiActionController
     public function injectBounceAccountRepository(BounceAccountRepository $bounceAccountRepository)
     {
         $this->bounceAccountRepository = $bounceAccountRepository;
+    }
+
+    /**
+     * injectNewsletterService
+     *
+     * @param NewsletterService $newsletterService
+     */
+    public function injectNewsletterService(NewsletterService $newsletterService)
+    {
+        $this->newsletterService = $newsletterService;
     }
 
     /**
@@ -236,6 +252,7 @@ class NewsletterController extends ApiActionController
      */
     public function statisticsAction(int $uidNewsletter)
     {
+        /** @var Newsletter $newsletter $newsletter */
         $newsletter = $this->newsletterRepository->findByUid($uidNewsletter);
 
         $this->view->setVariablesToRender(['data', 'success', 'total']);

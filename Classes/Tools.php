@@ -8,6 +8,7 @@ use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Service\NewsletterService;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -29,12 +30,16 @@ class Tools
 
     private NewsletterRepository $newsletterRepository;
 
+    private NewsletterService $newsletterService;
+
     public function __construct(
         EmailRepository $emailRepository,
-        NewsletterRepository $newsletterRepository
+        NewsletterRepository $newsletterRepository,
+        NewsletterService $newsletterService
     ) {
         $this->emailRepository = $emailRepository;
         $this->newsletterRepository = $newsletterRepository;
+        $this->newsletterService = $newsletterService;
     }
 
     public static function getInstance()
@@ -166,7 +171,7 @@ class Tools
         );
 
         // Schedule repeated newsletter if any
-        $newsletter->scheduleNextNewsletter();
+        $this->newsletterService->scheduleNextNewsletter($newsletter);
 
         // Unlock the newsletter by setting its end_time
         $newsletter->setEndTime(new DateTime());
@@ -448,13 +453,13 @@ class Tools
     }
 
     /**
-     * Returns the ObjectManager
+     * Get domain name
      *
-     * @return \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @return string domain, eg: www.example.com
      */
-    private static function getObjectManager()
+    public static function getDomain(): string
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        return parse_url(static::getBaseUrl(), PHP_URL_HOST);
     }
 
     /**

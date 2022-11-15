@@ -9,7 +9,7 @@ use Mirko\Newsletter\Domain\Model\RecipientList\CsvFile;
  */
 class CsvFileTest extends AbstractRecipientList
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new CsvFile();
     }
@@ -28,7 +28,7 @@ class CsvFileTest extends AbstractRecipientList
     public function setCsvSeparatorForStringSetsCsvSeparator()
     {
         $this->subject->setCsvSeparator('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'csvSeparator', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getCsvSeparator());
     }
 
     /**
@@ -45,7 +45,7 @@ class CsvFileTest extends AbstractRecipientList
     public function setCsvFieldsForStringSetsCsvFields()
     {
         $this->subject->setCsvFields('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'csvFields', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getCsvFields());
     }
 
     /**
@@ -62,13 +62,13 @@ class CsvFileTest extends AbstractRecipientList
     public function setCsvFilenameForStringSetsCsvFilename()
     {
         $this->subject->setCsvFilename('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'csvFilename', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getCsvFilename());
     }
 
     protected function prepareDataForEnumeration()
     {
-        $this->subject = $this->getMock(CsvFile::class, ['getPathname'], [], '', false);
-        $this->subject->expects($this->once())->method('getPathname')->will($this->returnValue(__DIR__));
+        $this->subject = new CsvFile();
+        $this->subject->expects($this->once())->method('getPathname')->willReturn(__DIR__);
         $this->subject->setCsvFilename('data.csv');
     }
 

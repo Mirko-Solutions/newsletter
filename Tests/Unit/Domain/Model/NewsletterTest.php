@@ -7,24 +7,26 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
 use Mirko\Newsletter\Domain\Model\PlainConverter\Lynx;
 use Mirko\Newsletter\Domain\Model\RecipientList\BeUsers;
+use Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase;
 
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Newsletter.
  */
-class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
+class NewsletterTest extends AbstractUnitTestCase
 {
     /**
      * @var Newsletter
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        $this->inicializeEnviroment();
         $this->loadConfiguration();
         $this->subject = new Newsletter();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }
@@ -50,7 +52,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         $this->assertNotNull($plannedTime);
 
         $plannedTime->setTime(0, 0, 0);
-        $this->assertSame($today->format(\DateTime::ISO8601), $plannedTime->format(\DateTime::ISO8601));
+        $this->assertSame($today->format(\DateTime::ATOM), $plannedTime->format(\DateTime::ATOM));
     }
 
     /**
@@ -61,9 +63,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         $dateTimeFixture = new \DateTime();
         $this->subject->setPlannedTime($dateTimeFixture);
 
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'plannedTime', $this->subject
-        );
+        $this->assertSame($dateTimeFixture, $this->subject->getPlannedTime());
     }
 
     /**
@@ -84,8 +84,9 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         $dateTimeFixture = new \DateTime();
         $this->subject->setBeginTime($dateTimeFixture);
 
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'beginTime', $this->subject
+        $this->assertSame(
+            $dateTimeFixture,
+            $this->subject->getBeginTime()
         );
     }
 
@@ -107,8 +108,9 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         $dateTimeFixture = new \DateTime();
         $this->subject->setEndTime($dateTimeFixture);
 
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'endTime', $this->subject
+        $this->assertSame(
+            $dateTimeFixture,
+            $this->subject->getEndTime()
         );
     }
 
@@ -118,7 +120,8 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     public function getRepetitionReturnsInitialValueForInteger()
     {
         $this->assertSame(
-            0, $this->subject->getRepetition()
+            0,
+            $this->subject->getRepetition()
         );
     }
 
@@ -129,8 +132,9 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->subject->setRepetition(12);
 
-        $this->assertAttributeSame(
-            12, 'repetition', $this->subject
+        $this->assertSame(
+            12,
+            $this->subject->getRepetition()
         );
     }
 
@@ -141,7 +145,8 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $converter = $this->subject->getPlainConverter();
         $this->assertSame(
-            Builtin::class, $converter
+            Builtin::class,
+            $converter
         );
 
         $this->assertTrue(class_exists($converter));
@@ -154,8 +159,9 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->subject->setPlainConverter('Conceived at T3CON10');
 
-        $this->assertAttributeSame(
-            'Conceived at T3CON10', 'plainConverter', $this->subject
+        $this->assertSame(
+            'Conceived at T3CON10',
+            $this->subject->getPlainConverter()
         );
     }
 
@@ -178,10 +184,11 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
 
     /**
      * @test
-     * @expectedException \Exception
+     *
      */
     public function getPlainConverterInstanceThrowsException()
     {
+        $this->expectException(\Exception::class);
         $this->subject->setPlainConverter('stdClass');
         $this->subject->getPlainConverterInstance();
     }
@@ -202,8 +209,8 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->subject->setIsTest(true);
 
-        $this->assertAttributeSame(
-            true, 'isTest', $this->subject
+        $this->assertTrue(
+            $this->subject->isIsTest()
         );
     }
 
@@ -225,8 +232,9 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         $bounceAccountFixture = new BounceAccount();
         $this->subject->setBounceAccount($bounceAccountFixture);
 
-        $this->assertAttributeSame(
-            $bounceAccountFixture, 'bounceAccount', $this->subject
+        $this->assertSame(
+            $bounceAccountFixture,
+            $this->subject->getBounceAccount()
         );
     }
 
@@ -237,7 +245,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->assertNull($this->subject->getUidBounceAccount());
 
-        $bounceAccount = $this->getMock(BounceAccount::class, ['getUid'], [], '', false);
+        $bounceAccount = $this->createMock(BounceAccount::class);
         $bounceAccount->expects($this->once())->method('getUid')->will($this->returnValue(123));
         $this->subject->setBounceAccount($bounceAccount);
         $this->assertSame(123, $this->subject->getUidBounceAccount());
@@ -250,8 +258,9 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->subject->setSenderName('Conceived at T3CON10');
 
-        $this->assertAttributeSame(
-            'Conceived at T3CON10', 'senderName', $this->subject
+        $this->assertSame(
+            'Conceived at T3CON10',
+            $this->subject->getSenderName()
         );
 
         $this->assertSame('Conceived at T3CON10', $this->subject->getSenderName());
@@ -263,10 +272,6 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     public function setSenderEmailForStringSetsSenderEmail()
     {
         $this->subject->setSenderEmail('john@example.com');
-
-        $this->assertAttributeSame(
-            'john@example.com', 'senderEmail', $this->subject
-        );
 
         $this->assertSame('john@example.com', $this->subject->getSenderEmail());
     }
@@ -287,9 +292,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->subject->setInjectOpenSpy(true);
 
-        $this->assertAttributeSame(
-            true, 'injectOpenSpy', $this->subject
-        );
+        $this->assertTrue(true, $this->subject->getInjectOpenSpy());
     }
 
     /**
@@ -308,9 +311,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->subject->setInjectLinksSpy(false);
 
-        $this->assertAttributeSame(
-            false, 'injectLinksSpy', $this->subject
-        );
+        $this->assertFalse($this->subject->getInjectLinksSpy());
     }
 
     /**
@@ -330,10 +331,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $recipientListFixture = new BeUsers();
         $this->subject->setRecipientList($recipientListFixture);
-
-        $this->assertAttributeSame(
-            $recipientListFixture, 'recipientList', $this->subject
-        );
+        $this->assertSame($recipientListFixture, $this->subject->getRecipientList());
     }
 
     /**
@@ -343,7 +341,7 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
     {
         $this->assertNull($this->subject->getUidRecipientList());
 
-        $recipientList = $this->getMock(BeUsers::class, ['getUid'], [], '', false);
+        $recipientList = $this->createMock(BeUsers::class);
         $recipientList->expects($this->once())->method('getUid')->will($this->returnValue(123));
         $this->subject->setRecipientList($recipientList);
         $this->assertSame(123, $this->subject->getUidRecipientList());
@@ -354,7 +352,11 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
      */
     public function getReplytoName()
     {
-        $this->assertSame('John Connor', $this->subject->getReplytoName(), 'sould return globally configured default value');
+        $this->assertSame(
+            'John Connor',
+            $this->subject->getReplytoName(),
+            'sould return globally configured default value'
+        );
         $this->subject->setReplytoName('My custom name');
         $this->assertSame('My custom name', $this->subject->getReplytoName(), 'sould return locally set value');
     }
@@ -364,7 +366,11 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
      */
     public function getReplytoEmail()
     {
-        $this->assertSame('john.connor@example.com', $this->subject->getReplytoEmail(), 'sould return globally configured default value');
+        $this->assertSame(
+            'john.connor@example.com',
+            $this->subject->getReplytoEmail(),
+            'sould return globally configured default value'
+        );
         $this->subject->setReplytoEmail('custom@example.com');
         $this->assertSame('custom@example.com', $this->subject->getReplytoEmail(), 'sould return locally set value');
     }

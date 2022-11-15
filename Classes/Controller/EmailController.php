@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\Controller;
 
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use Mirko\Newsletter\Domain\Model\Email;
@@ -29,6 +30,13 @@ class EmailController extends ApiActionController
     protected EmailRepository $emailRepository;
 
     /**
+     * recipientListRepository
+     *
+     * @var RecipientListRepository
+     */
+    protected RecipientListRepository $recipientListRepository;
+
+    /**
      * injectEmailRepository
      *
      * @param EmailRepository $emailRepository
@@ -36,6 +44,16 @@ class EmailController extends ApiActionController
     public function injectEmailRepository(EmailRepository $emailRepository)
     {
         $this->emailRepository = $emailRepository;
+    }
+
+    /**
+     * injectEmailRepository
+     *
+     * @param RecipientListRepository $recipientListRepository
+     */
+    public function injectRecipientListRepository(RecipientListRepository $recipientListRepository)
+    {
+        $this->recipientListRepository = $recipientListRepository;
     }
 
     /**
@@ -131,7 +149,11 @@ class EmailController extends ApiActionController
             /** @var Newsletter $newsletter */
             $newsletter = GeneralUtility::makeInstance(Newsletter::class);
             $newsletter->setPid(@$args['pid']);
-            $newsletter->setUidRecipientList(@$args['uidRecipientList']);
+            /**
+             * @var RecipientList $recipientList
+             */
+            $recipientList = $this->recipientListRepository->findByUid(@$args['uidRecipientList']);
+            $newsletter->setRecipientList($recipientList);
 
             // Find the recipient
             $recipientList = $newsletter->getRecipientList();

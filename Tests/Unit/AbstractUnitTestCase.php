@@ -3,9 +3,27 @@
 namespace Mirko\Newsletter\Tests\Unit;
 
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-class AbstractUnitTestCase extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class AbstractUnitTestCase extends UnitTestCase
 {
+    protected function inicializeEnviroment()
+    {
+        Environment::initialize(
+            new ApplicationContext('Testing'),
+            true,
+            true,
+            '',
+            '',
+            '',
+            '',
+            '/index.php',
+            Environment::isWindows() ? 'WINDOWS' : 'UNIX'
+        );
+    }
+
     protected function loadConfiguration()
     {
         $manager = new ConfigurationManager();
@@ -24,6 +42,6 @@ class AbstractUnitTestCase extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ]);
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['newsletter'] = $config;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'] = $config;
     }
 }

@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Utility;
 
 use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lang\LanguageService;
@@ -99,7 +100,7 @@ class Validator
         // We need to catch the exception if domain was not found/configured properly
         // or if we can't fetch the content (eg: because of improper SSL certificates)
         try {
-            $url = $this->newsletter->getContentUrl($language);
+            $url = NewsletterService::getContentUrl($newsletter, $language);
             $this->content = $this->getURL($url);
         } catch (\Exception $e) {
             $this->errors[] = $e->getMessage();
@@ -164,7 +165,7 @@ class Validator
      */
     private function errorPhpWarnings()
     {
-        if (mb_substr($this->content, 0, 22) == "<br />\n<b>Warning</b>:") {
+        if (mb_substr($this->content, 0, 22) === "<br />\n<b>Warning</b>:") {
             $this->errors[] = $this->lang->getLL('validation_mail_contains_php_warnings');
         }
     }
@@ -174,7 +175,7 @@ class Validator
      */
     private function errorPhpErrors()
     {
-        if (mb_substr($this->content, 0, 26) == "<br />\n<b>Fatal error</b>:") {
+        if (mb_substr($this->content, 0, 26) === "<br />\n<b>Fatal error</b>:") {
             $this->errors[] = $this->lang->getLL('validation_mail_contains_php_errors');
         }
     }
@@ -202,7 +203,7 @@ class Validator
             $absoluteDomain = $match[1];
         } // Otherwise try our best to guess what it is
         else {
-            $absoluteDomain = $this->newsletter->getBaseUrl() . '/';
+            $absoluteDomain = Tools::getBaseUrl() . '/';
         }
 
         $urlPatterns = [

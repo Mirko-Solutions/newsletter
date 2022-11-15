@@ -6,7 +6,7 @@ use Mirko\Newsletter\Domain\Model\IPlainConverter;
 use Html2Text\Html2Text;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
-require_once ExtensionManagementUtility::extPath('newsletter') . '/3dparty/Html2Text.php';
+require_once './public/typo3conf/ext/newsletter/3dparty/Html2Text.php';
 
 /**
  * Convert HTML to plain text using builtin Html2Text tool

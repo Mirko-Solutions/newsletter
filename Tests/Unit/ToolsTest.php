@@ -7,7 +7,7 @@ use Mirko\Newsletter\Tools;
 /**
  * Unit test for \Mirko\Newsletter\Tools
  */
-class ToolsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class ToolsTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     public function testEncryption()
     {

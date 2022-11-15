@@ -4,36 +4,38 @@ namespace Mirko\Newsletter\Tests\Unit\Utility;
 
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Utility\Validator;
-use TYPO3\CMS\Lang\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Test case for class Mirko\Newsletter\Utility\Validator.
  */
-class ValidatorTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class ValidatorTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
      * @var Validator
      */
     private $validator = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         global $LANG;
 
         // Initialize a fake LANG that return the localisation key instead of real value
-        $LANG = $this->getMock(LanguageService::class, ['includeLLFile', 'getLL'], [], '', false);
-        $LANG->method('includeLLFile')->will($this->returnValue(null));
-        $LANG->method('getLL')->will($this->returnCallback(function ($langKey) {
-            return $langKey;
-        }));
+        $LANG = $this->createMock(LanguageService::class);
+        $LANG->method('includeLLFile')->willReturn(null);
+        $LANG->method('getLL')->willReturnCallback(
+            function ($langKey) {
+                return $langKey;
+            }
+        );
 
-        $this->validator = $this->getMock(Validator::class, ['getURL'], [], '', false);
-        $this->newsletter = $this->getMock(Newsletter::class, ['getContentUrl', 'getBaseUrl'], [], '', false);
+        $this->validator = $this->createMock(Validator::class);
+        $this->newsletter = $this->createMock(Newsletter::class);
         $this->newsletter->method('getContentUrl')->will($this->returnValue('http://example.com/?id=123'));
         $this->newsletter->method('getBaseUrl')->will($this->returnValue('http://example.com'));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->validator);
     }

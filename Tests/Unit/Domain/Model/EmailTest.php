@@ -8,19 +8,19 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Email.
  */
-class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
      * @var Email
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Email();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }
@@ -42,10 +42,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setBeginTime($dateTimeFixture);
-
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'beginTime', $this->subject
-        );
+        $this->assertSame($dateTimeFixture, $this->subject->getBeginTime());
     }
 
     /**
@@ -65,10 +62,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setEndTime($dateTimeFixture);
-
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'endTime', $this->subject
-        );
+        $this->assertSame($dateTimeFixture, $this->subject->getEndTime());
     }
 
     /**
@@ -88,10 +82,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setOpenTime($dateTimeFixture);
-
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'openTime', $this->subject
-        );
+        $this->assertSame($dateTimeFixture, $this->subject->getOpenTime());
     }
 
     /**
@@ -111,10 +102,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setBounceTime($dateTimeFixture);
-
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'bounceTime', $this->subject
-        );
+        $this->assertSame($dateTimeFixture, $this->subject->getBounceTime());
     }
 
     /**
@@ -133,10 +121,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function setUnsubscribedForBooleanSetsUnsubscribed()
     {
         $this->subject->setUnsubscribed(true);
-
-        $this->assertAttributeSame(
-            true, 'unsubscribed', $this->subject
-        );
+        $this->assertTrue($this->subject->getUnsubscribed());
     }
 
     /**
@@ -153,7 +138,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function setRecipientAddressForStringSetsRecipientAddress()
     {
         $this->subject->setRecipientAddress('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'recipientAddress', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getRecipientAddress());
     }
 
     /**
@@ -190,10 +175,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $newsletterFixture = new Newsletter();
         $this->subject->setNewsletter($newsletterFixture);
-
-        $this->assertAttributeSame(
-            $newsletterFixture, 'newsletter', $this->subject
-        );
+        $this->assertSame($newsletterFixture, $this->subject->getNewsletter());
     }
 
     /**
@@ -221,7 +203,7 @@ class EmailTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function getAuthCode()
     {
-        $email = $this->getMock(Email::class, ['getUid'], [], '', false);
+        $email = $this->createMock(Email::class);
         $email->expects($this->any())->method('getUid')->will($this->returnValue(123));
         $email->setRecipientAddress('john@example.com');
         $this->assertSame('462aa2b1b9885a181e6d916a409d96c8', $email->getAuthCode());
