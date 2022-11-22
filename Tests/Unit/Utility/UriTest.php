@@ -7,6 +7,9 @@ use Mirko\Newsletter\Utility\Uri;
 /**
  * Test case for class Mirko\Newsletter\Utility\Uri.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Utility\Uri
+ */
 class UriTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     public function dataProviderTestUri()

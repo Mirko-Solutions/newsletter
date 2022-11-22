@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Controller;
 
 use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use Mirko\Newsletter\Domain\Model\Email;
@@ -115,7 +116,7 @@ class EmailController extends ApiActionController
     {
         // Override settings to NOT embed images inlines (doesn't make sense for web display)
         global $TYPO3_CONF_VARS;
-        $theConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
+        $theConf = Typo3GeneralService::getExtensionConfiguration();
         $theConf['attach_images'] = false;
         $TYPO3_CONF_VARS['EXTENSIONS']['newsletter'] = $theConf;
 

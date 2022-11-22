@@ -8,6 +8,9 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Link.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\Link
+ */
 class LinkTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
@@ -25,27 +28,21 @@ class LinkTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         unset($this->subject);
     }
 
-    /**
-     * @test
-     */
-    public function getUrlReturnsInitialValueForString()
+
+    public function testGetUrlReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getUrl());
     }
 
-    /**
-     * @test
-     */
-    public function setUrlForStringSetsUrl()
+
+    public function testSetUrlForStringSetsUrl()
     {
         $this->subject->setUrl('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getUrl());
     }
 
-    /**
-     * @test
-     */
-    public function setNewsletterForNewsletterSetsNewsletter()
+
+    public function testSetNewsletterForNewsletterSetsNewsletter()
     {
         $newsletterFixture = new Newsletter();
         $this->subject->setNewsletter($newsletterFixture);
@@ -56,10 +53,8 @@ class LinkTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getOpenedCountReturnsInitialValueForInteger()
+
+    public function testGetOpenedCountReturnsInitialValueForInteger()
     {
         $this->assertSame(
             0,
@@ -67,10 +62,8 @@ class LinkTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function setOpenedCountForIntegerSetsOpenedCount()
+
+    public function testSetOpenedCountForIntegerSetsOpenedCount()
     {
         $this->subject->setOpenedCount(12);
 

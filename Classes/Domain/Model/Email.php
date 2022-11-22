@@ -82,6 +82,15 @@ class Email extends AbstractEntity implements EmailInterface
     protected $authCode = '';
 
     /**
+     * @param int $uid
+     * @return void
+     */
+    public function setUid(int $uid): void
+    {
+        $this->uid = $uid;
+    }
+
+    /**
      * Setter for beginTime
      *
      * @param DateTime $beginTime beginTime
@@ -214,7 +223,7 @@ class Email extends AbstractEntity implements EmailInterface
      */
     public function isOpened()
     {
-        return $this->getOpenTime() > 0;
+        return (bool)$this->getOpenTime();
     }
 
     /**
@@ -244,7 +253,7 @@ class Email extends AbstractEntity implements EmailInterface
      */
     public function isBounced()
     {
-        return $this->getBounceTime() > 0;
+        return (bool)$this->getBounceTime();
     }
 
     /**

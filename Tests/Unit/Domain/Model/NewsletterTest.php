@@ -12,6 +12,9 @@ use Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Newsletter.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\Newsletter
+ */
 class NewsletterTest extends AbstractUnitTestCase
 {
     /**
@@ -31,20 +34,16 @@ class NewsletterTest extends AbstractUnitTestCase
         unset($this->subject);
     }
 
-    /**
-     * @test
-     */
-    public function setUid()
+
+    public function testSetUid()
     {
         $this->assertNull($this->subject->getUid());
         $this->subject->setUid(123);
         $this->assertSame(123, $this->subject->getUid());
     }
 
-    /**
-     * @test
-     */
-    public function getPlannedTimeReturnsInitialValueForDateTime()
+
+    public function testGetPlannedTimeReturnsInitialValueForDateTime()
     {
         $today = new \DateTime();
         $today->setTime(0, 0, 0);
@@ -55,10 +54,8 @@ class NewsletterTest extends AbstractUnitTestCase
         $this->assertSame($today->format(\DateTime::ATOM), $plannedTime->format(\DateTime::ATOM));
     }
 
-    /**
-     * @test
-     */
-    public function setPlannedTimeForDateTimeSetsPlannedTime()
+
+    public function testSetPlannedTimeForDateTimeSetsPlannedTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setPlannedTime($dateTimeFixture);
@@ -66,20 +63,16 @@ class NewsletterTest extends AbstractUnitTestCase
         $this->assertSame($dateTimeFixture, $this->subject->getPlannedTime());
     }
 
-    /**
-     * @test
-     */
-    public function getBeginTimeReturnsInitialValueForDateTime()
+
+    public function testGetBeginTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getBeginTime()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setBeginTimeForDateTimeSetsBeginTime()
+
+    public function testSetBeginTimeForDateTimeSetsBeginTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setBeginTime($dateTimeFixture);
@@ -90,20 +83,16 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getEndTimeReturnsInitialValueForDateTime()
+
+    public function testGetEndTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getEndTime()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setEndTimeForDateTimeSetsEndTime()
+
+    public function testSetEndTimeForDateTimeSetsEndTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setEndTime($dateTimeFixture);
@@ -114,10 +103,8 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getRepetitionReturnsInitialValueForInteger()
+
+    public function testGetRepetitionReturnsInitialValueForInteger()
     {
         $this->assertSame(
             0,
@@ -125,10 +112,8 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function setRepetitionForIntegerSetsRepetition()
+
+    public function testSetRepetitionForIntegerSetsRepetition()
     {
         $this->subject->setRepetition(12);
 
@@ -138,10 +123,8 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getPlainConverterReturnsInitialValueForString()
+
+    public function testGetPlainConverterReturnsInitialValueForString()
     {
         $converter = $this->subject->getPlainConverter();
         $this->assertSame(
@@ -152,10 +135,8 @@ class NewsletterTest extends AbstractUnitTestCase
         $this->assertTrue(class_exists($converter));
     }
 
-    /**
-     * @test
-     */
-    public function setPlainConverterForStringSetsPlainConverter()
+
+    public function testSetPlainConverterForStringSetsPlainConverter()
     {
         $this->subject->setPlainConverter('Conceived at T3CON10');
 
@@ -165,10 +146,8 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getPlainConverterInstance()
+
+    public function testGetPlainConverterInstance()
     {
         $classes = [
             'NonExistingClassFooBar' => Builtin::class,
@@ -186,26 +165,22 @@ class NewsletterTest extends AbstractUnitTestCase
      * @test
      *
      */
-    public function getPlainConverterInstanceThrowsException()
+    public function testGetPlainConverterInstanceThrowsException()
     {
         $this->expectException(\Exception::class);
         $this->subject->setPlainConverter('stdClass');
         $this->subject->getPlainConverterInstance();
     }
 
-    /**
-     * @test
-     */
-    public function getIsTestReturnsInitialValueForBoolean()
+
+    public function testGetIsTestReturnsInitialValueForBoolean()
     {
         $this->assertFalse($this->subject->getIsTest());
         $this->assertFalse($this->subject->isIsTest());
     }
 
-    /**
-     * @test
-     */
-    public function setIsTestForBooleanSetsIsTest()
+
+    public function testSetIsTestForBooleanSetsIsTest()
     {
         $this->subject->setIsTest(true);
 
@@ -214,20 +189,16 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getBounceAccountReturnsInitialValueForBounceAccount()
+
+    public function testGetBounceAccountReturnsInitialValueForBounceAccount()
     {
         $this->assertNull(
             $this->subject->getBounceAccount()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setBounceAccountForBounceAccountSetsBounceAccount()
+
+    public function testSetBounceAccountForBounceAccountSetsBounceAccount()
     {
         $bounceAccountFixture = new BounceAccount();
         $this->subject->setBounceAccount($bounceAccountFixture);
@@ -238,10 +209,8 @@ class NewsletterTest extends AbstractUnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getUidBounceAccount()
+
+    public function testGetUidBounceAccount()
     {
         $this->assertNull($this->subject->getUidBounceAccount());
 
@@ -251,93 +220,54 @@ class NewsletterTest extends AbstractUnitTestCase
         $this->assertSame(123, $this->subject->getUidBounceAccount());
     }
 
-    /**
-     * @test
-     */
-    public function setSenderNameForStringSetsSenderName()
-    {
-        $this->subject->setSenderName('Conceived at T3CON10');
 
-        $this->assertSame(
-            'Conceived at T3CON10',
-            $this->subject->getSenderName()
-        );
-
-        $this->assertSame('Conceived at T3CON10', $this->subject->getSenderName());
-    }
-
-    /**
-     * @test
-     */
-    public function setSenderEmailForStringSetsSenderEmail()
-    {
-        $this->subject->setSenderEmail('john@example.com');
-
-        $this->assertSame('john@example.com', $this->subject->getSenderEmail());
-    }
-
-    /**
-     * @test
-     */
-    public function getInjectOpenSpyReturnsInitialValueForBoolean()
+    public function testGetInjectOpenSpyReturnsInitialValueForBoolean()
     {
         $this->assertTrue($this->subject->getInjectOpenSpy());
         $this->assertTrue($this->subject->isInjectOpenSpy());
     }
 
-    /**
-     * @test
-     */
-    public function setInjectOpenSpyForBooleanSetssetInjectOpenSpy()
+
+    public function testSetInjectOpenSpyForBooleanSetssetInjectOpenSpy()
     {
         $this->subject->setInjectOpenSpy(true);
 
         $this->assertTrue(true, $this->subject->getInjectOpenSpy());
     }
 
-    /**
-     * @test
-     */
-    public function getInjectLinksSpyReturnsInitialValueForBoolean()
+
+    public function testGetInjectLinksSpyReturnsInitialValueForBoolean()
     {
         $this->assertTrue($this->subject->getInjectLinksSpy());
         $this->assertTrue($this->subject->isInjectLinksSpy());
     }
 
-    /**
-     * @test
-     */
-    public function setInjectLinksSpyForBooleanSetsInjectLinksSpy()
+
+    public function testSetInjectLinksSpyForBooleanSetsInjectLinksSpy()
     {
         $this->subject->setInjectLinksSpy(false);
 
         $this->assertFalse($this->subject->getInjectLinksSpy());
     }
 
-    /**
-     * @test
-     */
-    public function getRecipientListReturnsInitialValueForRecipientList()
+
+    public function testGetRecipientListReturnsInitialValueForRecipientList()
     {
         $this->assertNull(
             $this->subject->getRecipientList()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setRecipientListForRecipientListSetsRecipientList()
+
+    public function testSetRecipientListForRecipientListSetsRecipientList()
     {
         $recipientListFixture = new BeUsers();
         $this->subject->setRecipientList($recipientListFixture);
         $this->assertSame($recipientListFixture, $this->subject->getRecipientList());
     }
 
-    /**
-     * @test
-     */
-    public function getUidRecipientList()
+
+    public function testGetUidRecipientList()
     {
         $this->assertNull($this->subject->getUidRecipientList());
 
@@ -347,10 +277,8 @@ class NewsletterTest extends AbstractUnitTestCase
         $this->assertSame(123, $this->subject->getUidRecipientList());
     }
 
-    /**
-     * @test
-     */
-    public function getReplytoName()
+
+    public function testGetReplytoName()
     {
         $this->assertSame(
             'John Connor',
@@ -361,10 +289,8 @@ class NewsletterTest extends AbstractUnitTestCase
         $this->assertSame('My custom name', $this->subject->getReplytoName(), 'sould return locally set value');
     }
 
-    /**
-     * @test
-     */
-    public function getReplytoEmail()
+
+    public function testGetReplytoEmail()
     {
         $this->assertSame(
             'john.connor@example.com',

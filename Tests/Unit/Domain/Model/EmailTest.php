@@ -8,6 +8,9 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Email.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\Email
+ */
 class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
@@ -26,9 +29,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getBeginTimeReturnsInitialValueForDateTime()
+    public function testGetBeginTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getBeginTime()
@@ -36,9 +39,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setBeginTimeForDateTimeSetsBeginTime()
+    public function testSetBeginTimeForDateTimeSetsBeginTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setBeginTime($dateTimeFixture);
@@ -46,9 +49,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getEndTimeReturnsInitialValueForDateTime()
+    public function testGetEndTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getEndTime()
@@ -56,9 +59,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setEndTimeForDateTimeSetsEndTime()
+    public function testSetEndTimeForDateTimeSetsEndTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setEndTime($dateTimeFixture);
@@ -66,9 +69,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getOpenTimeReturnsInitialValueForDateTime()
+    public function testGetOpenTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getOpenTime()
@@ -76,9 +79,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setOpenTimeForDateTimeSetsOpenTime()
+    public function testSetOpenTimeForDateTimeSetsOpenTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setOpenTime($dateTimeFixture);
@@ -86,9 +89,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getBounceTimeReturnsInitialValueForDateTime()
+    public function testGetBounceTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getBounceTime()
@@ -96,9 +99,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setBounceTimeForDateTimeSetsBounceTime()
+    public function testSetBounceTimeForDateTimeSetsBounceTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setBounceTime($dateTimeFixture);
@@ -106,9 +109,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getUnsubscribedReturnsInitialValueForBoolean()
+    public function testGetUnsubscribedReturnsInitialValueForBoolean()
     {
         $this->assertFalse(
             $this->subject->getUnsubscribed()
@@ -116,52 +119,52 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setUnsubscribedForBooleanSetsUnsubscribed()
+    public function testSetUnsubscribedForBooleanSetsUnsubscribed()
     {
         $this->subject->setUnsubscribed(true);
         $this->assertTrue($this->subject->getUnsubscribed());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getRecipientAddressReturnsInitialValueForString()
+    public function testGetRecipientAddressReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getRecipientAddress());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setRecipientAddressForStringSetsRecipientAddress()
+    public function testSetRecipientAddressForStringSetsRecipientAddress()
     {
         $this->subject->setRecipientAddress('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getRecipientAddress());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getRecipientDataReturnsInitialValueForArray()
+    public function testGetRecipientDataReturnsInitialValueForArray()
     {
         $this->assertSame([], $this->subject->getRecipientData());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setRecipientDataForStringSetsRecipientData()
+    public function testSetRecipientDataForStringSetsRecipientData()
     {
         $this->subject->setRecipientData(['data1', 'data2']);
         $this->assertSame(['data1', 'data2'], $this->subject->getRecipientData());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getNewsletterReturnsInitialValueForNewsletter()
+    public function testGetNewsletterReturnsInitialValueForNewsletter()
     {
         $this->assertNull(
             $this->subject->getNewsletter()
@@ -169,9 +172,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setNewsletterForNewsletterSetsNewsletter()
+    public function testSetNewsletterForNewsletterSetsNewsletter()
     {
         $newsletterFixture = new Newsletter();
         $this->subject->setNewsletter($newsletterFixture);
@@ -179,9 +182,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function isOpened()
+    public function testIsOpened()
     {
         $this->assertFalse($this->subject->isOpened());
         $this->subject->setOpenTime(new \DateTime());
@@ -189,9 +192,9 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function isBounced()
+    public function testIsBounced()
     {
         $this->assertFalse($this->subject->isBounced());
         $this->subject->setBounceTime(new \DateTime());
@@ -199,12 +202,12 @@ class EmailTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getAuthCode()
+    public function testGetAuthCode()
     {
-        $email = $this->createMock(Email::class);
-        $email->expects($this->any())->method('getUid')->will($this->returnValue(123));
+        $email = new Email();
+        $email->setUid(123);
         $email->setRecipientAddress('john@example.com');
         $this->assertSame('462aa2b1b9885a181e6d916a409d96c8', $email->getAuthCode());
     }

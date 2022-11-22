@@ -6,7 +6,7 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Lang\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Toolbox for newsletter and dependant extensions.
@@ -72,7 +72,7 @@ class Validator
      *
      * @return string
      */
-    protected function getURL($url)
+    public function getURL($url): string
     {
         return Tools::getUrl($url);
     }

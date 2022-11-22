@@ -29,6 +29,7 @@
   "autoload": {
     "psr-4": {
       "Mirko\\Newsletter\\": "Classes/",
+      "Mirko\\Newsletter\\ThirdParty\\": "3dparty/",
       "Mirko\\Newsletter\\Tests\\": "Tests/"
     }
   },

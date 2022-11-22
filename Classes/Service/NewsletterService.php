@@ -151,7 +151,7 @@ class NewsletterService
         }
 
         if ($plannedTime && !$beginTime) {
-            return sprintf($LANG->getLL('newsletter_status_planned'), $plannedTime->format(\DateTimeInterface::ATOM));
+            return sprintf($LANG->getLL('newsletter_status_planned'), $plannedTime->format('D, d M y H:i:s'));
         }
 
         if ($beginTime && !$endTime) {
@@ -271,11 +271,6 @@ class NewsletterService
                 $minimumTimeToInsert = $time + $groupingTimestep;
             }
             $previousState = $newState;
-        }
-
-        // Don't forget to always add the very last state, if not already inserted
-        if (!($time >= $minimumTimeToInsert)) {
-            $states[] = $newState;
         }
 
         return $states;

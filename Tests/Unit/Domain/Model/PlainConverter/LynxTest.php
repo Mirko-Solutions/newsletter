@@ -9,6 +9,9 @@ use Mirko\Newsletter\Tools;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\PlainConverter\Lynx.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\PlainConverter\Lynx
+ */
 class LynxTest extends AbstractUnitTestCase
 {
     /**
@@ -36,10 +39,7 @@ class LynxTest extends AbstractUnitTestCase
         return $statusCode == 0;
     }
 
-    /**
-     * @test
-     */
-    public function getUrlReturnsInitialValueForString()
+    public function testGetUrlReturnsInitialValueForString()
     {
         if (!$this->canRunLynx()) {
             $this->markTestSkipped('The command "' . Tools::confParam('path_to_lynx') . '" is not available.');

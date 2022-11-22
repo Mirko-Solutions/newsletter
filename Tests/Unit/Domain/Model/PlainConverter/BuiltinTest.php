@@ -7,6 +7,9 @@ use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\PlainConverter\Builtin.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\PlainConverter\Builtin
+ */
 class BuiltinTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
@@ -24,10 +27,7 @@ class BuiltinTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         unset($this->subject);
     }
 
-    /**
-     * @test
-     */
-    public function getUrlReturnsInitialValueForString()
+    public function testGetUrlReturnsInitialValueForString()
     {
         $html = file_get_contents(__DIR__ . '/input.html');
         $expected = file_get_contents(__DIR__ . '/builtin.txt');

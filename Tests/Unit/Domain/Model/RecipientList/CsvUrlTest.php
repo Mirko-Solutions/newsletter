@@ -7,25 +7,24 @@ use Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl.
  */
-class CsvUrlTest extends CsvFileTest
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\RecipientList\CsvUrl
+ */
+class CsvUrlTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     protected function setUp() :void
     {
         $this->subject = new CsvUrl();
     }
 
-    /**
-     * @test
-     */
-    public function getCsvUrlReturnsInitialValueForString()
+
+    public function testGetCsvUrlReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getCsvUrl());
     }
 
-    /**
-     * @test
-     */
-    public function setCsvUrlForStringSetsCsvUrl()
+
+    public function testSetCsvUrlForStringSetsCsvUrl()
     {
         $this->subject->setCsvUrl('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getCsvUrl());

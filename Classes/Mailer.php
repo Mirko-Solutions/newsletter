@@ -4,9 +4,8 @@ namespace Mirko\Newsletter;
 
 use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Utility\UriBuilder;
-use Swift_Attachment;
-use Swift_EmbeddedFile;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -78,7 +77,7 @@ class Mailer
         global $TYPO3_CONF_VARS;
 
         /* Read some basic settings */
-        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
+        $this->extConf = Typo3GeneralService::getExtensionConfiguration();
         $this->realPath = Environment::getPublicPath() . '/';
         $this->substitutor = new Utility\MarkerSubstitutor();
     }

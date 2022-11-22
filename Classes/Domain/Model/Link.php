@@ -23,13 +23,8 @@ class Link extends AbstractEntity
 
     /**
      * newsletter
-     * Here the type is intentionally wrong because for some reasons it does not
-     * work in TYPO3 7.3 and older if we specify the correct type of Newsletter
-     *
-     * @Extbase\ORM\Lazy
-     * @var int
      */
-    protected $newsletter;
+    protected Newsletter $newsletter;
 
     /**
      * opened count
@@ -73,11 +68,9 @@ class Link extends AbstractEntity
      *
      * @return Newsletter newsletter
      */
-    public function getNewsletter()
+    public function getNewsletter(): Newsletter
     {
-        $newsletterRepository = GeneralUtility::makeInstance(NewsletterRepository::class);
-
-        return $newsletterRepository->findByUid($this->newsletter);
+        return $this->newsletter;
     }
 
     /**
@@ -103,9 +96,9 @@ class Link extends AbstractEntity
     public function getOpenedPercentage()
     {
         $emailRepository = GeneralUtility::makeInstance(EmailRepository::class);
-        $emailCount = $emailRepository->getCount($this->newsletter);
+        $emailCount = $emailRepository->getCount($this->newsletter->getUid());
 
-        if ($emailCount == 0) {
+        if ($emailCount === 0) {
             return 0;
         }
 

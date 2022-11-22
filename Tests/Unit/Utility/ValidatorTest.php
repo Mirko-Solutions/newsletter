@@ -3,11 +3,17 @@
 namespace Mirko\Newsletter\Tests\Unit\Utility;
 
 use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Service\NewsletterService;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Utility\Validator;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Test case for class Mirko\Newsletter\Utility\Validator.
+ */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Utility\Validator
  */
 class ValidatorTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
@@ -28,11 +34,30 @@ class ValidatorTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
                 return $langKey;
             }
         );
+        Typo3GeneralService::overrideExtensionConfiguration(
+            [
+                'append_url' => '',
+                'attach_images' => '1',
+                'fetch_path' => 'http://example.com',
+                'keep_messages' => '0',
+                'mails_per_round' => '100',
+                'notification_email' => 'user',
+                'path_to_fetchmail' => '/usr/bin/fetchmail',
+                'path_to_lynx' => '/usr/bin/lynx',
+                'replyto_email' => '',
+                'replyto_name' => '',
+                'sender_email' => 'user@gmail.com',
+                'sender_name' => 'user',
+                'unsubscribe_redirect' => '',
+            ]
+        );
+        $GLOBALS['TYPO3_CONF_VARS']['HTTP']['verify'] = false;
+        $GLOBALS['TYPO3_CONF_VARS']['HTTP']['headers']['User-Agent'] =
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36';
 
-        $this->validator = $this->createMock(Validator::class);
+        $this->validator = $this->getMockBuilder(Validator::class)->onlyMethods(['getURL'])
+            ->getMock();
         $this->newsletter = $this->createMock(Newsletter::class);
-        $this->newsletter->method('getContentUrl')->will($this->returnValue('http://example.com/?id=123'));
-        $this->newsletter->method('getBaseUrl')->will($this->returnValue('http://example.com'));
     }
 
     protected function tearDown(): void
@@ -265,12 +290,14 @@ class ValidatorTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     /**
      * @dataProvider dataProviderTestValidator
      *
+     * @covers
+     *
      * @param string $input
      * @param array $expected
      */
     public function testValidator($input, $expected)
     {
-        $this->validator->method('getURL')->will($this->returnValue($input));
+        $this->validator->method('getURL')->willReturn($input);
         $actual = $this->validator->validate($this->newsletter);
         $this->assertSame($expected, $actual);
     }

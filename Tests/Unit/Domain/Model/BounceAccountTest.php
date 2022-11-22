@@ -8,6 +8,9 @@ use Mirko\Newsletter\Tools;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\BounceAccount.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\BounceAccount
+ */
 class BounceAccountTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
@@ -25,130 +28,87 @@ class BounceAccountTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         unset($this->subject);
     }
 
-    /**
-     * @test
-     */
-    public function getEmailReturnsInitialValueForString()
+    public function testGetEmailReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getEmail());
     }
 
-    /**
-     * @test
-     */
-    public function setEmailForStringSetsEmail()
+    public function testSetEmailForStringSetsEmail()
     {
         $this->subject->setEmail('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getEmail());
     }
 
-    /**
-     * @test
-     */
-    public function getServerReturnsInitialValueForString()
+    public function testGetServerReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getServer());
     }
 
-    /**
-     * @test
-     */
-    public function setServerForStringSetsServer()
+    public function testSetServerForStringSetsServer()
     {
         $this->subject->setServer('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getServer());
     }
 
-    /**
-     * @test
-     */
-    public function getProtocolReturnsInitialValueForString()
+    public function testGetProtocolReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getProtocol());
     }
 
-    /**
-     * @test
-     */
-    public function setProtocolForStringSetsProtocol()
+    public function testSetProtocolForStringSetsProtocol()
     {
         $this->subject->setProtocol('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getProtocol());
     }
 
-    /**
-     * @test
-     */
-    public function getPortReturnsInitialValueForString()
+    public function testGetPortReturnsInitialValueForString()
     {
         $this->assertSame(0, $this->subject->getPort());
     }
 
-    /**
-     * @test
-     */
-    public function setPortForIntSetsPort()
+    public function testSetPortForIntSetsPort()
     {
         $this->subject->setPort(25);
         $this->assertSame(25, $this->subject->getPort());
     }
 
-    /**
-     * @test
-     */
-    public function getUsernameReturnsInitialValueForString()
+    public function testGetUsernameReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getUsername());
     }
 
-    /**
-     * @test
-     */
-    public function setUsernameForStringSetsUsername()
+    public function testSetUsernameForStringSetsUsername()
     {
         $this->subject->setUsername('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getUsername());
     }
 
-    /**
-     * @test
-     */
-    public function getPasswordReturnsInitialValueForString()
+    public function testGetPasswordReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getPassword());
     }
 
-    /**
-     * @test
-     */
-    public function setPasswordForStringSetsPassword()
+    public function testSetPasswordForStringSetsPassword()
     {
         $this->subject->setPassword('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getPassword());
     }
 
-    /**
-     * @test
-     */
-    public function getConfigReturnsInitialValueForString()
+    public function testGetConfigReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getConfig());
     }
 
-    /**
-     * @test
-     */
-    public function setConfigForStringSetsConfig()
+    public function testSetConfigForStringSetsConfig()
     {
         $this->subject->setConfig('Conceived at T3CON10');
         $this->assertSame('Conceived at T3CON10', $this->subject->getConfig());
     }
 
-    /**
-     * @test
-     */
-    public function getSubstitutedConfigDefault()
+
+    public function testGetSubstitutedConfigDefault()
     {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'encryptionKeyValue';
         $this->subject->setServer('mail.example.com');
         $this->subject->setProtocol('smtp');
         $this->subject->setPort(25);
@@ -158,11 +118,10 @@ class BounceAccountTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         $this->assertSame($expected, $this->subject->getSubstitutedConfig());
     }
 
-    /**
-     * @test
-     */
-    public function getSubstitutedConfigCustom()
+
+    public function testGetSubstitutedConfigCustom()
     {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'encryptionKeyValue';
         $this->subject->setServer('pop.example.com');
         $this->subject->setProtocol('pop');
         $this->subject->setPort(123);

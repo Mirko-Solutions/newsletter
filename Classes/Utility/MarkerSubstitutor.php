@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Utility;
 
 use Mirko\Newsletter\Domain\Model\Email;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -45,12 +46,12 @@ class MarkerSubstitutor
     {
         $markers = $this->getMarkers($email);
         $result = $src;
-
+        $extConfiguration = Typo3GeneralService::getExtensionConfiguration();
         if (array_key_exists(
                 'substituteMarkersHook',
-                $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']
-            ) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['substituteMarkersHook'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['substituteMarkersHook'] as $_classRef) {
+                $extConfiguration
+            ) && is_array($extConfiguration['substituteMarkersHook'])) {
+            foreach ($extConfiguration['substituteMarkersHook'] as $_classRef) {
                 $_procObj = GeneralUtility::makeInstance($_classRef);
                 $result = $_procObj->substituteMarkersHook($result, $name, $markers, $email);
             }
