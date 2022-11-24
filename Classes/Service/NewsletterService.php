@@ -232,13 +232,13 @@ class NewsletterService
         // Find out what the best grouping step is according to number of states
         $stateCount = count($stateDifferences);
         if ($stateCount > 5000) {
-            $groupingTimestep = 15 * 60; // 15 minutes
+            $groupingTimestamp = 15 * 60; // 15 minutes
         } elseif ($stateCount > 500) {
-            $groupingTimestep = 5 * 60; // 5 minutes
+            $groupingTimestamp = 5 * 60; // 5 minutes
         } elseif ($stateCount > 50) {
-            $groupingTimestep = 1 * 60; // 1 minutes
+            $groupingTimestamp = 1 * 60; // 1 minutes
         } else {
-            $groupingTimestep = 0; // no grouping at all
+            $groupingTimestamp = 0; // no grouping at all
         }
 
         $states = [$previousState];
@@ -255,12 +255,12 @@ class NewsletterService
 
             // Compute percentage for email states
             foreach (['emailNotSent', 'emailSent', 'emailOpened', 'emailBounced'] as $key) {
-                $newState[$key . 'Percentage'] = $newState[$key . 'Count'] / $newState['emailCount'] * 100;
+                $newState[$key . 'Percentage'] = round($newState[$key . 'Count'] / $newState['emailCount'] * 100, 1);
             }
 
             // Compute percentage for link states
             if ($newState['linkCount'] && $newState['emailCount']) {
-                $newState['linkOpenedPercentage'] = $newState['linkOpenedCount'] / ($newState['linkCount'] * $newState['emailCount']) * 100;
+                $newState['linkOpenedPercentage'] = round($newState['linkOpenedCount'] / ($newState['linkCount'] * $newState['emailCount']) * 100, 1);
             } else {
                 $newState['linkOpenedPercentage'] = 0;
             }
@@ -268,7 +268,7 @@ class NewsletterService
             // Insert the state only if grouping allows it
             if ($time >= $minimumTimeToInsert) {
                 $states[] = $newState;
-                $minimumTimeToInsert = $time + $groupingTimestep;
+                $minimumTimeToInsert = $time + $groupingTimestamp;
             }
             $previousState = $newState;
         }

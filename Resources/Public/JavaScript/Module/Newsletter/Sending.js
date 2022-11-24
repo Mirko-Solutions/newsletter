@@ -103,28 +103,21 @@ define(
                 }
             })
 
-            $(".disabled").on('click', function (e) {
-                e.preventDefault();
-                return;
-            })
-
             $('.extendButton').on('click', function (e) {
                 $(this).next().toggleClass('hidden')
             })
 
             $('#sendTestEmail-action').on('click', function (e) {
-                if (validateForm()) {
+                if (validateForm() || $(this).hasClass('disabled')) {
                     return;
                 }
-
                 sender.createNewsletter($(this), 1);
             })
 
             $('#addToQueue-action').on('click', function (e) {
-                if (validateForm()) {
+                if (validateForm() || $(this).hasClass('disabled')) {
                     return;
                 }
-
                 sender.createNewsletter($(this), 0);
             })
 
@@ -153,7 +146,10 @@ define(
                     }
                 }
 
-                console.log(error)
+                if (error) {
+                    Notification.error('Form validation error', '', 2);
+                }
+
                 return error;
             }
 

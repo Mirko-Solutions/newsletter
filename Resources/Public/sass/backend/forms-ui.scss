@@ -88,6 +88,10 @@ input[type="image"] {
   inset 4px 4px 6px 0 rgba(49, 49, 49, 0.4);
 }
 
+.action-button.disabled:hover {
+  background: rgb(255, 255, 255);
+}
+
 .action-button:before {
   height: 0%;
   width: 2px;
