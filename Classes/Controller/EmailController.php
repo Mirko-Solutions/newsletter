@@ -289,14 +289,12 @@ class EmailController extends ApiActionController
 
         // Use the page-owner as user
         if ($notificationEmail == 'user') {
-            $rs = Tools::getDatabaseConnection()->sql_query(
+            $notificationEmail = Tools::executeRawDBQuery(
                 'SELECT email
 			FROM be_users
 			LEFT JOIN pages ON be_users.uid = pages.perms_userid
 			WHERE pages.uid = ' . $newsletter->getPid()
-            );
-
-            list($notificationEmail) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
+            )->fetchOne();
         }
 
         // If cannot find valid email, don't send any notification

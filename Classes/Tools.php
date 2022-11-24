@@ -175,16 +175,8 @@ class Tools
      */
     public function runAllSpool()
     {
-        $db = self::getDatabaseConnection();
-
-        // Try to detect if a spool is already running
-        // If there is no records for the last 30 seconds, previous spool session is assumed to have ended.
-        // If there are newer records, then stop here, and assume the running mailer will take care of it.
-        $rs = $db->sql_query(
-            'SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30)
-        );
-        list($num_records) = $db->sql_fetch_row($rs);
-        if ($num_records != 0) {
+        $rs = Tools::executeRawDBQuery('SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30))->fetchOne();
+        if ($rs !== 0) {
             return;
         }
 

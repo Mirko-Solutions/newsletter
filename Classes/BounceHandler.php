@@ -125,24 +125,21 @@ fetchmail output was:
      */
     protected function findEmail()
     {
-        $db = Tools::getDatabaseConnection();
         $this->email = null;
         $this->recipientList = null;
 
         $authCode = $this->emailParser->getAuthCode();
         if ($authCode) {
             // Find the recipientList and email UIDs according to authcode
-            $rs = $db->sql_query(
-                "
+            $rs = Tools::executeRawDBQuery(           "
 			SELECT tx_newsletter_domain_model_newsletter.recipient_list, tx_newsletter_domain_model_email.uid
 			FROM tx_newsletter_domain_model_email
 			INNER JOIN tx_newsletter_domain_model_newsletter ON (tx_newsletter_domain_model_email.newsletter = tx_newsletter_domain_model_newsletter.uid)
 			INNER JOIN tx_newsletter_domain_model_recipientlist ON (tx_newsletter_domain_model_newsletter.recipient_list = tx_newsletter_domain_model_recipientlist.uid)
 			WHERE tx_newsletter_domain_model_email.auth_code = '$authCode' AND recipient_list IS NOT NULL
-			LIMIT 1"
-            );
+			LIMIT 1")->fetchOne();
 
-            if (list($recipientListUid, $emailUid) = $db->sql_fetch_row($rs)) {
+            if ([$recipientListUid, $emailUid] = $rs) {
                 $emailRepository = $this->objectManager->get(EmailRepository::class);
                 $this->email = $emailRepository->findByUid($emailUid);
 

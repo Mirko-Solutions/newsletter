@@ -14,6 +14,12 @@ services:
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
       $bounceAccountRepository: '@Mirko\Newsletter\Domain\Repository\BounceAccountRepository'
 
+  Mirko\Newsletter\Service\NewsletterService:
+    arguments:
+      $emailRepository: '@Mirko\Newsletter\Domain\Repository\EmailRepository'
+      $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
+      $linkRepository: '@Mirko\Newsletter\Domain\Repository\LinkRepository'
+
   Mirko\Newsletter\DataProvider\Backend\StatusPageDataProvider:
     arguments:
       $newsletterRepository: '@Mirko\Newsletter\Domain\Repository\NewsletterRepository'
