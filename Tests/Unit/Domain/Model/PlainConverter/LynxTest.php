@@ -3,24 +3,28 @@
 namespace Mirko\Newsletter\Tests\Unit\Domain\Model\PlainConverter;
 
 use Mirko\Newsletter\Domain\Model\PlainConverter\Lynx;
+use Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase;
 use Mirko\Newsletter\Tools;
 
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\PlainConverter\Lynx.
  */
-class LynxTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\PlainConverter\Lynx
+ */
+class LynxTest extends AbstractUnitTestCase
 {
     /**
      * @var Lynx
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Lynx();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }
@@ -35,10 +39,7 @@ class LynxTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         return $statusCode == 0;
     }
 
-    /**
-     * @test
-     */
-    public function getUrlReturnsInitialValueForString()
+    public function testGetUrlReturnsInitialValueForString()
     {
         if (!$this->canRunLynx()) {
             $this->markTestSkipped('The command "' . Tools::confParam('path_to_lynx') . '" is not available.');

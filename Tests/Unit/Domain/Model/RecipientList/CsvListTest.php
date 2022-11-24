@@ -7,36 +7,34 @@ use Mirko\Newsletter\Domain\Model\RecipientList\CsvList;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\RecipientList\CsvList.
  */
-class CsvListTest extends CsvFileTest
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\RecipientList\CsvList
+ */
+class CsvListTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
-    protected function setUp()
+    protected function setUp():void
     {
         $this->subject = new CsvList();
     }
 
-    /**
-     * @test
-     */
-    public function getCsvSeparatorReturnsInitialValueForString()
+
+    public function testGetCsvSeparatorReturnsInitialValueForString()
     {
         $this->assertSame(',', $this->subject->getCsvSeparator());
     }
 
-    /**
-     * @test
-     */
-    public function getCsvValuesReturnsInitialValueForString()
+
+    public function testGetCsvValuesReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getCsvValues());
     }
 
-    /**
-     * @test
-     */
-    public function setCsvValuesForStringSetsCsvValues()
+
+    public function testSetCsvValuesForStringSetsCsvValues()
     {
         $this->subject->setCsvValues('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'csvValues', $this->subject);
+        $this->assertClassHasAttribute('csvValues', $this->subject::class);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getCsvValues());
     }
 
     protected function prepareDataForEnumeration()

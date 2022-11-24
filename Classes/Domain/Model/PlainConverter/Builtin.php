@@ -3,15 +3,13 @@
 namespace Mirko\Newsletter\Domain\Model\PlainConverter;
 
 use Mirko\Newsletter\Domain\Model\IPlainConverter;
-use Html2Text\Html2Text;
+use Mirko\Newsletter\ThirdParty\Html2Text;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-
-require_once ExtensionManagementUtility::extPath('newsletter') . '/3dparty/Html2Text.php';
 
 /**
  * Convert HTML to plain text using builtin Html2Text tool
  */
-class Builtin implements IPlainConverter
+class Builtin extends Html2Text implements IPlainConverter
 {
     public function getPlainText($content, $baseUrl)
     {

@@ -8,72 +8,68 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Link.
  */
-class LinkTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\Link
+ */
+class LinkTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
      * @var Link
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Link();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }
 
-    /**
-     * @test
-     */
-    public function getUrlReturnsInitialValueForString()
+
+    public function testGetUrlReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getUrl());
     }
 
-    /**
-     * @test
-     */
-    public function setUrlForStringSetsUrl()
+
+    public function testSetUrlForStringSetsUrl()
     {
         $this->subject->setUrl('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'url', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getUrl());
     }
 
-    /**
-     * @test
-     */
-    public function setNewsletterForNewsletterSetsNewsletter()
+
+    public function testSetNewsletterForNewsletterSetsNewsletter()
     {
         $newsletterFixture = new Newsletter();
         $this->subject->setNewsletter($newsletterFixture);
 
-        $this->assertAttributeSame(
-            $newsletterFixture, 'newsletter', $this->subject
+        $this->assertSame(
+            $newsletterFixture,
+            $this->subject->getNewsletter()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getOpenedCountReturnsInitialValueForInteger()
+
+    public function testGetOpenedCountReturnsInitialValueForInteger()
     {
         $this->assertSame(
-            0, $this->subject->getOpenedCount()
+            0,
+            $this->subject->getOpenedCount()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setOpenedCountForIntegerSetsOpenedCount()
+
+    public function testSetOpenedCountForIntegerSetsOpenedCount()
     {
         $this->subject->setOpenedCount(12);
 
-        $this->assertAttributeSame(
-            12, 'openedCount', $this->subject
+        $this->assertSame(
+            12,
+            $this->subject->getOpenedCount()
         );
     }
 }

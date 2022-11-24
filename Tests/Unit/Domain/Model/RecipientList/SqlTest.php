@@ -7,61 +7,52 @@ use Mirko\Newsletter\Domain\Model\RecipientList\Sql;
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Sql.
  */
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\RecipientList\Sql
+ */
 class SqlTest extends AbstractRecipientList
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new Sql();
     }
 
-    /**
-     * @test
-     */
-    public function getSqlStatementReturnsInitialValueForString()
+
+    public function testGetSqlStatementReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getSqlStatement());
     }
 
-    /**
-     * @test
-     */
-    public function setSqlStatementForStringSetsSqlStatement()
+
+    public function testSetSqlStatementForStringSetsSqlStatement()
     {
         $this->subject->setSqlStatement('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'sqlStatement', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getSqlStatement());
     }
 
-    /**
-     * @test
-     */
-    public function getSqlRegisterBounceReturnsInitialValueForString()
+
+    public function testGetSqlRegisterBounceReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getSqlRegisterBounce());
     }
 
-    /**
-     * @test
-     */
-    public function setSqlRegisterBounceForStringSetsSqlRegisterBounce()
+
+    public function testSetSqlRegisterBounceForStringSetsSqlRegisterBounce()
     {
         $this->subject->setSqlRegisterBounce('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'sqlRegisterBounce', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getSqlRegisterBounce());
     }
 
-    /**
-     * @test
-     */
-    public function getSqlRegisterClickReturnsInitialValueForString()
+
+    public function testGetSqlRegisterClickReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getSqlRegisterClick());
     }
 
-    /**
-     * @test
-     */
-    public function setSqlRegisterClickForStringSetsSqlRegisterClick()
+
+    public function testSetSqlRegisterClickForStringSetsSqlRegisterClick()
     {
         $this->subject->setSqlRegisterClick('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'sqlRegisterClick', $this->subject);
+        $this->assertSame('Conceived at T3CON10', $this->subject->getSqlRegisterClick());
     }
 }

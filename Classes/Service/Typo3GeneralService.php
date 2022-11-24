@@ -22,4 +22,14 @@ class Typo3GeneralService
     {
         return $GLOBALS['LANG'];
     }
+
+    public static function getExtensionConfiguration(): array
+    {
+        return $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'] ?? [];
+    }
+
+    public static function overrideExtensionConfiguration(array $configuration): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'] = $configuration;
+    }
 }

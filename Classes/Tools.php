@@ -8,6 +8,8 @@ use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Service\NewsletterService;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -21,7 +23,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class Tools
 {
-    private static $configuration = null;
+    private static array $configuration = [];
 
     private static string $OPEN_SSL_CIPHER = 'aes-256-cbc';
 
@@ -29,12 +31,16 @@ class Tools
 
     private NewsletterRepository $newsletterRepository;
 
+    private NewsletterService $newsletterService;
+
     public function __construct(
         EmailRepository $emailRepository,
-        NewsletterRepository $newsletterRepository
+        NewsletterRepository $newsletterRepository,
+        NewsletterService $newsletterService
     ) {
         $this->emailRepository = $emailRepository;
         $this->newsletterRepository = $newsletterRepository;
+        $this->newsletterService = $newsletterService;
     }
 
     public static function getInstance()
@@ -51,25 +57,12 @@ class Tools
      */
     public static function confParam($key)
     {
-        // Look for a config in the module TS first.
-        static $configTS;
-        if (!is_array($configTS)) {
-            $configTS = $backendConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-                ExtensionConfiguration::class
-            )
-                ->get('newsletter');
-        }
-
-        if (isset($configTS[$key])) {
-            return $configTS[$key];
-        }
-
         // Else fallback to the extension config.
-        if (!is_array(self::$configuration)) {
-            self::$configuration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
+        if (empty(static::$configuration)) {
+            static::$configuration = Typo3GeneralService::getExtensionConfiguration();
         }
 
-        return self::$configuration[$key] ?? null;
+        return static::$configuration[$key] ?? null;
     }
 
     /**
@@ -102,9 +95,9 @@ class Tools
         // hook for modifying the mailer before finish preconfiguring
         if (array_key_exists(
                 'getConfiguredMailerHook',
-                $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']
-            ) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'] as $_classRef) {
+                static::$configuration
+            ) && is_array(static::$configuration['getConfiguredMailerHook'])) {
+            foreach (static::$configuration['getConfiguredMailerHook'] as $_classRef) {
                 $_procObj = GeneralUtility::makeInstance($_classRef);
                 $mailer = $_procObj->getConfiguredMailerHook($mailer, $newsletter);
             }
@@ -166,7 +159,7 @@ class Tools
         );
 
         // Schedule repeated newsletter if any
-        $newsletter->scheduleNextNewsletter();
+        $this->newsletterService->scheduleNextNewsletter($newsletter);
 
         // Unlock the newsletter by setting its end_time
         $newsletter->setEndTime(new DateTime());
@@ -448,13 +441,13 @@ class Tools
     }
 
     /**
-     * Returns the ObjectManager
+     * Get domain name
      *
-     * @return \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @return string domain, eg: www.example.com
      */
-    private static function getObjectManager()
+    public static function getDomain(): string
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        return parse_url(static::getBaseUrl(), PHP_URL_HOST);
     }
 
     /**
