@@ -23,11 +23,18 @@ class Typo3GeneralService
         return $GLOBALS['LANG'];
     }
 
+    /**
+     * @return array
+     */
     public static function getExtensionConfiguration(): array
     {
         return $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'] ?? [];
     }
 
+    /**
+     * @param array $configuration
+     * @return void
+     */
     public static function overrideExtensionConfiguration(array $configuration): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'] = $configuration;

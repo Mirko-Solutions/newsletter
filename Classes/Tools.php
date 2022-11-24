@@ -3,6 +3,8 @@
 namespace Mirko\Newsletter;
 
 use DateTime;
+use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Result;
 use GuzzleHttp\Exception\RequestException;
 use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
@@ -11,6 +13,8 @@ use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Service\Typo3GeneralService;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -138,7 +142,6 @@ class Tools
         $emailSpooledCount = 0;
         $recipientList = $newsletter->getRecipientList();
         $recipientList->init();
-        $db = self::getDatabaseConnection();
         while ($receiver = $recipientList->getRecipient()) {
             // Register the recipient
             if (GeneralUtility::validEmail($receiver['email'])) {
@@ -458,6 +461,33 @@ class Tools
     public static function getDatabaseConnection()
     {
         return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
+     * @param $tableName
+     * @return QueryBuilder
+     */
+    public static function getQueryBuilderForTable($tableName): QueryBuilder
+    {
+        return GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable($tableName)
+            ->createQueryBuilder();
+    }
+
+    /**
+     * @param string $sql
+     * @return Result|void
+     * @throws Exception
+     */
+    public static function executeRawDBQuery(string $sql)
+    {
+        try {
+            $databaseConnection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionByName(
+                ConnectionPool::DEFAULT_CONNECTION_NAME
+            );
+            return $databaseConnection->prepare($sql)->executeQuery();
+        } catch (\Exception $exception) {
+        }
     }
 
     /**

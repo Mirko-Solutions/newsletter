@@ -305,7 +305,7 @@ class EmailController extends ApiActionController
         }
 
         // Build email texts
-        $baseUrl = $newsletter->getBaseUrl();
+        $baseUrl = Tools::getBaseUrl();
         $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid(
             ) . ']=edit';
         $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid(
