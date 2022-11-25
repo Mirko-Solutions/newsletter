@@ -99,12 +99,11 @@ class NewsletterRepository extends AbstractRepository
             'linkOpenedCount' => 0,
         ];
 
-        /* @var $db \TYPO3\CMS\Core\Database\DatabaseConnection */
-        $db = Tools::getDatabaseConnection();
+        $columns = implode(', ', array_keys($stateConfiguration));
+        $rs = Tools::executeRawDBQuery("SELECT {$columns} FROM {$from} WHERE {$where}");
 
-        $rs = $db->exec_SELECTquery(implode(', ', array_keys($stateConfiguration)), $from, $where);
         $count = 0;
-        while ($email = $db->sql_fetch_assoc($rs)) {
+        while ($email = $rs->fetchAssociative()) {
             foreach ($stateConfiguration as $stateKey => $stateConf) {
                 $time = $email[$stateKey];
                 if ($time) {
@@ -120,7 +119,6 @@ class NewsletterRepository extends AbstractRepository
             }
             ++$count;
         }
-        $db->sql_free_result($rs);
 
         return $count;
     }
@@ -134,8 +132,6 @@ class NewsletterRepository extends AbstractRepository
      */
     public static function findAllNewsletterAndEmailUidToSend(Newsletter $newsletter = null)
     {
-        $db = Tools::getDatabaseConnection();
-
         // Apply limit of emails per round
         $mails_per_round = (int)Tools::confParam('mails_per_round');
         if ($mails_per_round) {
@@ -152,20 +148,13 @@ class NewsletterRepository extends AbstractRepository
         }
 
         // Find the uid of emails and newsletters that need to be sent
-        $rs = $db->sql_query(
+        return Tools::executeRawDBQuery(
             'SELECT tx_newsletter_domain_model_newsletter.uid AS newsletter, tx_newsletter_domain_model_email.uid AS email
 						FROM tx_newsletter_domain_model_email
 						INNER JOIN tx_newsletter_domain_model_newsletter ON (tx_newsletter_domain_model_email.newsletter = tx_newsletter_domain_model_newsletter.uid)
 						WHERE tx_newsletter_domain_model_email.begin_time = 0
                         ' . $newsletterUid . '
 						ORDER BY tx_newsletter_domain_model_email.newsletter ' . $limit
-        );
-
-        $result = [];
-        while ($record = $db->sql_fetch_assoc($rs)) {
-            $result[] = $record;
-        }
-
-        return $result;
+        )->fetchAllAssociative();
     }
 }

@@ -66,9 +66,9 @@ define(
                             ]
                         )
                         $('.overview__recipients-count span').html(lastSentStats['emailCount']);
-                        $('.overview__emailsOpened span').html(lastSentStats['emailOpenedPercentage']);
-                        $('.overview__emailsBounced span').html(lastSentStats['emailBouncedPercentage']);
-                        $('.overview__clickedLinks span').html(lastSentStats['linkOpenedPercentage']);
+                        $('.overview__emailsOpened span').html(lastSentStats['emailOpenedPercentage'] + '%');
+                        $('.overview__emailsBounced span').html(lastSentStats['emailBouncedPercentage'] + '%');
+                        $('.overview__clickedLinks span').html(lastSentStats['linkOpenedPercentage'] + '%');
                         const plannedDate = new Date(newsletter['plannedTime'])
                         const beginTime = new Date(newsletter['beginTime'])
                         $('.overview__plannedDate span').html(plannedDate.toLocaleString("en-GB"));

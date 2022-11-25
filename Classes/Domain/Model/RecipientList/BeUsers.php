@@ -52,7 +52,7 @@ class BeUsers extends GentleSql
         $config[] = -1;
         $config = array_filter($config);
 
-        $this->data = Tools::getDatabaseConnection()->sql_query(
+        $this->data = Tools::executeRawDBQuery(
             'SELECT email, realName, username, lang, admin FROM be_users
 				WHERE uid IN (' . implode(',', $config) . ")
 				AND email <> ''

@@ -7,6 +7,7 @@ use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\LinkRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use Mirko\Newsletter\Tools;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class NewsletterService
 {
@@ -24,6 +25,11 @@ class NewsletterService
         $this->emailRepository = $emailRepository;
         $this->newsletterRepository = $newsletterRepository;
         $this->linkRepository = $linkRepository;
+    }
+
+    public static function getInstance()
+    {
+        return GeneralUtility::makeInstance(self::class);
     }
 
     /**
@@ -49,19 +55,20 @@ class NewsletterService
      */
     public function getEmailNotSentCount(Newsletter $newsletter)
     {
-        $db = Tools::getDatabaseConnection();
+        $queryBuilder = Tools::getQueryBuilderForTable('tx_newsletter_domain_model_email');
 
         // If the newsletter didn't start, then it means all emails are "not sent"
         if (!$newsletter->getBeginTime()) {
             return $this->getEmailCount($newsletter);
         }
-
-        $numberOfNotSent = $db->exec_SELECTcountRows(
-            '*',
-            'tx_newsletter_domain_model_email',
-            'end_time = 0 AND newsletter = ' . $newsletter->getUid()
-        );
-
+        $numberOfNotSent = $queryBuilder
+            ->select('uid')
+            ->from('tx_newsletter_domain_model_email')
+            ->where($queryBuilder->expr()->eq('end_time', $queryBuilder->createNamedParameter(0)))
+            ->andWhere(
+                $queryBuilder->expr()->eq('newsletter', $queryBuilder->createNamedParameter($newsletter->getUid()))
+            )
+            ->execute()->rowCount();
         return (int)$numberOfNotSent;
     }
 
@@ -118,16 +125,8 @@ class NewsletterService
                 break;
         }
         $newPlannedTime = mktime($hour, $minute, 0, $month, $day, $year);
-
-        // Clone this newsletter and give the new plannedTime
-        // We cannot use extbase because __clone() doesn't work and even if we clone manually the PID cannot be set
-        $db = Tools::getDatabaseConnection();
-        $db->sql_query(
-            "INSERT INTO tx_newsletter_domain_model_newsletter
-        (uid, pid, planned_time, begin_time, end_time, repetition, plain_converter, is_test, attachments, sender_name, sender_email, replyto_name, replyto_email, inject_open_spy, inject_links_spy, bounce_account, recipient_list)
-		SELECT null AS uid, pid, '$newPlannedTime' AS planned_time, 0 AS begin_time, 0 AS end_time, repetition, plain_converter, is_test, attachments, sender_name, sender_email, replyto_name, replyto_email, inject_open_spy, inject_links_spy, bounce_account, recipient_list
-		FROM tx_newsletter_domain_model_newsletter WHERE uid = " . $newsletter->getUid()
-        );
+        $newsletter->setPlannedTime(new \DateTime($newPlannedTime));
+        $this->newsletterRepository->add($newsletter);
     }
 
     /**
@@ -260,7 +259,10 @@ class NewsletterService
 
             // Compute percentage for link states
             if ($newState['linkCount'] && $newState['emailCount']) {
-                $newState['linkOpenedPercentage'] = round($newState['linkOpenedCount'] / ($newState['linkCount'] * $newState['emailCount']) * 100, 1);
+                $newState['linkOpenedPercentage'] = round(
+                    $newState['linkOpenedCount'] / ($newState['linkCount'] * $newState['emailCount']) * 100,
+                    1
+                );
             } else {
                 $newState['linkOpenedPercentage'] = 0;
             }

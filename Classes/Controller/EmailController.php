@@ -154,18 +154,19 @@ class EmailController extends ApiActionController
              * @var RecipientList $recipientList
              */
             $recipientList = $this->recipientListRepository->findByUid(@$args['uidRecipientList']);
-            $newsletter->setRecipientList($recipientList);
-
-            // Find the recipient
-            $recipientList = $newsletter->getRecipientList();
-            $recipientList->init();
-            while ($record = $recipientList->getRecipient()) {
-                // Got him
-                if ($record['email'] === $args['email']) {
-                    // Build a fake email
-                    $email = GeneralUtility::makeInstance(Email::class);
-                    $email->setRecipientAddress($record['email']);
-                    $email->setRecipientData($record);
+            if ($recipientList instanceof RecipientList) {
+                $newsletter->setRecipientList($recipientList);
+                // Find the recipient
+                $recipientList = $newsletter->getRecipientList();
+                $recipientList->init();
+                while ($record = $recipientList->getRecipient()) {
+                    // Got him
+                    if ($record['email'] === $args['email']) {
+                        // Build a fake email
+                        $email = GeneralUtility::makeInstance(Email::class);
+                        $email->setRecipientAddress($record['email']);
+                        $email->setRecipientData($record);
+                    }
                 }
             }
         } else {
@@ -289,14 +290,12 @@ class EmailController extends ApiActionController
 
         // Use the page-owner as user
         if ($notificationEmail == 'user') {
-            $rs = Tools::getDatabaseConnection()->sql_query(
+            $notificationEmail = Tools::executeRawDBQuery(
                 'SELECT email
 			FROM be_users
 			LEFT JOIN pages ON be_users.uid = pages.perms_userid
 			WHERE pages.uid = ' . $newsletter->getPid()
-            );
-
-            list($notificationEmail) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
+            )->fetchOne();
         }
 
         // If cannot find valid email, don't send any notification
@@ -305,7 +304,7 @@ class EmailController extends ApiActionController
         }
 
         // Build email texts
-        $baseUrl = $newsletter->getBaseUrl();
+        $baseUrl = Tools::getBaseUrl();
         $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid(
             ) . ']=edit';
         $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid(

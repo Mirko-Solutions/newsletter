@@ -122,12 +122,16 @@ class ModuleController extends ActionController
         );
 
         $pageType = '';
+        $queryBuilder = Tools::getQueryBuilderForTable('pages');
+        $pageDokType = $queryBuilder->select('doktype')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->pageId))
+            )->executeQuery()->fetchOne();
 
-        $record = Tools::getDatabaseConnection()->exec_SELECTgetSingleRow('doktype', 'pages', 'uid =' . $this->pageId);
-
-        if (!empty($record['doktype']) && $record['doktype'] === 254) {
+        if ($pageDokType === 254) {
             $pageType = 'folder';
-        } elseif (!empty($record['doktype'])) {
+        } elseif ($pageDokType === 1) {
             $pageType = 'page';
         }
 

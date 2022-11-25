@@ -366,8 +366,6 @@ class Newsletter extends AbstractEntity
      */
     public function getSenderName()
     {
-        $db = Tools::getDatabaseConnection();
-
         // Return the senderName defined on the newsletter
         if ($this->senderName) {
             return $this->senderName;
@@ -377,14 +375,14 @@ class Newsletter extends AbstractEntity
         $sender = Tools::confParam('sender_name');
         if ($sender === 'user') {
             // Use the page-owner as user
-            $rs = $db->sql_query(
+            $rs = Tools::executeRawDBQuery(
                 "SELECT realName
 							  FROM be_users
 							  LEFT JOIN pages ON be_users.uid = pages.perms_userid
 							  WHERE pages.uid = $this->pid"
             );
 
-            [$sender] = $db->sql_fetch_row($rs);
+            [$sender] = $rs->fetchNumeric();
             if ($sender) {
                 return $sender;
             }
@@ -420,8 +418,6 @@ class Newsletter extends AbstractEntity
      */
     public function getSenderEmail()
     {
-        $db = Tools::getDatabaseConnection();
-
         /* The sender defined on the page? */
         if (GeneralUtility::validEmail($this->senderEmail)) {
             return $this->senderEmail;
@@ -431,14 +427,14 @@ class Newsletter extends AbstractEntity
         $email = Tools::confParam('sender_email');
         if ($email === 'user') {
             /* Use the page-owner as user */
-            $rs = $db->sql_query(
+            $rs = Tools::executeRawDBQuery(
                 "SELECT email
 			FROM be_users bu
 			LEFT JOIN pages p ON bu.uid = p.perms_userid
 			WHERE p.uid = $this->pid"
             );
 
-            [$email] = Tools::getDatabaseConnection()->sql_fetch_row($rs);
+            [$email] = $rs->fetchNumeric();
             if (GeneralUtility::validEmail($email)) {
                 return $email;
             }
@@ -675,12 +671,11 @@ class Newsletter extends AbstractEntity
      */
     public function getTitle()
     {
-        $db = Tools::getDatabaseConnection();
-        $rs = $db->sql_query("SELECT title FROM pages WHERE uid = $this->pid");
+        $rs = Tools::executeRawDBQuery("SELECT title FROM pages WHERE uid = $this->pid");
 
         $title = '';
-        if ($db->sql_num_rows($rs)) {
-            list($title) = $db->sql_fetch_row($rs);
+        if ($rs->rowCount()) {
+            [$title] = $rs->fetchNumeric();
         }
 
         return $title;

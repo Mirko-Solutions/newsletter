@@ -306,7 +306,7 @@ class Mailer
      */
     private function getLinkAuthCode(Email $email, $url, $isPreview, $isPlainText = false)
     {
-        $db = Tools::getDatabaseConnection();
+        $queryBuilder = Tools::getQueryBuilderForTable('tx_newsletter_domain_model_link');
         $url = html_entity_decode($url);
 
         // First check in our local cache
@@ -318,30 +318,35 @@ class Mailer
         } // Finally if it's not a preview and link was not in cache, check database
         else {
             // Look for the link database, it may already exist
-            $res = $db->sql_query(
-                'SELECT uid FROM tx_newsletter_domain_model_link WHERE url = ' . $db->fullQuoteStr(
-                    $url,
-                    'tx_newsletter_domain_model_link'
-                ) . ' AND newsletter = ' . $db->fullQuoteStr(
-                    $this->newsletter->getUid(),
-                    'tx_newsletter_domain_model_link'
-                ) . ' LIMIT 1'
-            );
-            $row = $db->sql_fetch_row($res);
-            if ($row) {
-                $linkId = $row[0];
+            $res = $queryBuilder
+                ->select('uid')
+                ->from('tx_newsletter_domain_model_link')
+                ->where($queryBuilder->expr()->eq('url', $queryBuilder->createNamedParameter($url)))
+                ->andWhere(
+                    $queryBuilder->expr()->eq(
+                        'newsletter',
+                        $queryBuilder->createNamedParameter($this->newsletter->getUid())
+                    )
+                )
+                ->setMaxResults(1)
+                ->execute()->fetchOne();
+
+            if ($res) {
+                $linkId = $res;
             } // Otherwise create it
             else {
-                $db->exec_INSERTquery(
-                    'tx_newsletter_domain_model_link',
-                    [
-                        'pid' => $this->newsletter->getPid(),
-                        'url' => $url,
-                        'newsletter' => $this->newsletter->getUid(),
-                    ]
-                );
+                $queryBuilder
+                    ->insert('tx_newsletter_domain_model_link')
+                    ->values(
+                        [
+                            'pid' => $this->newsletter->getPid(),
+                            'url' => $url,
+                            'newsletter' => $this->newsletter->getUid(),
+                        ]
+                    )
+                    ->executeStatement();
 
-                $linkId = $db->sql_insert_id();
+                $linkId = $queryBuilder->getConnection()->lastInsertId();
             }
         }
 
