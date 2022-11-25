@@ -126,10 +126,10 @@ class Sql extends RecipientList
 
         // Inject dummy SQL statement, just for fun !
         if (!$sql) {
-            $sql = 'SELECT email FROM be_users WHERE 1 = 0';
+            $sql = 'SELECT email FROM be_users';
         }
 
-        $this->data = Tools::getDatabaseConnection()->sql_query($sql);
+        $this->data = Tools::executeRawDBQuery($sql);
     }
 
     /**
@@ -140,7 +140,7 @@ class Sql extends RecipientList
      */
     public function getRecipient()
     {
-        $r = Tools::getDatabaseConnection()->sql_fetch_assoc($this->data);
+        $r = $this->data->fetchAssociative();
         if (is_array($r)) {
             if (!isset($r['plain_only'])) {
                 $r['plain_only'] = $this->isPlainOnly();
@@ -158,12 +158,12 @@ class Sql extends RecipientList
 
     public function getCount()
     {
-        return Tools::getDatabaseConnection()->sql_num_rows($this->data);
+        return $this->data->rowCount();
     }
 
     public function getError()
     {
-        return Tools::getDatabaseConnection()->sql_error();
+        return $this->data->errorInfo();
     }
 
     /**
@@ -176,8 +176,6 @@ class Sql extends RecipientList
      */
     public function registerBounce($email, $bounceLevel)
     {
-        $db = Tools::getDatabaseConnection();
-
         $sql = str_replace([
             '###EMAIL###',
             '###BOUNCE_TYPE###',
@@ -185,7 +183,7 @@ class Sql extends RecipientList
             '###BOUNCE_TYPE_HARD###',
             '###BOUNCE_TYPE_UNSUBSCRIBE###',
         ], [
-            $db->fullQuoteStr($email, 'tx_newsletter_domain_model_recipientlist'), // Here we assume the SQL table to recipientList, but it could be something different.
+            "'{$email}'",
             $bounceLevel,
             EmailParser::NEWSLETTER_SOFTBOUNCE,
             EmailParser::NEWSLETTER_HARDBOUNCE,
@@ -193,9 +191,7 @@ class Sql extends RecipientList
         ], $this->getSqlRegisterBounce());
 
         if ($sql) {
-            $db->sql_query($sql);
-
-            return $db->sql_affected_rows();
+            return Tools::executeRawDBQuery($sql)->rowCount();
         }
 
         return false;
@@ -208,12 +204,10 @@ class Sql extends RecipientList
      */
     public function registerOpen($email)
     {
-        $db = Tools::getDatabaseConnection();
-
-        $sql = str_replace('###EMAIL###', $db->fullQuoteStr($email, 'tx_newsletter_domain_model_recipientlist'), $this->getSqlRegisterOpen());
+        $sql = str_replace('###EMAIL###', "'{$email}'", $this->getSqlRegisterOpen());
 
         if ($sql) {
-            $db->sql_query($sql);
+           Tools::executeRawDBQuery($sql);
         }
     }
 
@@ -224,12 +218,10 @@ class Sql extends RecipientList
      */
     public function registerClick($email)
     {
-        $db = Tools::getDatabaseConnection();
-
-        $sql = str_replace('###EMAIL###', $db->fullQuoteStr($email, 'tx_newsletter_domain_model_recipientlist'), $this->getSqlRegisterClick());
+        $sql = str_replace('###EMAIL###', "'{$email}'", $this->getSqlRegisterClick());
 
         if ($sql) {
-            $db->sql_query($sql);
+            Tools::executeRawDBQuery($sql);
         }
     }
 }

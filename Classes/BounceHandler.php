@@ -137,7 +137,7 @@ fetchmail output was:
 			INNER JOIN tx_newsletter_domain_model_newsletter ON (tx_newsletter_domain_model_email.newsletter = tx_newsletter_domain_model_newsletter.uid)
 			INNER JOIN tx_newsletter_domain_model_recipientlist ON (tx_newsletter_domain_model_newsletter.recipient_list = tx_newsletter_domain_model_recipientlist.uid)
 			WHERE tx_newsletter_domain_model_email.auth_code = '$authCode' AND recipient_list IS NOT NULL
-			LIMIT 1")->fetchOne();
+			LIMIT 1")->fetchNumeric();
 
             if ([$recipientListUid, $emailUid] = $rs) {
                 $emailRepository = $this->objectManager->get(EmailRepository::class);

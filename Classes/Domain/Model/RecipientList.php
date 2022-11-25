@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\Domain\Model;
 
+use Doctrine\DBAL\ForwardCompatibility\Result;
 use Mirko\Newsletter\Utility\UriBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -131,9 +132,9 @@ abstract class RecipientList extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
     /**
      * Array or mysql result containing raw data for recipient list. Kind of cache in memory.
      *
-     * @var array
+     * @var array|Result
      */
-    protected $data = null;
+    protected array|Result $data;
 
     /**
      * Initializing method to prepare for reading recipients.

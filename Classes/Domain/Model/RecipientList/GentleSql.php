@@ -30,8 +30,6 @@ abstract class GentleSql extends Sql
      */
     public function registerBounce($email, $bounceLevel)
     {
-        $db = Tools::getDatabaseConnection();
-
         $increment = 0;
         switch ($bounceLevel) {
             case EmailParser::NEWSLETTER_UNSUBSCRIBE:
@@ -46,11 +44,11 @@ abstract class GentleSql extends Sql
         }
 
         if ($increment) {
-            $db->sql_query('UPDATE ' . $this->getTableName() . "
+            return Tools::executeRawDBQuery(
+                'UPDATE ' . $this->getTableName() . "
 						SET tx_newsletter_bounce = tx_newsletter_bounce + $increment
-						WHERE email = '$email'");
-
-            return $db->sql_affected_rows();
+						WHERE email = '$email'"
+            )->rowCount();
         }
 
         return false;
@@ -65,9 +63,11 @@ abstract class GentleSql extends Sql
      */
     public function registerClick($email)
     {
-        Tools::getDatabaseConnection()->sql_query('UPDATE ' . $this->getTableName() . "
+        Tools::executeRawDBQuery(
+            'UPDATE ' . $this->getTableName() . "
 							SET tx_newsletter_bounce = 0
-							WHERE email = '$email'");
+							WHERE email = '{$email}'"
+        );
     }
 
     /**
@@ -77,8 +77,10 @@ abstract class GentleSql extends Sql
      */
     public function registerOpen($email)
     {
-        Tools::getDatabaseConnection()->sql_query('UPDATE ' . $this->getTableName() . "
+        Tools::executeRawDBQuery(
+            'UPDATE ' . $this->getTableName() . "
 							SET tx_newsletter_bounce = 0
-							WHERE email = '$email'");
+							WHERE email = '$email'"
+        );
     }
 }

@@ -323,24 +323,30 @@ class Mailer
                 ->from('tx_newsletter_domain_model_link')
                 ->where($queryBuilder->expr()->eq('url', $queryBuilder->createNamedParameter($url)))
                 ->andWhere(
-                    $queryBuilder->expr()->eq('newsletter', $queryBuilder->createNamedParameter($this->newsletter->getUid()))
+                    $queryBuilder->expr()->eq(
+                        'newsletter',
+                        $queryBuilder->createNamedParameter($this->newsletter->getUid())
+                    )
                 )
                 ->setMaxResults(1)
                 ->execute()->fetchOne();
+
             if ($res) {
-                $linkId = $res[0];
+                $linkId = $res;
             } // Otherwise create it
             else {
                 $queryBuilder
                     ->insert('tx_newsletter_domain_model_link')
-                    ->values([
-                        'pid' => $this->newsletter->getPid(),
-                        'url' => $url,
-                        'newsletter' => $this->newsletter->getUid(),
-                    ])
+                    ->values(
+                        [
+                            'pid' => $this->newsletter->getPid(),
+                            'url' => $url,
+                            'newsletter' => $this->newsletter->getUid(),
+                        ]
+                    )
                     ->executeStatement();
 
-                $linkId =  $queryBuilder->getConnection()->lastInsertId();
+                $linkId = $queryBuilder->getConnection()->lastInsertId();
             }
         }
 

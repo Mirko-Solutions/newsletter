@@ -154,18 +154,19 @@ class EmailController extends ApiActionController
              * @var RecipientList $recipientList
              */
             $recipientList = $this->recipientListRepository->findByUid(@$args['uidRecipientList']);
-            $newsletter->setRecipientList($recipientList);
-
-            // Find the recipient
-            $recipientList = $newsletter->getRecipientList();
-            $recipientList->init();
-            while ($record = $recipientList->getRecipient()) {
-                // Got him
-                if ($record['email'] === $args['email']) {
-                    // Build a fake email
-                    $email = GeneralUtility::makeInstance(Email::class);
-                    $email->setRecipientAddress($record['email']);
-                    $email->setRecipientData($record);
+            if ($recipientList instanceof RecipientList) {
+                $newsletter->setRecipientList($recipientList);
+                // Find the recipient
+                $recipientList = $newsletter->getRecipientList();
+                $recipientList->init();
+                while ($record = $recipientList->getRecipient()) {
+                    // Got him
+                    if ($record['email'] === $args['email']) {
+                        // Build a fake email
+                        $email = GeneralUtility::makeInstance(Email::class);
+                        $email->setRecipientAddress($record['email']);
+                        $email->setRecipientData($record);
+                    }
                 }
             }
         } else {

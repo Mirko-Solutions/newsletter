@@ -175,7 +175,9 @@ class Tools
      */
     public function runAllSpool()
     {
-        $rs = Tools::executeRawDBQuery('SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30))->fetchOne();
+        $rs = Tools::executeRawDBQuery(
+            'SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30)
+        )->fetchOne();
         if ($rs !== 0) {
             return;
         }
@@ -443,16 +445,6 @@ class Tools
     public static function getDomain(): string
     {
         return parse_url(static::getBaseUrl(), PHP_URL_HOST);
-    }
-
-    /**
-     * Returns the the connection to database
-     *
-     * @return DatabaseConnection
-     */
-    public static function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**

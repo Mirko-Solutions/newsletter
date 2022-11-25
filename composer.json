@@ -16,7 +16,6 @@
     "php": ">=7.4.0",
     "ext-dom": "*",
     "ext-openssl": "*",
-    "friendsoftypo3/typo3db-legacy": ">=1.1.2",
     "typo3/cms-backend": "^11.5",
     "typo3/cms-core": "^11.5",
     "typo3/cms-extbase": "^11.5",

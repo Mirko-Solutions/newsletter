@@ -81,7 +81,7 @@
             <trans-unit id="links_tab" xml:space="preserve">
                 <source>Links</source>
             </trans-unit>
-            <trans-unit id="" xml:space="preserve">
+            <trans-unit id="emails_tab" xml:space="preserve">
                 <source>Emails</source>
             </trans-unit>
             <trans-unit id="recipients" xml:space="preserve">
