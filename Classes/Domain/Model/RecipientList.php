@@ -134,7 +134,7 @@ abstract class RecipientList extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
      *
      * @var array|Result
      */
-    protected array|Result $data;
+    protected $data;
 
     /**
      * Initializing method to prepare for reading recipients.
