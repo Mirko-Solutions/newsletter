@@ -7,42 +7,43 @@ use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Model\PlainConverter\Builtin;
 use Mirko\Newsletter\Domain\Model\PlainConverter\Lynx;
 use Mirko\Newsletter\Domain\Model\RecipientList\BeUsers;
+use Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase;
 
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\Newsletter.
  */
-class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\Newsletter
+ */
+class NewsletterTest extends AbstractUnitTestCase
 {
     /**
      * @var Newsletter
      */
     protected $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        $this->inicializeEnviroment();
         $this->loadConfiguration();
         $this->subject = new Newsletter();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->subject);
     }
 
-    /**
-     * @test
-     */
-    public function setUid()
+
+    public function testSetUid()
     {
         $this->assertNull($this->subject->getUid());
         $this->subject->setUid(123);
         $this->assertSame(123, $this->subject->getUid());
     }
 
-    /**
-     * @test
-     */
-    public function getPlannedTimeReturnsInitialValueForDateTime()
+
+    public function testGetPlannedTimeReturnsInitialValueForDateTime()
     {
         $today = new \DateTime();
         $today->setTime(0, 0, 0);
@@ -50,119 +51,103 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
         $this->assertNotNull($plannedTime);
 
         $plannedTime->setTime(0, 0, 0);
-        $this->assertSame($today->format(\DateTime::ISO8601), $plannedTime->format(\DateTime::ISO8601));
+        $this->assertSame($today->format(\DateTime::ATOM), $plannedTime->format(\DateTime::ATOM));
     }
 
-    /**
-     * @test
-     */
-    public function setPlannedTimeForDateTimeSetsPlannedTime()
+
+    public function testSetPlannedTimeForDateTimeSetsPlannedTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setPlannedTime($dateTimeFixture);
 
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'plannedTime', $this->subject
-        );
+        $this->assertSame($dateTimeFixture, $this->subject->getPlannedTime());
     }
 
-    /**
-     * @test
-     */
-    public function getBeginTimeReturnsInitialValueForDateTime()
+
+    public function testGetBeginTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getBeginTime()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setBeginTimeForDateTimeSetsBeginTime()
+
+    public function testSetBeginTimeForDateTimeSetsBeginTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setBeginTime($dateTimeFixture);
 
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'beginTime', $this->subject
+        $this->assertSame(
+            $dateTimeFixture,
+            $this->subject->getBeginTime()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getEndTimeReturnsInitialValueForDateTime()
+
+    public function testGetEndTimeReturnsInitialValueForDateTime()
     {
         $this->assertNull(
             $this->subject->getEndTime()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setEndTimeForDateTimeSetsEndTime()
+
+    public function testSetEndTimeForDateTimeSetsEndTime()
     {
         $dateTimeFixture = new \DateTime();
         $this->subject->setEndTime($dateTimeFixture);
 
-        $this->assertAttributeSame(
-            $dateTimeFixture, 'endTime', $this->subject
+        $this->assertSame(
+            $dateTimeFixture,
+            $this->subject->getEndTime()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getRepetitionReturnsInitialValueForInteger()
+
+    public function testGetRepetitionReturnsInitialValueForInteger()
     {
         $this->assertSame(
-            0, $this->subject->getRepetition()
+            0,
+            $this->subject->getRepetition()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setRepetitionForIntegerSetsRepetition()
+
+    public function testSetRepetitionForIntegerSetsRepetition()
     {
         $this->subject->setRepetition(12);
 
-        $this->assertAttributeSame(
-            12, 'repetition', $this->subject
+        $this->assertSame(
+            12,
+            $this->subject->getRepetition()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getPlainConverterReturnsInitialValueForString()
+
+    public function testGetPlainConverterReturnsInitialValueForString()
     {
         $converter = $this->subject->getPlainConverter();
         $this->assertSame(
-            Builtin::class, $converter
+            Builtin::class,
+            $converter
         );
 
         $this->assertTrue(class_exists($converter));
     }
 
-    /**
-     * @test
-     */
-    public function setPlainConverterForStringSetsPlainConverter()
+
+    public function testSetPlainConverterForStringSetsPlainConverter()
     {
         $this->subject->setPlainConverter('Conceived at T3CON10');
 
-        $this->assertAttributeSame(
-            'Conceived at T3CON10', 'plainConverter', $this->subject
+        $this->assertSame(
+            'Conceived at T3CON10',
+            $this->subject->getPlainConverter()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getPlainConverterInstance()
+
+    public function testGetPlainConverterInstance()
     {
         $classes = [
             'NonExistingClassFooBar' => Builtin::class,
@@ -178,193 +163,140 @@ class NewsletterTest extends \Mirko\Newsletter\Tests\Unit\AbstractUnitTestCase
 
     /**
      * @test
-     * @expectedException \Exception
+     *
      */
-    public function getPlainConverterInstanceThrowsException()
+    public function testGetPlainConverterInstanceThrowsException()
     {
+        $this->expectException(\Exception::class);
         $this->subject->setPlainConverter('stdClass');
         $this->subject->getPlainConverterInstance();
     }
 
-    /**
-     * @test
-     */
-    public function getIsTestReturnsInitialValueForBoolean()
+
+    public function testGetIsTestReturnsInitialValueForBoolean()
     {
         $this->assertFalse($this->subject->getIsTest());
         $this->assertFalse($this->subject->isIsTest());
     }
 
-    /**
-     * @test
-     */
-    public function setIsTestForBooleanSetsIsTest()
+
+    public function testSetIsTestForBooleanSetsIsTest()
     {
         $this->subject->setIsTest(true);
 
-        $this->assertAttributeSame(
-            true, 'isTest', $this->subject
+        $this->assertTrue(
+            $this->subject->isIsTest()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getBounceAccountReturnsInitialValueForBounceAccount()
+
+    public function testGetBounceAccountReturnsInitialValueForBounceAccount()
     {
         $this->assertNull(
             $this->subject->getBounceAccount()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setBounceAccountForBounceAccountSetsBounceAccount()
+
+    public function testSetBounceAccountForBounceAccountSetsBounceAccount()
     {
         $bounceAccountFixture = new BounceAccount();
         $this->subject->setBounceAccount($bounceAccountFixture);
 
-        $this->assertAttributeSame(
-            $bounceAccountFixture, 'bounceAccount', $this->subject
+        $this->assertSame(
+            $bounceAccountFixture,
+            $this->subject->getBounceAccount()
         );
     }
 
-    /**
-     * @test
-     */
-    public function getUidBounceAccount()
+
+    public function testGetUidBounceAccount()
     {
         $this->assertNull($this->subject->getUidBounceAccount());
 
-        $bounceAccount = $this->getMock(BounceAccount::class, ['getUid'], [], '', false);
+        $bounceAccount = $this->createMock(BounceAccount::class);
         $bounceAccount->expects($this->once())->method('getUid')->will($this->returnValue(123));
         $this->subject->setBounceAccount($bounceAccount);
         $this->assertSame(123, $this->subject->getUidBounceAccount());
     }
 
-    /**
-     * @test
-     */
-    public function setSenderNameForStringSetsSenderName()
-    {
-        $this->subject->setSenderName('Conceived at T3CON10');
 
-        $this->assertAttributeSame(
-            'Conceived at T3CON10', 'senderName', $this->subject
-        );
-
-        $this->assertSame('Conceived at T3CON10', $this->subject->getSenderName());
-    }
-
-    /**
-     * @test
-     */
-    public function setSenderEmailForStringSetsSenderEmail()
-    {
-        $this->subject->setSenderEmail('john@example.com');
-
-        $this->assertAttributeSame(
-            'john@example.com', 'senderEmail', $this->subject
-        );
-
-        $this->assertSame('john@example.com', $this->subject->getSenderEmail());
-    }
-
-    /**
-     * @test
-     */
-    public function getInjectOpenSpyReturnsInitialValueForBoolean()
+    public function testGetInjectOpenSpyReturnsInitialValueForBoolean()
     {
         $this->assertTrue($this->subject->getInjectOpenSpy());
         $this->assertTrue($this->subject->isInjectOpenSpy());
     }
 
-    /**
-     * @test
-     */
-    public function setInjectOpenSpyForBooleanSetssetInjectOpenSpy()
+
+    public function testSetInjectOpenSpyForBooleanSetssetInjectOpenSpy()
     {
         $this->subject->setInjectOpenSpy(true);
 
-        $this->assertAttributeSame(
-            true, 'injectOpenSpy', $this->subject
-        );
+        $this->assertTrue(true, $this->subject->getInjectOpenSpy());
     }
 
-    /**
-     * @test
-     */
-    public function getInjectLinksSpyReturnsInitialValueForBoolean()
+
+    public function testGetInjectLinksSpyReturnsInitialValueForBoolean()
     {
         $this->assertTrue($this->subject->getInjectLinksSpy());
         $this->assertTrue($this->subject->isInjectLinksSpy());
     }
 
-    /**
-     * @test
-     */
-    public function setInjectLinksSpyForBooleanSetsInjectLinksSpy()
+
+    public function testSetInjectLinksSpyForBooleanSetsInjectLinksSpy()
     {
         $this->subject->setInjectLinksSpy(false);
 
-        $this->assertAttributeSame(
-            false, 'injectLinksSpy', $this->subject
-        );
+        $this->assertFalse($this->subject->getInjectLinksSpy());
     }
 
-    /**
-     * @test
-     */
-    public function getRecipientListReturnsInitialValueForRecipientList()
+
+    public function testGetRecipientListReturnsInitialValueForRecipientList()
     {
         $this->assertNull(
             $this->subject->getRecipientList()
         );
     }
 
-    /**
-     * @test
-     */
-    public function setRecipientListForRecipientListSetsRecipientList()
+
+    public function testSetRecipientListForRecipientListSetsRecipientList()
     {
         $recipientListFixture = new BeUsers();
         $this->subject->setRecipientList($recipientListFixture);
-
-        $this->assertAttributeSame(
-            $recipientListFixture, 'recipientList', $this->subject
-        );
+        $this->assertSame($recipientListFixture, $this->subject->getRecipientList());
     }
 
-    /**
-     * @test
-     */
-    public function getUidRecipientList()
+
+    public function testGetUidRecipientList()
     {
         $this->assertNull($this->subject->getUidRecipientList());
 
-        $recipientList = $this->getMock(BeUsers::class, ['getUid'], [], '', false);
+        $recipientList = $this->createMock(BeUsers::class);
         $recipientList->expects($this->once())->method('getUid')->will($this->returnValue(123));
         $this->subject->setRecipientList($recipientList);
         $this->assertSame(123, $this->subject->getUidRecipientList());
     }
 
-    /**
-     * @test
-     */
-    public function getReplytoName()
+
+    public function testGetReplytoName()
     {
-        $this->assertSame('John Connor', $this->subject->getReplytoName(), 'sould return globally configured default value');
+        $this->assertSame(
+            'John Connor',
+            $this->subject->getReplytoName(),
+            'sould return globally configured default value'
+        );
         $this->subject->setReplytoName('My custom name');
         $this->assertSame('My custom name', $this->subject->getReplytoName(), 'sould return locally set value');
     }
 
-    /**
-     * @test
-     */
-    public function getReplytoEmail()
+
+    public function testGetReplytoEmail()
     {
-        $this->assertSame('john.connor@example.com', $this->subject->getReplytoEmail(), 'sould return globally configured default value');
+        $this->assertSame(
+            'john.connor@example.com',
+            $this->subject->getReplytoEmail(),
+            'sould return globally configured default value'
+        );
         $this->subject->setReplytoEmail('custom@example.com');
         $this->assertSame('custom@example.com', $this->subject->getReplytoEmail(), 'sould return locally set value');
     }

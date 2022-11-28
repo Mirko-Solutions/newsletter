@@ -52,7 +52,7 @@ class FeGroups extends GentleSql
         $groups[] = -1;
         $groups = array_filter($groups);
 
-        $this->data = Tools::getDatabaseConnection()->sql_query(
+        $this->data = Tools::executeRawDBQuery(
             'SELECT DISTINCT email,name,address,telephone,fax,username,fe_users.title,zip,city,country,www,company,fe_groups.title AS group_title
 				FROM fe_groups, fe_users
 				WHERE fe_groups.uid IN (' . implode(',', $groups) . ")
@@ -62,6 +62,7 @@ class FeGroups extends GentleSql
 				AND fe_groups.hidden = 0
 				AND fe_users.disable = 0
 				AND fe_users.deleted = 0
-				AND tx_newsletter_bounce < 10");
+				AND tx_newsletter_bounce < 10"
+        );
     }
 }

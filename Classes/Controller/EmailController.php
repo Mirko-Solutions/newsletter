@@ -2,6 +2,8 @@
 
 namespace Mirko\Newsletter\Controller;
 
+use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use Mirko\Newsletter\Domain\Model\Email;
@@ -29,6 +31,13 @@ class EmailController extends ApiActionController
     protected EmailRepository $emailRepository;
 
     /**
+     * recipientListRepository
+     *
+     * @var RecipientListRepository
+     */
+    protected RecipientListRepository $recipientListRepository;
+
+    /**
      * injectEmailRepository
      *
      * @param EmailRepository $emailRepository
@@ -36,6 +45,16 @@ class EmailController extends ApiActionController
     public function injectEmailRepository(EmailRepository $emailRepository)
     {
         $this->emailRepository = $emailRepository;
+    }
+
+    /**
+     * injectEmailRepository
+     *
+     * @param RecipientListRepository $recipientListRepository
+     */
+    public function injectRecipientListRepository(RecipientListRepository $recipientListRepository)
+    {
+        $this->recipientListRepository = $recipientListRepository;
     }
 
     /**
@@ -97,7 +116,7 @@ class EmailController extends ApiActionController
     {
         // Override settings to NOT embed images inlines (doesn't make sense for web display)
         global $TYPO3_CONF_VARS;
-        $theConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
+        $theConf = Typo3GeneralService::getExtensionConfiguration();
         $theConf['attach_images'] = false;
         $TYPO3_CONF_VARS['EXTENSIONS']['newsletter'] = $theConf;
 
@@ -131,18 +150,23 @@ class EmailController extends ApiActionController
             /** @var Newsletter $newsletter */
             $newsletter = GeneralUtility::makeInstance(Newsletter::class);
             $newsletter->setPid(@$args['pid']);
-            $newsletter->setUidRecipientList(@$args['uidRecipientList']);
-
-            // Find the recipient
-            $recipientList = $newsletter->getRecipientList();
-            $recipientList->init();
-            while ($record = $recipientList->getRecipient()) {
-                // Got him
-                if ($record['email'] === $args['email']) {
-                    // Build a fake email
-                    $email = GeneralUtility::makeInstance(Email::class);
-                    $email->setRecipientAddress($record['email']);
-                    $email->setRecipientData($record);
+            /**
+             * @var RecipientList $recipientList
+             */
+            $recipientList = $this->recipientListRepository->findByUid(@$args['uidRecipientList']);
+            if ($recipientList instanceof RecipientList) {
+                $newsletter->setRecipientList($recipientList);
+                // Find the recipient
+                $recipientList = $newsletter->getRecipientList();
+                $recipientList->init();
+                while ($record = $recipientList->getRecipient()) {
+                    // Got him
+                    if ($record['email'] === $args['email']) {
+                        // Build a fake email
+                        $email = GeneralUtility::makeInstance(Email::class);
+                        $email->setRecipientAddress($record['email']);
+                        $email->setRecipientData($record);
+                    }
                 }
             }
         } else {
@@ -266,14 +290,12 @@ class EmailController extends ApiActionController
 
         // Use the page-owner as user
         if ($notificationEmail == 'user') {
-            $rs = Tools::getDatabaseConnection()->sql_query(
+            $notificationEmail = Tools::executeRawDBQuery(
                 'SELECT email
 			FROM be_users
 			LEFT JOIN pages ON be_users.uid = pages.perms_userid
 			WHERE pages.uid = ' . $newsletter->getPid()
-            );
-
-            list($notificationEmail) = Tools::getDatabaseConnection()->sql_fetch_row($rs);
+            )->fetchOne();
         }
 
         // If cannot find valid email, don't send any notification
@@ -282,7 +304,7 @@ class EmailController extends ApiActionController
         }
 
         // Build email texts
-        $baseUrl = $newsletter->getBaseUrl();
+        $baseUrl = Tools::getBaseUrl();
         $urlRecipient = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_email][' . $email->getUid(
             ) . ']=edit';
         $urlRecipientList = $baseUrl . '/typo3/alt_doc.php?&edit[tx_newsletter_domain_model_recipientlist][' . $recipientList->getUid(

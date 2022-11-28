@@ -2,42 +2,47 @@
 
 namespace Mirko\Newsletter\Tests\Unit\Domain\Model\RecipientList;
 
+use Mirko\Newsletter\Domain\Model\RecipientList;
+
 /**
  * Test case for class \Mirko\Newsletter\Domain\Model\CsvList.
  */
-abstract class AbstractRecipientList extends \TYPO3\CMS\Core\Tests\UnitTestCase
+/**
+ * @coversDefaultClass \Mirko\Newsletter\Domain\Model\RecipientList\CsvList
+ */
+abstract class AbstractRecipientList extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
 {
     /**
-     * @var RecipientList
+     * @var object $subject
      */
     protected $subject = null;
 
-    protected function tearDown()
+    protected function tearDown():void
     {
         unset($this->subject);
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getTitleReturnsInitialValueForString()
+    public function testGetTitleReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getTitle());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setTitleForStringSetsTitle()
+    public function testSetTitleForStringSetsTitle()
     {
         $this->subject->setTitle('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'title', $this->subject);
+        $this->assertClassHasAttribute('title', $this->subject::class, 'Conceived at T3CON10');
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getPlainOnlyReturnsInitialValueForBoolean()
+    public function testGetPlainOnlyReturnsInitialValueForBoolean()
     {
         $this->assertFalse(
             $this->subject->getPlainOnly()
@@ -48,48 +53,46 @@ abstract class AbstractRecipientList extends \TYPO3\CMS\Core\Tests\UnitTestCase
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setPlainOnlyForBooleanSetsPlainOnly()
+    public function testSetPlainOnlyForBooleanSetsPlainOnly()
     {
         $this->subject->setPlainOnly(true);
 
-        $this->assertAttributeSame(
-            true, 'plainOnly', $this->subject
-        );
+        $this->assertClassHasAttribute('plainOnly', $this->subject::class, true);
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getLangReturnsInitialValueForString()
+    public function testGetLangReturnsInitialValueForString()
     {
         $this->assertSame(0, $this->subject->getLang());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setLangForStringSetsLang()
+    public function testSetLangForStringSetsLang()
     {
         $this->subject->setLang(123);
-        $this->assertAttributeSame(123, 'lang', $this->subject);
+        $this->assertClassHasAttribute('lang', $this->subject::class, 123);
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function getTypeReturnsInitialValueForString()
+    public function testGetTypeReturnsInitialValueForString()
     {
         $this->assertSame('', $this->subject->getType());
     }
 
     /**
-     * @test
+     * @covers
      */
-    public function setTypeForStringSetsType()
+    public function testSetTypeForStringSetsType()
     {
         $this->subject->setType('Conceived at T3CON10');
-        $this->assertAttributeSame('Conceived at T3CON10', 'type', $this->subject);
+        $this->assertClassHasAttribute('type', $this->subject::class, 'Conceived at T3CON10');
     }
 }

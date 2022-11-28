@@ -4,19 +4,18 @@
     <div class="tabs__header">
         <div class="tabs__list">
             <div class="tabs__item tabs__item_active" data-tab="overview">
-                <span class="tabs__button">overview</span>
+                <span class="tabs__button"> <f:translate key="overview_tab"/> </span>
             </div>
             <div class="tabs__item" data-tab="emails">
-                <span class="tabs__button">emails</span>
+                <span class="tabs__button"><f:translate key="emails_tab"/> </span>
             </div>
             <div class="tabs__item" data-tab="links">
-                <span class="tabs__button">links</span>
+                <span class="tabs__button"> <f:translate key="links_tab"/></span>
             </div>
         </div>
     </div>
     <div class="tabs__body">
         <div class="tab tab_active" data-tab="overview">
-            <p>test</p>
             <div class="overviewContainer">
                 <div class="overviewStats">
                     <div class="overviewStats__pieChartContainer">
@@ -24,22 +23,22 @@
                     </div>
                     <div class="overviewStats__group">
                         <div class="overview__recipients-count">
-                            <span class="statsCounter"></span> recipients
+                            <span class="statsCounter"></span> <f:translate key="recipients"/>
                         </div>
                         <div class="overview__emailsOpened">
-                            <span class="statsCounter status-green"></span> emails opened
+                            <span class="statsCounter status-green"></span> <f:translate key="emails_opened"/>
                         </div>
                         <div class="overview__emailsBounced">
-                            <span class="statsCounter status-red"></span> emails bounced
+                            <span class="statsCounter status-red"></span> <f:translate key="emails_bounced"/>
                         </div>
                         <div class="overview__clickedLinks">
-                            <span class="statsCounter status-yellow"></span> clicked links
+                            <span class="statsCounter status-yellow"></span> <f:translate key="links_opened"/>
                         </div>
                         <div class="overview__plannedDate">
-                            Planned to be sent on <span class="statsCounter"></span>
+                             <f:translate key="planned_to_be_sent_on"/>    <span class="statsCounter"></span>
                         </div>
                         <div class="overview__startDate">
-                            Started sending on <span class="statsCounter"></span>
+                             <f:translate key="started"/> <span class="statsCounter"></span>
                         </div>
                     </div>
                 </div>

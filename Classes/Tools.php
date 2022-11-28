@@ -3,12 +3,18 @@
 namespace Mirko\Newsletter;
 
 use DateTime;
+use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Result;
 use GuzzleHttp\Exception\RequestException;
 use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
 use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Service\NewsletterService;
+use Mirko\Newsletter\Service\Typo3GeneralService;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -21,7 +27,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class Tools
 {
-    private static $configuration = null;
+    private static array $configuration = [];
 
     private static string $OPEN_SSL_CIPHER = 'aes-256-cbc';
 
@@ -29,12 +35,16 @@ class Tools
 
     private NewsletterRepository $newsletterRepository;
 
+    private NewsletterService $newsletterService;
+
     public function __construct(
         EmailRepository $emailRepository,
-        NewsletterRepository $newsletterRepository
+        NewsletterRepository $newsletterRepository,
+        NewsletterService $newsletterService
     ) {
         $this->emailRepository = $emailRepository;
         $this->newsletterRepository = $newsletterRepository;
+        $this->newsletterService = $newsletterService;
     }
 
     public static function getInstance()
@@ -51,25 +61,12 @@ class Tools
      */
     public static function confParam($key)
     {
-        // Look for a config in the module TS first.
-        static $configTS;
-        if (!is_array($configTS)) {
-            $configTS = $backendConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-                ExtensionConfiguration::class
-            )
-                ->get('newsletter');
-        }
-
-        if (isset($configTS[$key])) {
-            return $configTS[$key];
-        }
-
         // Else fallback to the extension config.
-        if (!is_array(self::$configuration)) {
-            self::$configuration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter'];
+        if (empty(static::$configuration)) {
+            static::$configuration = Typo3GeneralService::getExtensionConfiguration();
         }
 
-        return self::$configuration[$key] ?? null;
+        return static::$configuration[$key] ?? null;
     }
 
     /**
@@ -102,9 +99,9 @@ class Tools
         // hook for modifying the mailer before finish preconfiguring
         if (array_key_exists(
                 'getConfiguredMailerHook',
-                $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']
-            ) && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['newsletter']['getConfiguredMailerHook'] as $_classRef) {
+                static::$configuration
+            ) && is_array(static::$configuration['getConfiguredMailerHook'])) {
+            foreach (static::$configuration['getConfiguredMailerHook'] as $_classRef) {
                 $_procObj = GeneralUtility::makeInstance($_classRef);
                 $mailer = $_procObj->getConfiguredMailerHook($mailer, $newsletter);
             }
@@ -145,7 +142,6 @@ class Tools
         $emailSpooledCount = 0;
         $recipientList = $newsletter->getRecipientList();
         $recipientList->init();
-        $db = self::getDatabaseConnection();
         while ($receiver = $recipientList->getRecipient()) {
             // Register the recipient
             if (GeneralUtility::validEmail($receiver['email'])) {
@@ -166,7 +162,7 @@ class Tools
         );
 
         // Schedule repeated newsletter if any
-        $newsletter->scheduleNextNewsletter();
+        $this->newsletterService->scheduleNextNewsletter($newsletter);
 
         // Unlock the newsletter by setting its end_time
         $newsletter->setEndTime(new DateTime());
@@ -179,16 +175,10 @@ class Tools
      */
     public function runAllSpool()
     {
-        $db = self::getDatabaseConnection();
-
-        // Try to detect if a spool is already running
-        // If there is no records for the last 30 seconds, previous spool session is assumed to have ended.
-        // If there are newer records, then stop here, and assume the running mailer will take care of it.
-        $rs = $db->sql_query(
+        $rs = Tools::executeRawDBQuery(
             'SELECT COUNT(uid) FROM tx_newsletter_domain_model_email WHERE begin_time > ' . (time() - 30)
-        );
-        list($num_records) = $db->sql_fetch_row($rs);
-        if ($num_records != 0) {
+        )->fetchOne();
+        if ($rs !== 0) {
             return;
         }
 
@@ -448,23 +438,40 @@ class Tools
     }
 
     /**
-     * Returns the ObjectManager
+     * Get domain name
      *
-     * @return \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @return string domain, eg: www.example.com
      */
-    private static function getObjectManager()
+    public static function getDomain(): string
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        return parse_url(static::getBaseUrl(), PHP_URL_HOST);
     }
 
     /**
-     * Returns the the connection to database
-     *
-     * @return DatabaseConnection
+     * @param $tableName
+     * @return QueryBuilder
      */
-    public static function getDatabaseConnection()
+    public static function getQueryBuilderForTable($tableName): QueryBuilder
     {
-        return $GLOBALS['TYPO3_DB'];
+        return GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable($tableName)
+            ->createQueryBuilder();
+    }
+
+    /**
+     * @param string $sql
+     * @return Result|void
+     * @throws Exception
+     */
+    public static function executeRawDBQuery(string $sql)
+    {
+        try {
+            $databaseConnection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionByName(
+                ConnectionPool::DEFAULT_CONNECTION_NAME
+            );
+            return $databaseConnection->prepare($sql)->executeQuery();
+        } catch (\Exception $exception) {
+        }
     }
 
     /**

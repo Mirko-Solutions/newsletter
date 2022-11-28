@@ -4,6 +4,8 @@ namespace Mirko\Newsletter\Domain\Model\RecipientList;
 
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Recipient List using CSV file
@@ -112,7 +114,7 @@ class CsvFile extends AbstractArray
     }
 
     protected function getFileReferences($uid) {
-        $fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
+        $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
         $fileObjects = $fileRepository->findByRelation('tx_newsletter_domain_model_recipientlist', 'csv_filename', $uid);
 
         if (empty($fileObjects)) {

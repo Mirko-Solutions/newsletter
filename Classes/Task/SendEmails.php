@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Task;
 
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
+use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -14,6 +15,8 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  */
 class SendEmails extends AbstractTask
 {
+    private NewsletterService $newsletterService;
+
     /**
      * Sends emails for queued newsletter
      *
@@ -39,7 +42,7 @@ class SendEmails extends AbstractTask
     public function getAdditionalInformation()
     {
         $newsletterRepository = Tools::getInstance()->getNewsletterRepository();
-
+        $newsletterService = NewsletterService::getInstance();
         $newslettersToSend = $newsletterRepository->findAllReadyToSend();
         $newslettersBeingSent = $newsletterRepository->findAllBeingSent();
         $newslettersToSendCount = count($newslettersToSend);
@@ -47,10 +50,10 @@ class SendEmails extends AbstractTask
 
         $emailNotSentCount = 0;
         foreach ($newslettersToSend as $newsletter) {
-            $emailNotSentCount += $newsletter->getEmailNotSentCount();
+            $emailNotSentCount += $newsletterService->getEmailNotSentCount($newsletter);
         }
         foreach ($newslettersBeingSent as $newsletter) {
-            $emailNotSentCount += $newsletter->getEmailNotSentCount();
+            $emailNotSentCount += $newsletterService->getEmailNotSentCount($newsletter);
         }
 
         $emailsPerRound = Tools::confParam('mails_per_round');
