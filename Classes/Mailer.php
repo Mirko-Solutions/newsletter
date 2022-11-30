@@ -4,6 +4,7 @@ namespace Mirko\Newsletter;
 
 use Mirko\Newsletter\Domain\Model\Email;
 use Mirko\Newsletter\Domain\Model\Newsletter;
+use Mirko\Newsletter\Helper\Typo3CompatibilityHelper;
 use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Utility\UriBuilder;
 use TYPO3\CMS\Core\Core\Environment;
@@ -343,8 +344,13 @@ class Mailer
                             'url' => $url,
                             'newsletter' => $this->newsletter->getUid(),
                         ]
-                    )
-                    ->executeStatement();
+                    );
+                    if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+                        $queryBuilder->execute();
+                    }else {
+                        $queryBuilder->executeStatement();
+                    }
+
 
                 $linkId = $queryBuilder->getConnection()->lastInsertId();
             }

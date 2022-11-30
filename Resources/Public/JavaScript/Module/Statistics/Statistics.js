@@ -23,7 +23,8 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        gridOptions.api.setRowData(response.data);
+                        const responseJson = JSON.parse(response);
+                        gridOptions.api.setRowData(responseJson.data);
                         gridOptions.api.forEachNode(node => node.rowIndex === 0 ? node.setSelected(true) : node.setSelected(false));
                     },
                     error: function (response) {
@@ -52,7 +53,8 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        const newsletter = response.data;
+                        const responseJson = JSON.parse(response);
+                        const newsletter = responseJson.data;
                         const AllStats = newsletter['statistics'];
                         const lastSentStats = AllStats[AllStats.length - 1];
                         updatePieChartData(
@@ -107,7 +109,8 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        me.emailStatsTable.api.setRowData(response.data);
+                        const responseJson = JSON.parse(response);
+                        me.emailStatsTable.api.setRowData(responseJson.data);
                     },
                     error: function (response) {
                         const r = $.parseJSON(response.responseText);
@@ -138,7 +141,8 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        me.linksStatsTable.api.setRowData(response.data);
+                        const responseJson = JSON.parse(response);
+                        me.linksStatsTable.api.setRowData(responseJson.data);
                     },
                     error: function (response) {
                         const r = $.parseJSON(response.responseText);

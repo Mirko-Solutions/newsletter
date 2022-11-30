@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\MVC\Controller;
 
+use Mirko\Newsletter\Helper\Typo3CompatibilityHelper;
 use Mirko\Newsletter\MVC\View\JsonView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -36,8 +37,9 @@ class ApiActionController extends ActionController
      */
     public function initializeView($view)
     {
-        if ($this->request->getAttribute('jsonRequest')) {
-            $this->view = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Mvc\View\JsonView::class);
+        $request = Typo3CompatibilityHelper::checkRequestType($this->request);
+        if ($request->getAttribute('jsonRequest')) {
+            $this->view = GeneralUtility::makeInstance(JsonView::class);
         }
     }
 
@@ -49,15 +51,24 @@ class ApiActionController extends ActionController
     {
         $message = $this->getFlattenedValidationErrorMessage();
 
-        if ($this->view instanceof JsonView) {
-            $this->view->setVariablesToRender(['flashMessages', 'error', 'success']);
+        if (!$this->view instanceof JsonView) {
+            return;
+        }
+
+        $this->view->setVariablesToRender(['flashMessages', 'error', 'success']);
+        if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $this->view->assign(
+                'flashMessages',
+                $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        } else {
             $this->view->assign(
                 'flashMessages',
                 $this->getFlashMessageQueue()->getAllMessagesAndFlush()
             );
-            $this->view->assign('error', $message);
-            $this->view->assign('success', false);
         }
+        $this->view->assign('error', $message);
+        $this->view->assign('success', false);
     }
 
     /**
@@ -78,9 +89,16 @@ class ApiActionController extends ActionController
      */
     protected function flushFlashMessages(): void
     {
-        $this->view->assign(
-            'flashMessages',
-            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
-        );
+        if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $this->view->assign(
+                'flashMessages',
+                $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        } else {
+            $this->view->assign(
+                'flashMessages',
+                $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        }
     }
 }

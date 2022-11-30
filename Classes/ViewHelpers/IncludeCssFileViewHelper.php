@@ -45,7 +45,7 @@ class IncludeCssFileViewHelper extends AbstractViewHelper
         $pathInsideExt = $this->arguments['pathInsideExt'];
 
         if ($extKey === null) {
-            $extKey = $this->renderingContext->getRequest()->getControllerExtensionKey();
+            $extKey = 'newsletter';
         }
 
         $extPath = ExtensionManagementUtility::extPath($extKey);

@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\Controller;
 
+use Mirko\Newsletter\Helper\Typo3CompatibilityHelper;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -62,10 +63,17 @@ class RecipientListController extends ApiActionController
         $this->view->assign('total', $recipientLists->count());
         $this->view->assign('data', $recipientLists);
         $this->view->assign('success', true);
-        $this->view->assign(
-            'flashMessages',
-            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
-        );
+        if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $this->view->assign(
+                'flashMessages',
+                $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        } else {
+            $this->view->assign(
+                'flashMessages',
+                $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        }
     }
 
     /**
@@ -115,10 +123,18 @@ class RecipientListController extends ApiActionController
         $this->view->assign('total', $recipientLists->getCount());
         $this->view->assign('data', $recipients);
         $this->view->assign('success', true);
-        $this->view->assign(
-            'flashMessages',
-            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
-        );
+        if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $this->view->assign(
+                'flashMessages',
+                $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        } else {
+            $this->view->assign(
+                'flashMessages',
+                $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        }
+
         $this->view->setVariablesToRender(['metaData', 'total', 'data', 'success', 'flashMessages']);
     }
 
