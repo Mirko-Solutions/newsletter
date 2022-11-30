@@ -21,7 +21,8 @@ define(
                         xhr.setRequestHeader('Content-Type', 'json');
                     },
                     success: function (response) {
-                        gridOptions.api.setRowData(response.data);
+                        const responseJson = JSON.parse(response);
+                        gridOptions.api.setRowData(responseJson.data);
                     },
                     error: function (response) {
                         const r = $.parseJSON(response.responseText);
@@ -61,8 +62,8 @@ define(
                     },
                     success: function (response) {
                         $('.action-button').removeClass('disabled');
-
-                        generateFlashMessageFromResponse(Notification, response);
+                        const responseJson = JSON.parse(response);
+                        generateFlashMessageFromResponse(Notification, responseJson);
                     },
                     error: function (response) {
                         $('.action-button').removeClass('disabled');

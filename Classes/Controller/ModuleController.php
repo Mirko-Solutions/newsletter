@@ -2,15 +2,16 @@
 
 namespace Mirko\Newsletter\Controller;
 
+use Mirko\Newsletter\Helper\Typo3CompatibilityHelper;
 use Mirko\Newsletter\Service\NewsletterModuleService;
 use Mirko\Newsletter\Service\Typo3GeneralService;
+use Mirko\Newsletter\Template\ModuleTemplateFactory;
 use Mirko\Newsletter\Tools;
 use Mirko\Newsletter\Utility\BackendDataProviderRegistration;
 use Mirko\Newsletter\Utility\UriBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
@@ -112,7 +113,7 @@ class ModuleController extends ActionController
         if ($pageRecord) {
             $moduleTemplate->getDocHeaderComponent()->setMetaInformation($pageRecord);
         }
-        $moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue());
+
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Libraries/Libraries');
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Newsletter/Libraries/Utility');
@@ -127,7 +128,17 @@ class ModuleController extends ActionController
             ->from('pages')
             ->where(
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->pageId))
-            )->executeQuery()->fetchOne();
+            );
+
+        if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $pageDokType->execute()->fetchOne();
+
+            $moduleTemplate->setFlashMessageQueue($this->controllerContext->getFlashMessageQueue());
+        } else {
+            $pageDokType->executeQuery()->fetchOne();
+
+            $moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue());
+        }
 
         if ($pageDokType === 254) {
             $pageType = 'folder';
@@ -144,9 +155,10 @@ class ModuleController extends ActionController
         return $moduleTemplate;
     }
 
-    public function newsletterAction(): ResponseInterface
+    public function newsletterAction()
     {
-        $moduleTemplate = $this->initializeModuleTemplate($this->request);
+        $request = Typo3CompatibilityHelper::checkRequestType($this->request);
+        $moduleTemplate = $this->initializeModuleTemplate($request);
 
         $this->view->assignMultiple(
             [
@@ -158,12 +170,14 @@ class ModuleController extends ActionController
             ]
         );
         $moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($moduleTemplate->renderContent());
+
+        return $moduleTemplate->renderContent();
     }
 
-    public function statisticsAction(): ResponseInterface
+    public function statisticsAction()
     {
-        $moduleTemplate = $this->initializeModuleTemplate($this->request);
+        $request = Typo3CompatibilityHelper::checkRequestType($this->request);
+        $moduleTemplate = $this->initializeModuleTemplate($request);
 
         $this->configuration['emailShowUrl'] = UriBuilder::buildFrontendUri($this->pageId, 'Email', 'show');
 
@@ -177,6 +191,6 @@ class ModuleController extends ActionController
             ]
         );
         $moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($moduleTemplate->renderContent());
+        return $moduleTemplate->renderContent();
     }
 }

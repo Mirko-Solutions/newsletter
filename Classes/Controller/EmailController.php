@@ -3,6 +3,7 @@
 namespace Mirko\Newsletter\Controller;
 
 use Mirko\Newsletter\Domain\Repository\RecipientListRepository;
+use Mirko\Newsletter\Helper\Typo3CompatibilityHelper;
 use Mirko\Newsletter\Service\Typo3GeneralService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Mail\MailMessage;
@@ -87,10 +88,17 @@ class EmailController extends ApiActionController
         $this->view->assign('total', $this->emailRepository->getCount($uidNewsletter));
         $this->view->assign('data', $emails);
         $this->view->assign('success', true);
-        $this->view->assign(
-            'flashMessages',
-            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
-        );
+        if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $this->view->assign(
+                'flashMessages',
+                $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        } else {
+            $this->view->assign(
+                'flashMessages',
+                $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        }
     }
 
     /**

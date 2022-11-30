@@ -151,7 +151,7 @@ return [
                     'maxitems' => 1,
                     'size' => 1,
                     'max_size' => 500,
-                    'internal_type' => 'file',
+                    'type' => 'inline',
                     'allowed' => 'csv,txt',
                     'uploadfolder' => 'uploads/tx_newsletter',
                     'appearance' => [

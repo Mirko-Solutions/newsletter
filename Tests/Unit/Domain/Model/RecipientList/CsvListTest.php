@@ -33,7 +33,7 @@ class CsvListTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
     public function testSetCsvValuesForStringSetsCsvValues()
     {
         $this->subject->setCsvValues('Conceived at T3CON10');
-        $this->assertClassHasAttribute('csvValues', $this->subject::class);
+        $this->assertClassHasAttribute('csvValues', get_class($this->subject));
         $this->assertSame('Conceived at T3CON10', $this->subject->getCsvValues());
     }
 
