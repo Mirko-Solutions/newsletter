@@ -61,14 +61,3 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][time()] = [
     'priority' => 40,
     'class' => \Mirko\Newsletter\Tca\RecipientListTca::class,
 ];
-
-// Make a call to update
-if (TYPO3_MODE === 'BE') {
-    $dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-    $dispatcher->connect(
-        \TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class,
-        'afterExtensionInstall',
-        \Mirko\Newsletter\Update\Update::class,
-        'afterExtensionInstall'
-    );
-}

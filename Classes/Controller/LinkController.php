@@ -2,6 +2,7 @@
 
 namespace Mirko\Newsletter\Controller;
 
+use Mirko\Newsletter\Helper\Typo3CompatibilityHelper;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use Mirko\Newsletter\Domain\Repository\LinkRepository;
@@ -59,10 +60,17 @@ class LinkController extends ApiActionController
         $this->view->assign('total', $this->linkRepository->getCount($uidNewsletter));
         $this->view->assign('data', $links);
         $this->view->assign('success', true);
-        $this->view->assign(
-            'flashMessages',
-            $this->getFlashMessageQueue()->getAllMessagesAndFlush()
-        );
+          if (Typo3CompatibilityHelper::typo3VersionIs10()) {
+            $this->view->assign(
+                'flashMessages',
+                $this->controllerContext->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        } else {
+            $this->view->assign(
+                'flashMessages',
+                $this->getFlashMessageQueue()->getAllMessagesAndFlush()
+            );
+        }
     }
 
     /**
@@ -101,6 +109,13 @@ class LinkController extends ApiActionController
      */
     public static function resolveJsonViewConfiguration(): array
     {
+        if (Typo3CompatibilityHelper::typo3VersionIs10()){
+            return [
+                '_exposeObjectIdentifier' => true,
+                '_only' => ['url', 'openedCount'],
+            ];
+        }
+
         return [
             '_exposeObjectIdentifier' => true,
             '_only' => ['url', 'openedCount', 'openedPercentage'],

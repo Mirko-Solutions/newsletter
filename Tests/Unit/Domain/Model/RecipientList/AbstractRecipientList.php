@@ -36,7 +36,7 @@ abstract class AbstractRecipientList extends \TYPO3\TestingFramework\Core\Unit\U
     public function testSetTitleForStringSetsTitle()
     {
         $this->subject->setTitle('Conceived at T3CON10');
-        $this->assertClassHasAttribute('title', $this->subject::class, 'Conceived at T3CON10');
+        $this->assertClassHasAttribute('title', get_class($this->subject), 'Conceived at T3CON10');
     }
 
     /**
@@ -59,7 +59,7 @@ abstract class AbstractRecipientList extends \TYPO3\TestingFramework\Core\Unit\U
     {
         $this->subject->setPlainOnly(true);
 
-        $this->assertClassHasAttribute('plainOnly', $this->subject::class, true);
+        $this->assertClassHasAttribute('plainOnly', get_class($this->subject), true);
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class AbstractRecipientList extends \TYPO3\TestingFramework\Core\Unit\U
     public function testSetLangForStringSetsLang()
     {
         $this->subject->setLang(123);
-        $this->assertClassHasAttribute('lang', $this->subject::class, 123);
+        $this->assertClassHasAttribute('lang', get_class($this->subject), 123);
     }
 
     /**
@@ -93,6 +93,6 @@ abstract class AbstractRecipientList extends \TYPO3\TestingFramework\Core\Unit\U
     public function testSetTypeForStringSetsType()
     {
         $this->subject->setType('Conceived at T3CON10');
-        $this->assertClassHasAttribute('type', $this->subject::class, 'Conceived at T3CON10');
+        $this->assertClassHasAttribute('type', get_class($this->subject), 'Conceived at T3CON10');
     }
 }
