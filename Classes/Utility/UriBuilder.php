@@ -120,6 +120,12 @@ abstract class UriBuilder
             $uri .= $prefix . http_build_query([self::getNamespace() => $argumentsToRestore]);
         }
 
+        // If the `typeNum` is part of the arguments array, append the `type` parameter to the URI
+        if (isset($arguments['type']) && $arguments['type'] === self::PAGE_TYPE) {
+            $prefix = mb_strpos($uri, '?') === false ? '?' : '&';
+            $uri .= $prefix . 'type=' . self::PAGE_TYPE;
+        }
+
         return $uri;
     }
 
