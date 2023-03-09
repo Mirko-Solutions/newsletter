@@ -272,6 +272,7 @@ class EmailController extends ApiActionController
                     'recipient' => $recipientAddress,
                 ]
             );
+            $uriBuilder->setCreateAbsoluteUri(true);
             $redirect = $uriBuilder->build();
         }
 
