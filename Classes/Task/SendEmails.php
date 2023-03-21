@@ -2,11 +2,8 @@
 
 namespace Mirko\Newsletter\Task;
 
-use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
@@ -25,8 +22,12 @@ class SendEmails extends AbstractTask
     public function execute()
     {
         $tools = Tools::getInstance();
+        $logger = Tools::getLogger(__CLASS__);
+        $logger->debug('Create all spoon');
         $tools->createAllSpool();
+        $logger->debug('Will run all spoon');
         $tools->runAllSpool();
+        $logger->debug('Did run all spoon');
 
         return true;
     }
