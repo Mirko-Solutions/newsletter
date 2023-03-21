@@ -88,8 +88,7 @@ class Tools
      * This mailer will have both plain and HTML content applied as well as files attached.
      *
      * @param Newsletter $newsletter The newsletter
-     * @param int $language
-     *
+     * @param int        $language
      * @return Mailer preconfigured mailer for sending
      */
     public static function getConfiguredMailer(Newsletter $newsletter, $language = null)
@@ -355,6 +354,7 @@ class Tools
                     $report['message'] = $exception->getMessage();
                     $report['exception'] = $exception;
                 }
+
                 return false;
             }
             $content = '';
@@ -415,7 +415,6 @@ class Tools
 
     public static function getBaseUrl($pid = null)
     {
-
         // Is anything hardcoded from TYPO3_CONF_VARS ?
         $domain = Tools::confParam('fetch_path');
 
@@ -479,6 +478,7 @@ class Tools
             $databaseConnection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionByName(
                 ConnectionPool::DEFAULT_CONNECTION_NAME
             );
+
             return $databaseConnection->prepare($sql)->executeQuery();
         } catch (\Exception $exception) {
         }
