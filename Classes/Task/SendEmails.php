@@ -23,11 +23,11 @@ class SendEmails extends AbstractTask
     {
         $tools = Tools::getInstance();
         $logger = Tools::getLogger(__CLASS__);
-        $logger->debug('Create all spoon');
+        $logger->debug('Create all spool');
         $tools->createAllSpool();
-        $logger->debug('Will run all spoon');
+        $logger->debug('Will run all spool');
         $tools->runAllSpool();
-        $logger->debug('Did run all spoon');
+        $logger->debug('Did run all spool');
 
         return true;
     }
