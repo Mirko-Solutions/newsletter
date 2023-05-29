@@ -272,6 +272,7 @@ class EmailController extends ApiActionController
                     'recipient' => $recipientAddress,
                 ]
             );
+            $uriBuilder->setCreateAbsoluteUri(true);
             $redirect = $uriBuilder->build();
         }
 
@@ -332,7 +333,7 @@ class EmailController extends ApiActionController
         $message->setTo($notificationEmail)
             ->setFrom([$newsletter->getSenderEmail() => $newsletter->getSenderName()])
             ->setSubject($subject)
-            ->setBody($body, 'text/html');
+            ->html($body);
         $message->send();
     }
 

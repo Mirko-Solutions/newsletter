@@ -6,12 +6,18 @@ use DateTime;
 use Mirko\Newsletter\Utility\UriBuilder;
 use TYPO3\CMS\Extbase\Annotation as Extbase;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use UnexpectedValueException;
+use function bin2hex;
+use function random_bytes;
+use function strlen;
 
 /**
  * Email
  */
 class Email extends AbstractEntity implements EmailInterface
 {
+    private const INITIAL_AUTH_CODE_PREFIX = 'initial-';
+
     /**
      * beginTime
      *
@@ -80,6 +86,11 @@ class Email extends AbstractEntity implements EmailInterface
      * @var string
      */
     protected $authCode = '';
+
+    public function __construct()
+    {
+        $this->authCode = self::INITIAL_AUTH_CODE_PREFIX . bin2hex(random_bytes(20));
+    }
 
     /**
      * @param int $uid
@@ -181,6 +192,8 @@ class Email extends AbstractEntity implements EmailInterface
     {
         if ($this->getUid()) {
             $this->authCode = md5($this->getUid() . $this->getRecipientAddress());
+        } else {
+            throw new UnexpectedValueException('Can not compute the auth code because the UID is not set');
         }
     }
 
@@ -193,6 +206,10 @@ class Email extends AbstractEntity implements EmailInterface
      */
     public function getAuthCode()
     {
+        if (substr($this->authCode, 0, strlen(self::INITIAL_AUTH_CODE_PREFIX)) === self::INITIAL_AUTH_CODE_PREFIX) {
+            throw new UnexpectedValueException('Auth code has not been computed');
+        }
+
         return $this->authCode;
     }
 

@@ -1,12 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Mirko\Newsletter\Task;
 
-use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
@@ -15,20 +14,17 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  */
 class SendEmails extends AbstractTask
 {
-    private NewsletterService $newsletterService;
-
     /**
      * Sends emails for queued newsletter
      *
      * @return bool Returns true on successful execution, false on error
      */
-    public function execute()
+    public function execute(): bool
     {
-        $tools = Tools::getInstance();
-        $tools->createAllSpool();
-        $tools->runAllSpool();
+        /** @var SendEmailsTaskHandler $sendEmailsTaskHandler */
+        $sendEmailsTaskHandler = GeneralUtility::makeInstance(SendEmailsTaskHandler::class);
 
-        return true;
+        return $sendEmailsTaskHandler->createAndRunSpool();
     }
 
     /**
@@ -39,7 +35,7 @@ class SendEmails extends AbstractTask
      *
      * @return string Information to display
      */
-    public function getAdditionalInformation()
+    public function getAdditionalInformation(): string
     {
         $newsletterRepository = Tools::getInstance()->getNewsletterRepository();
         $newsletterService = NewsletterService::getInstance();

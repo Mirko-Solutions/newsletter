@@ -495,7 +495,7 @@ class Mailer
         $plain = $this->getPlain();
 
         if ($recipientData['plain_only']) {
-            $message->html($plain, 'text/plain');
+            $message->text($plain);
         } else {
             // Attach inline files and replace markers used for URL
             foreach ($this->attachmentsEmbedded as $marker => $attachment) {
@@ -503,7 +503,7 @@ class Mailer
                 $this->html = str_replace($marker, $embeddedSrc->toString(), $this->html);
             }
 
-            $message->html($this->html, 'text/html');
+            $message->html($this->html);
         }
 
         return $message;

@@ -12,15 +12,14 @@ use Mirko\Newsletter\Domain\Repository\EmailRepository;
 use Mirko\Newsletter\Domain\Repository\NewsletterRepository;
 use Mirko\Newsletter\Service\NewsletterService;
 use Mirko\Newsletter\Service\Typo3GeneralService;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use function count;
 
 /**
  * Toolbox for newsletter and dependant extensions.
@@ -37,6 +36,8 @@ class Tools
 
     private NewsletterService $newsletterService;
 
+    private LoggerInterface $logger;
+
     public function __construct(
         EmailRepository $emailRepository,
         NewsletterRepository $newsletterRepository,
@@ -45,6 +46,7 @@ class Tools
         $this->emailRepository = $emailRepository;
         $this->newsletterRepository = $newsletterRepository;
         $this->newsletterService = $newsletterService;
+        $this->logger = static::getLogger(__CLASS__);
     }
 
     public static function getInstance()
@@ -86,8 +88,7 @@ class Tools
      * This mailer will have both plain and HTML content applied as well as files attached.
      *
      * @param Newsletter $newsletter The newsletter
-     * @param int $language
-     *
+     * @param int        $language
      * @return Mailer preconfigured mailer for sending
      */
     public static function getConfiguredMailer(Newsletter $newsletter, $language = null)
@@ -196,9 +197,11 @@ class Tools
         $mailers = [];
 
         $allUids = $this->newsletterRepository->findAllNewsletterAndEmailUidToSend($limitNewsletter);
+        $this->logger->info('Will send ' . count($allUids) . ' emails');
 
         $oldNewsletterUid = null;
         foreach ($allUids as $uids) {
+            $this->logger->debug("Will send newsletter #" . $uids['newsletter']);
             $newsletterUid = $uids['newsletter'];
             $emailUid = $uids['email'];
 
@@ -215,6 +218,11 @@ class Tools
             /** @var Email $email */
             $email = $this->emailRepository->findByUid($emailUid);
             $recipientData = $email->getRecipientData();
+            $this->logger->debug(
+                "Newsletter recipient data for email " . $recipientData['email'] ?? '',
+                $recipientData
+            );
+
             $language = $recipientData['L'] ?? '';
 
             // Was a language with this page defined, if not create one
@@ -234,11 +242,12 @@ class Tools
             $this->emailRepository->update($email);
             $this->emailRepository->persistAll();
             ++$emailSentCount;
+            $this->logger->debug("Sent $emailSentCount emails will wait 2 secs");
             sleep(2);
         }
 
         // Log numbers
-        self::getLogger(__CLASS__)->info("Sent $emailSentCount emails");
+        $this->logger->info("Sent $emailSentCount emails");
     }
 
     /**
@@ -345,6 +354,7 @@ class Tools
                     $report['message'] = $exception->getMessage();
                     $report['exception'] = $exception;
                 }
+
                 return false;
             }
             $content = '';
@@ -405,7 +415,6 @@ class Tools
 
     public static function getBaseUrl($pid = null)
     {
-
         // Is anything hardcoded from TYPO3_CONF_VARS ?
         $domain = Tools::confParam('fetch_path');
 
@@ -469,6 +478,7 @@ class Tools
             $databaseConnection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionByName(
                 ConnectionPool::DEFAULT_CONNECTION_NAME
             );
+
             return $databaseConnection->prepare($sql)->executeQuery();
         } catch (\Exception $exception) {
         }
